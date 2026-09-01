@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Kagaz & Syahi - Print Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&family=Space+Mono:wght@700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              paper: "#F9F9F7",
+              ink: "#15181C",
+              stamp: "#C0392E",
+            },
+            fontFamily: {
+              heading: ["Outfit", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+              mono: ["Space Mono", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      body {
+        background-color: #f9f9f7;
+        color: #15181c;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Manga Hard Shadows - No borders, just the shadow block */
+      .manga-shadow {
+        box-shadow: 4px 4px 0px #15181c;
+        background-color: white;
+        border-radius: 8px;
+      }
+
+      .manga-shadow-stamp {
+        box-shadow: 4px 4px 0px #631711;
+        border-radius: 8px;
+      }
+
+      .manga-shadow-active:active {
+        box-shadow: 0px 0px 0px #15181c;
+        transform: translate(4px, 4px);
+        transition: all 0.1s ease;
+      }
+
+      /* Speed Lines Animation */
+      .speed-lines-bg {
+        position: absolute;
+        inset: 0;
+        opacity: 0.05;
+        background-image: repeating-linear-gradient(
+          90deg,
+          transparent 0%,
+          transparent 48%,
+          #15181c 50%,
+          transparent 52%,
+          transparent 100%
+        );
+        background-size: 200% 100%;
+        animation: speedLines 0.3s infinite linear;
+        pointer-events: none;
+        z-index: 0;
+        display: none; /* Hidden by default */
+      }
+
+      @keyframes speedLines {
+        0% {
+          background-position: 0 0;
+        }
+        100% {
+          background-position: 100% 0;
+        }
+      }
+
+      /* File Fly Animation */
+      .anim-file-fly {
+        animation: fileFly 0.6s ease-out forwards;
+      }
+      @keyframes fileFly {
+        0% {
+          transform: translateY(100px) scale(0.5);
+          opacity: 0;
+        }
+        50% {
+          transform: translateY(-20px) scale(1.05);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* Laser Scan Animation */
+      .scanner-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background-color: #c0392e;
+        box-shadow:
+          0 0 10px #c0392e,
+          0 0 20px #c0392e;
+        opacity: 0;
+        z-index: 10;
+      }
+      .anim-laser-scan {
+        animation: laserScan 1.5s ease-in-out infinite;
+      }
+      @keyframes laserScan {
+        0% {
+          top: 0%;
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          top: 100%;
+          opacity: 0;
+        }
+      }
+
+      /* Printer Spit Animation */
+      .anim-printer-spit {
+        animation: printerSpit 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+          forwards;
+        transform-origin: top;
+      }
+      @keyframes printerSpit {
+        0% {
+          transform: translateY(-100%);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Hide scrollbar for clean mobile look globally */
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Specific scrollbar for file container */
+      .file-scroll-container::-webkit-scrollbar {
+        display: block;
+        width: 6px;
+      }
+      .file-scroll-container::-webkit-scrollbar-track {
+        background: #f3f4f6;
+        border-radius: 10px;
+        margin-block: 4px;
+      }
+      .file-scroll-container::-webkit-scrollbar-thumb {
+        background: #9ca3af;
+        border-radius: 10px;
+      }
+      .file-scroll-container::-webkit-scrollbar-thumb:hover {
+        background: #6b7280;
+      }
+
+      /* Radio Button Customization */
+      input[type="radio"]:checked + div {
+        background-color: #15181c;
+        color: #f9f9f7;
+      }
+      input[type="radio"]:checked + div .text-ink {
+        color: #f9f9f7;
+      }
+
+      .glass-panel {
+        background: rgba(249, 249, 247, 0.95);
+        backdrop-filter: blur(8px);
+      }
+    </style>
+  </head>
+  <body
+    class="font-body min-h-screen relative overflow-hidden flex flex-col justify-between max-w-md mx-auto"
+  >
+    <!-- Speed lines background for processing state -->
+    <div id="speedLines" class="speed-lines-bg"></div>
+
+    <!-- Header -->
+    <header class="p-5 flex justify-between items-center z-10 glass-panel">
+      <div>
+        <h1
+          class="font-heading text-[22px] font-extrabold text-ink tracking-wide uppercase leading-tight"
+        >
+          Kagaz & Syahi
+        </h1>
+        <p
+          class="text-[10px] font-bold text-stamp tracking-widest uppercase mt-0.5"
+        >
+          Manga Edition
+        </p>
+      </div>
+      <div
+        id="shopIdDisplay"
+        class="bg-ink text-white font-heading text-[11px] font-bold px-4 py-1.5 rounded-full hidden tracking-widest flex items-center gap-1.5"
+      >
+        SHOP:
+        <span id="shopIdValue" class="font-mono text-xs tracking-normal"
+          >---</span
+        >
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-5 z-10 overflow-y-auto pb-24" id="mainContainer">
+      <!-- Error State: No Shop ID -->
+      <div
+        id="errorState"
+        class="hidden flex flex-col items-center justify-center h-full text-center mt-20 anim-file-fly"
+      >
+        <svg
+          class="w-16 h-16 text-stamp mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          ></path>
+        </svg>
+        <h2 class="font-heading text-2xl mb-2">No Shop ID Found</h2>
+        <p class="text-sm opacity-80 mb-6">
+          Please scan the shop's QR code again to start printing.
+        </p>
+      </div>
+
+      <!-- Step 1: Upload File -->
+      <div id="step1" class="flex flex-col h-full hidden">
+        <h2 class="font-heading text-3xl font-bold mb-2">Print Document</h2>
+        <p class="mb-8 opacity-80 text-sm">
+          Select files to print at this shop.
+        </p>
+
+        <label
+          for="fileInput"
+          class="manga-shadow manga-shadow-active flex flex-col items-center justify-center h-48 cursor-pointer relative overflow-hidden group"
+        >
+          <svg
+            class="w-12 h-12 text-ink mb-3 group-hover:scale-110 transition-transform"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+            ></path>
+          </svg>
+          <span class="font-heading font-bold text-lg">Tap to Upload</span>
+          <span class="text-xs opacity-60 mt-1">PDF, JPG, PNG (Max 10MB)</span>
+          <input
+            type="file"
+            id="fileInput"
+            class="hidden"
+            accept=".pdf,.jpg,.jpeg,.png"
+            multiple
+          />
+        </label>
+      </div>
+
+      <!-- Step 2: Configuration -->
+      <div
+        id="step2"
+        class="flex flex-col hidden anim-file-fly max-w-sm mx-auto w-full pt-4"
+      >
+        <!-- Shop Info -->
+        <div class="mb-5 px-1">
+          <span
+            class="text-[10px] font-bold opacity-50 uppercase tracking-widest block mb-1"
+            >Dukaan</span
+          >
+          <div class="flex justify-between items-center">
+            <h2
+              class="font-heading text-xl font-bold text-ink truncate"
+              id="shopNameDisplay"
+            >
+              Raju E-Mitra & Print
+            </h2>
+            <span
+              class="bg-green-50 text-green-600 text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap ml-2 shadow-sm border border-green-200"
+              >Khula hai</span
+            >
+          </div>
+          <div
+            class="border-b-2 border-dashed border-gray-200 mt-4 opacity-50"
+          ></div>
+        </div>
+
+        <!-- Dynamic File Cards Container (Made scrollable if more than 3 files) -->
+        <div
+          id="fileCardsContainer"
+          class="mb-2 max-h-[240px] overflow-y-auto overflow-x-hidden p-1 -mx-1 file-scroll-container pr-2"
+        >
+          <!-- File cards will be injected here by JS -->
+        </div>
+
+        <!-- Paper Size (Full Width) -->
+        <div class="mb-6 px-1 mt-4">
+          <label
+            class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2"
+            >Paper Size</label
+          >
+          <div class="relative">
+            <select
+              class="w-full appearance-none bg-white rounded-lg p-3 font-semibold text-sm text-ink manga-shadow focus:outline-none"
+            >
+              <option>A4 (Normal)</option>
+              <option>A3 (Large)</option>
+              <option>Letter</option>
+            </select>
+            <div
+              class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Print Type -->
+        <div class="mb-6 px-1">
+          <label
+            class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2"
+            >Print Type</label
+          >
+          <div class="flex bg-gray-200 p-1 rounded-lg manga-shadow">
+            <label class="flex-1 cursor-pointer">
+              <input
+                type="radio"
+                name="colorType"
+                value="BW"
+                class="hidden"
+                checked
+                onchange="updateTotal()"
+              />
+              <div
+                class="text-center py-2 rounded-md font-semibold text-sm transition-colors text-gray-600"
+              >
+                Black & White
+              </div>
+            </label>
+            <label class="flex-1 cursor-pointer">
+              <input
+                type="radio"
+                name="colorType"
+                value="Color"
+                class="hidden"
+                onchange="updateTotal()"
+              />
+              <div
+                class="text-center py-2 rounded-md font-semibold text-sm transition-colors text-gray-600"
+              >
+                Colour
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Payable Amount -->
+        <div
+          class="bg-ink text-white rounded-xl p-5 mb-8 manga-shadow flex justify-between items-center"
+        >
+          <div>
+            <p class="text-xs text-gray-400 mb-1">Payable Amount</p>
+            <p
+              class="font-heading text-3xl font-bold flex items-center tracking-tight"
+            >
+              ₹<span id="totalDisplay">20</span>
+            </p>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] text-gray-400 mb-1">Rate / page</p>
+            <p class="font-bold text-sm" id="rateDisplay">₹5 (B&W)</p>
+          </div>
+        </div>
+
+        <!-- Payment Buttons (Swapped: Cash Left, UPI Right) -->
+        <div class="grid grid-cols-2 gap-3 pb-8">
+          <button
+            onclick="processPayment('CASH')"
+            class="bg-white text-ink font-body text-sm sm:text-base font-semibold py-4 rounded-lg manga-shadow active:translate-y-1 active:shadow-none transition-all"
+          >
+            Dukaan pe Cash
+          </button>
+          <button
+            onclick="processPayment('UPI')"
+            class="bg-stamp text-white font-body text-sm sm:text-base font-semibold py-4 rounded-lg manga-shadow-stamp active:translate-y-1 active:shadow-none transition-all"
+          >
+            UPI se Pay karein
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3: Processing (Animations) -->
+      <div
+        id="step3"
+        class="hidden flex-col items-center justify-center h-full mt-10"
+      >
+        <h2
+          id="processingText"
+          class="font-heading text-2xl font-bold mb-10 text-center uppercase tracking-widest bg-white px-4 py-2 manga-shadow"
+        >
+          INITIALIZING...
+        </h2>
+
+        <div
+          class="relative w-48 h-64 bg-white manga-shadow flex items-center justify-center overflow-hidden"
+          id="processingDocument"
+        >
+          <!-- Laser Scanner -->
+          <div id="scannerLine" class="scanner-line"></div>
+
+          <svg
+            class="w-20 h-20 text-ink opacity-20"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            ></path>
+          </svg>
+
+          <!-- Overlay for "Printed" effect -->
+          <div
+            id="printedOverlay"
+            class="absolute inset-0 bg-ink flex items-center justify-center hidden"
+          >
+            <span
+              class="text-paper font-heading font-bold text-xl uppercase tracking-widest"
+              >Done</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Success / Receipt -->
+      <div id="step4" class="hidden flex-col items-center h-full pt-10">
+        <div
+          class="w-full bg-white manga-shadow p-6 relative anim-printer-spit"
+        >
+          <!-- Jagged top edge for receipt -->
+          <div
+            class="absolute -top-2 left-0 w-full h-4 bg-paper"
+            style="
+              clip-path: polygon(
+                0 100%,
+                5% 0,
+                10% 100%,
+                15% 0,
+                20% 100%,
+                25% 0,
+                30% 100%,
+                35% 0,
+                40% 100%,
+                45% 0,
+                50% 100%,
+                55% 0,
+                60% 100%,
+                65% 0,
+                70% 100%,
+                75% 0,
+                80% 100%,
+                85% 0,
+                90% 100%,
+                95% 0,
+                100% 100%
+              );
+            "
+          ></div>
+
+          <div class="text-center mb-6">
+            <h2
+              class="font-heading text-3xl font-bold text-stamp uppercase mb-1"
+            >
+              Ordered
+            </h2>
+            <p class="text-sm font-semibold opacity-70">
+              Hand this to the shopkeeper
+            </p>
+          </div>
+
+          <div
+            class="border-t-2 border-dashed border-ink opacity-20 mb-6"
+          ></div>
+
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-sm font-bold opacity-70 uppercase tracking-wider"
+              >Order ID</span
+            >
+            <span
+              id="receiptOrderId"
+              class="font-mono font-bold text-lg bg-paper px-2 py-1 rounded"
+              >#12345</span
+            >
+          </div>
+
+          <div class="flex justify-between items-center mb-6">
+            <span class="text-sm font-bold opacity-70 uppercase tracking-wider"
+              >Shop ID</span
+            >
+            <span id="receiptShopId" class="font-mono font-bold text-lg"
+              >---</span
+            >
+          </div>
+
+          <div class="bg-paper p-4 rounded mb-6">
+            <div class="flex justify-between text-sm mb-2">
+              <span>Document</span>
+              <span id="receiptType" class="font-bold">B & W</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span>Copies</span>
+              <span id="receiptCopies" class="font-bold">1</span>
+            </div>
+          </div>
+
+          <div
+            class="border-t-2 border-dashed border-ink opacity-20 mb-6"
+          ></div>
+
+          <div class="flex justify-between items-end">
+            <span class="font-heading text-lg font-bold">Total Pay</span>
+            <span
+              id="receiptTotal"
+              class="font-mono font-bold text-3xl text-stamp"
+              >₹5</span
+            >
+          </div>
+        </div>
+
+        <button
+          onclick="resetApp()"
+          class="mt-8 font-heading font-bold opacity-60 hover:opacity-100 uppercase tracking-wider underline"
+        >
+          Print Another File
+        </button>
+      </div>
+    </main>
+
+    <script>
+      // State
+      let currentShopId = null;
+      let filesList = [];
+      let paymentMode = "";
+
+      // Prices based on user instructions
+      const PRICES = {
+        BW: 5,
+        Color: 10,
+      };
+
+      // Initialize App
+      function init() {
+        const urlParams = new URLSearchParams(window.location.search);
+        currentShopId = urlParams.get("shop_id");
+
+        if (currentShopId) {
+          const shopNames = [
+            "Raju E-Mitra & Print",
+            "Gupta Copy House",
+            "Sharma Stationers",
+            "Student Print Center",
+          ];
+          const hash = currentShopId.split("").reduce((a, b) => {
+            a = (a << 5) - a + b.charCodeAt(0);
+            return a & a;
+          }, 0);
+          const nameIndex = Math.abs(hash) % shopNames.length;
+
+          document.getElementById("shopIdValue").textContent = currentShopId;
+          document.getElementById("shopNameDisplay").textContent =
+            shopNames[nameIndex];
+          document.getElementById("shopIdDisplay").classList.remove("hidden");
+          document.getElementById("step1").classList.remove("hidden");
+        } else {
+          document.getElementById("errorState").classList.remove("hidden");
+        }
+
+        // File Input Listener
+        document
+          .getElementById("fileInput")
+          .addEventListener("change", function (e) {
+            if (e.target.files.length > 0) {
+              Array.from(e.target.files).forEach((file) => {
+                let isImage =
+                  file.type.startsWith("image/") ||
+                  file.name.match(/\.(jpg|jpeg|png)$/i);
+                let pages = isImage ? 1 : Math.floor(Math.random() * 15) + 1;
+
+                filesList.push({
+                  file: file,
+                  pages: pages,
+                  copies: 1,
+                });
+              });
+              showConfigStep();
+            }
+          });
+      }
+
+      function renderFiles() {
+        const container = document.getElementById("fileCardsContainer");
+        container.innerHTML = "";
+
+        filesList.forEach((item, index) => {
+          let fileName = item.file.name;
+          if (fileName.length > 20) {
+            const extIndex = fileName.lastIndexOf(".");
+            const ext = extIndex !== -1 ? fileName.substring(extIndex) : "";
+            const name =
+              extIndex !== -1 ? fileName.substring(0, extIndex) : fileName;
+            fileName =
+              name.substring(0, 11) +
+              "..." +
+              name.substring(name.length - 3) +
+              ext;
+          }
+
+          container.innerHTML += `
+                    <div class="manga-shadow p-3 mb-4 bg-white rounded-xl mx-1 mt-1">
+                        <!-- File Info Row -->
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-3 overflow-hidden flex-1">
+                                <div class="bg-red-50 text-stamp p-2.5 rounded-xl shrink-0 flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                </div>
+                                <div class="flex flex-col overflow-hidden">
+                                    <span class="font-heading font-bold text-sm text-ink truncate">${fileName}</span>
+                                    <span class="text-[10px] font-semibold bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded w-max mt-1">${item.pages} ${item.pages > 1 ? "pages" : "page"}</span>
+                                </div>
+                            </div>
+                            <!-- Cross Button -->
+                            <button onclick="removeFile(${index})" class="p-1.5 text-gray-400 hover:text-stamp bg-gray-50 hover:bg-red-50 rounded-lg transition-colors shrink-0 ml-2" title="Remove file">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Dashed Separator -->
+                        <div class="border-b-2 border-dashed border-gray-100 mb-3"></div>
+                        
+                        <!-- Kitni Copy Row -->
+                        <div class="flex items-center justify-between">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Kitni Copy?</label>
+                            <div class="flex items-center bg-white rounded-lg p-0.5 border border-gray-200">
+                                <button onclick="updateFileCopies(${index}, -1)" class="w-7 h-7 flex items-center justify-center hover:bg-gray-50 rounded text-base font-bold text-gray-500 active:scale-95 transition-transform">-</button>
+                                <span class="w-6 text-center font-body text-sm font-bold text-ink">${item.copies}</span>
+                                <button onclick="updateFileCopies(${index}, 1)" class="w-7 h-7 flex items-center justify-center hover:bg-gray-50 rounded text-base font-bold text-gray-500 active:scale-95 transition-transform">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        });
+      }
+
+      function showConfigStep() {
+        document.getElementById("step1").classList.add("hidden");
+        document.getElementById("step2").classList.remove("hidden");
+
+        renderFiles();
+        updateTotal();
+      }
+
+      function removeFile(index) {
+        filesList.splice(index, 1);
+
+        if (filesList.length === 0) {
+          document.getElementById("fileInput").value = "";
+          document.getElementById("step2").classList.add("hidden");
+          document.getElementById("step1").classList.remove("hidden");
+        } else {
+          renderFiles();
+          updateTotal();
+        }
+      }
+
+      function updateFileCopies(index, change) {
+        filesList[index].copies += change;
+        if (filesList[index].copies < 1) filesList[index].copies = 1;
+        if (filesList[index].copies > 50) filesList[index].copies = 50;
+
+        renderFiles();
+        updateTotal();
+      }
+
+      function updateTotal() {
+        const colorType = document.querySelector(
+          'input[name="colorType"]:checked',
+        ).value;
+        const pricePerPage = PRICES[colorType];
+
+        let totalPagesAcrossAllFiles = 0;
+        filesList.forEach((item) => {
+          totalPagesAcrossAllFiles += item.pages * item.copies;
+        });
+
+        const total = pricePerPage * totalPagesAcrossAllFiles;
+
+        document.getElementById("totalDisplay").textContent = total;
+        document.getElementById("rateDisplay").textContent =
+          `₹${pricePerPage} (${colorType === "BW" ? "B&W" : "Color"})`;
+      }
+
+      function processPayment(mode) {
+        paymentMode = mode;
+
+        if (mode === "UPI") {
+          document.getElementById("processingText").textContent =
+            "VERIFYING UPI...";
+        } else {
+          document.getElementById("processingText").textContent =
+            "INITIALIZING...";
+        }
+        startProcessing();
+      }
+
+      function startProcessing() {
+        document.getElementById("step2").classList.add("hidden");
+
+        const step3 = document.getElementById("step3");
+        step3.classList.remove("hidden");
+        step3.classList.add("flex");
+
+        const speedLines = document.getElementById("speedLines");
+        speedLines.style.display = "block";
+
+        const procText = document.getElementById("processingText");
+        const scanner = document.getElementById("scannerLine");
+        const documentElement = document.getElementById("processingDocument");
+
+        documentElement.classList.add("anim-file-fly");
+
+        setTimeout(() => {
+          procText.textContent = "SCANNING FILE...";
+          scanner.classList.add("anim-laser-scan");
+        }, 600);
+
+        setTimeout(() => {
+          scanner.classList.remove("anim-laser-scan");
+          scanner.style.opacity = "0";
+          procText.textContent = "PRINTING...";
+          document.getElementById("printedOverlay").classList.remove("hidden");
+        }, 2500);
+
+        setTimeout(() => {
+          speedLines.style.display = "none";
+          step3.classList.add("hidden");
+          step3.classList.remove("flex");
+          showReceipt();
+        }, 3500);
+      }
+
+      function showReceipt() {
+        const step4 = document.getElementById("step4");
+        step4.classList.remove("hidden");
+        step4.classList.add("flex");
+
+        const orderId = "MGA-" + Math.floor(1000 + Math.random() * 9000);
+        const colorType = document.querySelector(
+          'input[name="colorType"]:checked',
+        ).value;
+        const total = document.getElementById("totalDisplay").textContent;
+
+        let totalCopiesAgg = 0;
+        filesList.forEach((f) => (totalCopiesAgg += f.copies));
+
+        document.getElementById("receiptOrderId").textContent = orderId;
+        document.getElementById("receiptShopId").textContent = currentShopId;
+        document.getElementById("receiptType").textContent =
+          colorType === "BW" ? "Black & White" : "Color";
+        document.getElementById("receiptCopies").textContent =
+          `${filesList.length} Files (${totalCopiesAgg} copies total)`;
+        document.getElementById("receiptTotal").textContent = `₹${total}`;
+
+        let paymentStatus = document.getElementById("paymentStatusElement");
+        if (!paymentStatus) {
+          paymentStatus = document.createElement("div");
+          paymentStatus.id = "paymentStatusElement";
+          const receiptTotalDiv =
+            document.getElementById("receiptTotal").parentElement;
+          receiptTotalDiv.parentElement.appendChild(paymentStatus);
+        }
+
+        paymentStatus.className = `mt-6 text-center font-bold text-sm px-4 py-2 rounded-lg manga-shadow block w-full border-2 border-ink ${paymentMode === "UPI" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`;
+        paymentStatus.textContent =
+          paymentMode === "UPI" ? "Paid via UPI ✅" : "Pay Cash at Shop 💰";
+      }
+
+      function resetApp() {
+        filesList = [];
+        paymentMode = "";
+        document.getElementById("fileInput").value = "";
+        document.querySelector('input[value="BW"]').checked = true;
+        document.getElementById("printedOverlay").classList.add("hidden");
+        document
+          .getElementById("processingDocument")
+          .classList.remove("anim-file-fly");
+
+        document.getElementById("step2").classList.add("hidden");
+        document.getElementById("step3").classList.add("hidden");
+        document.getElementById("step3").classList.remove("flex");
+        document.getElementById("step4").classList.add("hidden");
+        document.getElementById("step4").classList.remove("flex");
+        document.getElementById("speedLines").style.display = "none";
+
+        const ps = document.getElementById("paymentStatusElement");
+        if (ps) ps.remove();
+
+        if (currentShopId) {
+          document.getElementById("step1").classList.remove("hidden");
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>
