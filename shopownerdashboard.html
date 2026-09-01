@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dukaan Dashboard - Kagaz & Syahi Edition</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              paper: "#F9F9F7",
+              ink: "#15181C",
+              stamp: "#C0392E",
+              highlight: "#FFD700",
+            },
+            fontFamily: {
+              heading: ["Outfit", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+              mono: ["Space Mono", "monospace"],
+            },
+            boxShadow: {
+              manga: "4px 4px 0px 0px #15181C",
+              "manga-sm": "2px 2px 0px 0px #15181C",
+              "manga-lg": "6px 6px 0px 0px #15181C",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      /* Base Styles */
+      body {
+        background-color: #f9f9f7; /* paper */
+        color: #15181c; /* ink */
+        font-family: "Inter", sans-serif;
+        background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0V0zm20 20h20v20H20V20zM0 20h20v20H0V20z' fill='%2315181c' fill-opacity='0.02' fill-rule='evenodd'/%3E%3C/svg%3E");
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Outfit", sans-serif;
+      }
+
+      .font-mono {
+        font-family: "Space Mono", monospace;
+      }
+
+      /* Manga Theme Utilities */
+      .manga-border {
+        /* Removed border to eliminate black lines */
+      }
+
+      .manga-card {
+        background-color: #ffffff;
+        box-shadow: 4px 4px 0px 0px #15181c;
+        border-radius: 4px;
+      }
+
+      .manga-btn {
+        background-color: #c0392e; /* stamp */
+        color: white;
+        box-shadow: 4px 4px 0px 0px #15181c;
+        font-family: "Outfit", sans-serif;
+        font-weight: 700;
+        transition: all 0.1s ease-in-out;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+
+      .manga-btn:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 5px 5px 0px 0px #15181c;
+      }
+
+      .manga-btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px 0px #15181c;
+      }
+
+      .manga-btn-secondary {
+        background-color: #ffffff;
+        color: #15181c;
+        box-shadow: 4px 4px 0px 0px #15181c;
+        font-family: "Outfit", sans-serif;
+        font-weight: 700;
+        transition: all 0.1s;
+        border-radius: 4px;
+      }
+
+      .manga-btn-secondary:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px 0px #15181c;
+      }
+
+      .manga-input {
+        background-color: #f9f9f7;
+        padding: 0.5rem;
+        outline: none;
+        border-radius: 4px;
+        transition: box-shadow 0.2s;
+      }
+      .manga-input:focus {
+        box-shadow: 4px 4px 0px 0px #15181c;
+      }
+
+      /* Speed Lines Animation (Background) */
+      .bg-speed-lines {
+        position: relative;
+      }
+      .bg-speed-lines::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 20px,
+          rgba(21, 24, 28, 0.05) 20px,
+          rgba(21, 24, 28, 0.05) 22px
+        );
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      /* Laser Scan Animation */
+      @keyframes scan {
+        0% {
+          top: 0%;
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          top: 100%;
+          opacity: 0;
+        }
+      }
+      .laser-container {
+        position: relative;
+        overflow: hidden;
+      }
+      .laser-line {
+        position: absolute;
+        width: 100%;
+        height: 3px;
+        background-color: #c0392e;
+        box-shadow: 0 0 10px #c0392e;
+        animation: scan 2.5s infinite linear;
+        left: 0;
+        z-index: 10;
+      }
+
+      /* File Fly Animation */
+      @keyframes fly {
+        0% {
+          transform: scale(1) translate(0, 0) rotate(0deg);
+          opacity: 1;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          transform: scale(0.2) translate(300px, -200px) rotate(45deg);
+          opacity: 0;
+        }
+      }
+      .animate-fly {
+        animation: fly 0.7s forwards cubic-bezier(0.5, 0, 0.2, 1);
+        position: relative;
+        z-index: 50;
+      }
+
+      /* Printer Spit Animation */
+      @keyframes spit {
+        0% {
+          transform: translateY(-80%) scale(0.9);
+          opacity: 0;
+          clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(0) scale(1);
+          clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+      }
+      .animate-spit {
+        animation: spit 0.6s ease-out forwards;
+        transform-origin: top center;
+      }
+
+      /* Sidebar active state */
+      .nav-item.active {
+        background-color: #15181c;
+        color: #f9f9f7;
+      }
+      .nav-item.active i {
+        color: #f9f9f7;
+      }
+
+      /* Hide scrollbar for cleaner look */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f9f9f7;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #15181c;
+        border-radius: 0px;
+      }
+
+      /* Mobile menu toggle */
+      #mobile-menu {
+        display: none;
+      }
+      @media (max-width: 768px) {
+        #mobile-menu.open {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body class="flex h-screen overflow-hidden bg-speed-lines">
+    <!-- Mobile Header & Hamburger -->
+    <div
+      class="md:hidden flex justify-between items-center p-4 bg-white z-50 absolute w-full top-0 shadow-manga"
+    >
+      <div class="flex items-center gap-2">
+        <i data-lucide="printer" class="w-6 h-6 text-ink"></i>
+        <span class="font-heading font-bold text-xl text-ink"
+          >Dukaan Panel</span
+        >
+      </div>
+      <button
+        id="menu-btn"
+        class="p-2 manga-btn-secondary rounded"
+        onclick="toggleMenu()"
+      >
+        <i data-lucide="menu" class="w-6 h-6 text-ink"></i>
+      </button>
+    </div>
+
+    <!-- Sidebar -->
+    <aside
+      id="sidebar"
+      class="bg-white w-64 flex-shrink-0 flex flex-col h-full absolute md:relative z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 pt-16 md:pt-0"
+    >
+      <!-- Logo Area -->
+      <div class="p-6 flex items-center gap-3 bg-highlight">
+        <div class="p-2 bg-ink text-paper rounded">
+          <i data-lucide="printer" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="font-heading font-bold text-xl leading-tight">
+            Mera Print Shop
+          </h1>
+          <p class="text-xs font-mono font-bold">ID: SHP-9021</p>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex-1 overflow-y-auto p-4 space-y-3 mt-2">
+        <a
+          href="#"
+          onclick="switchTab('overview', this)"
+          class="nav-item active flex items-center gap-3 p-3 rounded font-bold hover:bg-gray-100 transition-colors"
+        >
+          <i data-lucide="layout-dashboard" class="w-5 h-5 text-ink"></i>
+          Overview (Home)
+        </a>
+        <a
+          href="#"
+          onclick="switchTab('orders', this)"
+          class="nav-item flex items-center gap-3 p-3 rounded font-bold hover:bg-gray-100 transition-colors relative"
+        >
+          <i data-lucide="file-stack" class="w-5 h-5 text-ink"></i>
+          Orders (Print Jobs)
+          <span class="absolute top-2 right-2 flex h-3 w-3">
+            <span
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-stamp opacity-75"
+            ></span>
+            <span
+              class="relative inline-flex rounded-full h-3 w-3 bg-stamp"
+            ></span>
+          </span>
+        </a>
+        <a
+          href="#"
+          onclick="switchTab('qr', this)"
+          class="nav-item flex items-center gap-3 p-3 rounded font-bold hover:bg-gray-100 transition-colors"
+        >
+          <i data-lucide="qr-code" class="w-5 h-5 text-ink"></i>
+          Mera QR Code
+        </a>
+        <a
+          href="#"
+          onclick="switchTab('earnings', this)"
+          class="nav-item flex items-center gap-3 p-3 rounded font-bold hover:bg-gray-100 transition-colors"
+        >
+          <i data-lucide="wallet" class="w-5 h-5 text-ink"></i>
+          Kamaayi (Earnings)
+        </a>
+        <a
+          href="#"
+          onclick="switchTab('settings', this)"
+          class="nav-item flex items-center gap-3 p-3 rounded font-bold hover:bg-gray-100 transition-colors"
+        >
+          <i data-lucide="settings" class="w-5 h-5 text-ink"></i>
+          Settings
+        </a>
+      </nav>
+
+      <!-- Help Section -->
+      <div class="p-4 bg-gray-50">
+        <div class="manga-card p-3 text-center bg-highlight">
+          <p class="font-bold text-sm mb-2">Madad chahiye?</p>
+          <p class="text-xs mb-3">Support team se baat karein</p>
+          <button
+            class="manga-btn w-full py-2 text-sm flex items-center justify-center gap-2"
+          >
+            <i data-lucide="headphones" class="w-4 h-4"></i> Call Support
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main
+      class="flex-1 flex flex-col h-full overflow-hidden relative pt-16 md:pt-0"
+    >
+      <!-- Topbar -->
+      <header
+        class="h-16 bg-white flex items-center justify-between px-6 flex-shrink-0 z-10 hidden md:flex shadow-sm"
+      >
+        <h2 id="page-title" class="font-heading font-bold text-2xl">
+          Overview
+        </h2>
+
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center gap-2 px-3 py-1 bg-green-100 rounded-full shadow-[2px_2px_0px_0px_#15181C]"
+          >
+            <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+            <span class="font-bold text-sm">Shop Online Hai</span>
+          </div>
+          <button class="manga-btn-secondary p-2 rounded-full">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+          </button>
+          <button
+            class="manga-btn-secondary px-4 py-2 flex items-center gap-2 rounded"
+          >
+            <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Content Area -->
+      <div class="flex-1 overflow-y-auto p-4 md:p-8">
+        <!-- SECTION: OVERVIEW -->
+        <section
+          id="tab-overview"
+          class="tab-content max-w-5xl mx-auto space-y-6"
+        >
+          <!-- Alert Banner -->
+          <div
+            class="manga-card bg-[#FFF3CD] p-4 flex gap-4 items-start relative overflow-hidden"
+          >
+            <!-- Speed lines effect specifically for alert -->
+            <div
+              class="absolute inset-0 opacity-10"
+              style="
+                background-image: repeating-linear-gradient(
+                  45deg,
+                  transparent,
+                  transparent 10px,
+                  #15181c 10px,
+                  #15181c 12px
+                );
+              "
+            ></div>
+
+            <div class="p-2 bg-white rounded-full z-10 flex-shrink-0">
+              <i data-lucide="megaphone" class="w-6 h-6 text-stamp"></i>
+            </div>
+            <div class="z-10">
+              <h3 class="font-heading font-bold text-lg mb-1">
+                Zaroori Soochna - Admin ki Taraf Se
+              </h3>
+              <ul class="text-sm space-y-1 font-medium">
+                <li>
+                  🔥 <span class="font-bold">New Update:</span> Aadhaar aur PAN
+                  card print karne ka naya format aa gaya hai.
+                </li>
+                <li>
+                  ⚠️ Photo quality ab auto-enhance hogi bina extra charge ke.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="manga-card p-6 flex flex-col justify-between">
+              <div class="flex justify-between items-start mb-4">
+                <div>
+                  <p class="text-sm font-bold text-gray-600 uppercase">
+                    Aaj Ki Kamaayi
+                  </p>
+                  <h3 class="font-heading font-extrabold text-3xl mt-1">
+                    ₹450
+                  </h3>
+                </div>
+                <div class="p-3 bg-green-100 rounded">
+                  <i
+                    data-lucide="indian-rupee"
+                    class="w-6 h-6 text-green-700"
+                  ></i>
+                </div>
+              </div>
+              <p
+                class="text-xs font-bold text-green-600 flex items-center gap-1"
+              >
+                <i data-lucide="trending-up" class="w-3 h-3"></i> +12% kal se
+                behtar
+              </p>
+            </div>
+
+            <div class="manga-card p-6 flex flex-col justify-between">
+              <div class="flex justify-between items-start mb-4">
+                <div>
+                  <p class="text-sm font-bold text-gray-600 uppercase">
+                    Baaki Prints (Pending)
+                  </p>
+                  <h3
+                    class="font-heading font-extrabold text-3xl mt-1 text-stamp"
+                  >
+                    5
+                  </h3>
+                </div>
+                <div class="p-3 bg-red-100 rounded">
+                  <i data-lucide="printer" class="w-6 h-6 text-stamp"></i>
+                </div>
+              </div>
+              <button
+                onclick="
+                  switchTab('orders', document.querySelectorAll('.nav-item')[1])
+                "
+                class="text-xs font-bold underline text-ink flex items-center gap-1 hover:text-stamp"
+              >
+                Jaldi Print Karein
+                <i data-lucide="arrow-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+
+            <div class="manga-card p-6 flex flex-col justify-between">
+              <div class="flex justify-between items-start mb-4">
+                <div>
+                  <p class="text-sm font-bold text-gray-600 uppercase">
+                    Poore Hue (Completed)
+                  </p>
+                  <h3 class="font-heading font-extrabold text-3xl mt-1">28</h3>
+                </div>
+                <div class="p-3 bg-blue-100 rounded">
+                  <i
+                    data-lucide="check-circle"
+                    class="w-6 h-6 text-blue-700"
+                  ></i>
+                </div>
+              </div>
+              <p class="text-xs font-bold text-gray-500">Aaj ke din mein</p>
+            </div>
+          </div>
+
+          <!-- Recent Activity Mockup -->
+          <div class="manga-card">
+            <div
+              class="p-4 flex justify-between items-center bg-gray-50 rounded-t"
+            >
+              <h3 class="font-heading font-bold text-lg">
+                Haliye Orders (Recent)
+              </h3>
+            </div>
+            <div class="p-0">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-paper text-sm">
+                    <th class="p-3 font-bold">Order ID</th>
+                    <th class="p-3 font-bold">Customer Document</th>
+                    <th class="p-3 font-bold">Status</th>
+                    <th class="p-3 font-bold text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody class="text-sm font-medium">
+                  <tr>
+                    <td class="p-3 font-mono">ORD-001</td>
+                    <td class="p-3 flex items-center gap-2">
+                      <i data-lucide="file-text" class="w-4 h-4"></i>
+                      Aadhaar_Card.pdf
+                    </td>
+                    <td class="p-3">
+                      <span
+                        class="bg-yellow-200 px-2 py-1 text-xs font-bold rounded"
+                        >Pending</span
+                      >
+                    </td>
+                    <td class="p-3 text-right">₹10</td>
+                  </tr>
+                  <tr class="bg-gray-50/50">
+                    <td class="p-3 font-mono">ORD-002</td>
+                    <td class="p-3 flex items-center gap-2">
+                      <i data-lucide="image" class="w-4 h-4"></i>
+                      Photo_Passport.jpg
+                    </td>
+                    <td class="p-3">
+                      <span
+                        class="bg-green-200 px-2 py-1 text-xs font-bold rounded"
+                        >Done</span
+                      >
+                    </td>
+                    <td class="p-3 text-right">₹30</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: ORDERS (Print Jobs) -->
+        <section
+          id="tab-orders"
+          class="tab-content hidden max-w-4xl mx-auto space-y-6"
+        >
+          <div class="flex justify-between items-end mb-4">
+            <p class="font-bold text-gray-600">
+              Naye print jobs yahan aayenge.
+            </p>
+            <button
+              class="manga-btn-secondary px-3 py-1 text-sm flex items-center gap-2"
+              onclick="refreshOrders()"
+            >
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh
+            </button>
+          </div>
+
+          <!-- Order Item 1 (Pending) -->
+          <div class="manga-card p-5 relative" id="order-card-1">
+            <div class="flex justify-between items-start mb-3">
+              <div class="flex gap-3">
+                <div class="p-3 bg-gray-100 rounded h-fit">
+                  <i data-lucide="file-pdf" class="w-8 h-8 text-stamp"></i>
+                </div>
+                <div>
+                  <h3 class="font-heading font-bold text-xl">
+                    Ration_Card_Update.pdf
+                  </h3>
+                  <div
+                    class="flex items-center gap-3 text-sm font-bold text-gray-600 mt-1"
+                  >
+                    <span class="flex items-center gap-1"
+                      ><i data-lucide="calendar" class="w-4 h-4"></i> 01 Sep
+                      2026</span
+                    >
+                    <span class="flex items-center gap-1"
+                      ><i data-lucide="clock" class="w-4 h-4"></i> 11:30
+                      AM</span
+                    >
+                    <span class="font-mono bg-gray-200 px-1 rounded"
+                      >ID: PRT-882</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="text-right">
+                <h2 class="font-heading font-extrabold text-2xl">₹15</h2>
+                <span
+                  class="inline-block mt-1 bg-yellow-200 px-2 py-0.5 text-xs font-bold rounded"
+                  >Naya Order</span
+                >
+              </div>
+            </div>
+
+            <div class="flex gap-2 mb-4 text-xs font-bold">
+              <span
+                class="bg-gray-100 px-2 py-1 rounded flex items-center gap-1"
+                ><span class="w-2 h-2 rounded-full bg-black"></span> B&W
+                (Kala-Safed)</span
+              >
+              <span class="bg-green-100 px-2 py-1 rounded text-green-800"
+                >Counter Cash</span
+              >
+              <span class="bg-gray-100 px-2 py-1 rounded"
+                >3 Pages x 1 Copy</span
+              >
+            </div>
+
+            <div class="flex gap-3 pt-4">
+              <button
+                class="manga-btn flex-1 py-3 text-lg flex items-center justify-center gap-2"
+                onclick="startPrint(this, 'order-card-1')"
+              >
+                <i data-lucide="printer" class="w-5 h-5"></i> Print Nikalein
+              </button>
+              <button
+                class="manga-btn-secondary px-4 py-3 text-lg flex items-center justify-center"
+                title="Reject Order"
+              >
+                <i data-lucide="x" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Order Item 2 (Failed / Example from image) -->
+          <div class="manga-card p-5 bg-red-50/50">
+            <div class="flex justify-between items-start mb-3">
+              <div class="flex gap-3">
+                <div class="p-3 bg-white rounded h-fit">
+                  <i data-lucide="file-text" class="w-8 h-8 text-gray-500"></i>
+                </div>
+                <div>
+                  <h3
+                    class="font-heading font-bold text-xl line-through text-gray-500"
+                  >
+                    document_test.pdf
+                  </h3>
+                  <div
+                    class="flex items-center gap-3 text-sm font-bold text-gray-600 mt-1"
+                  >
+                    <span class="flex items-center gap-1"
+                      ><i data-lucide="calendar" class="w-4 h-4"></i> 31 Aug
+                      2026</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="text-right">
+                <h2 class="font-heading font-extrabold text-2xl text-gray-500">
+                  ₹5
+                </h2>
+              </div>
+            </div>
+
+            <div
+              class="p-3 bg-red-100 rounded mt-2 mb-2 flex items-start gap-2"
+            >
+              <i
+                data-lucide="alert-triangle"
+                class="w-5 h-5 text-stamp flex-shrink-0 mt-0.5"
+              ></i>
+              <div>
+                <p class="font-bold text-stamp">Fail: Print failed</p>
+                <p class="text-xs font-medium text-red-800 mt-1">
+                  <i data-lucide="trash-2" class="w-3 h-3 inline"></i> File
+                  delete ho chuki hai — koi copy store nahi (privacy safe)
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: QR CODE -->
+        <section id="tab-qr" class="tab-content hidden max-w-3xl mx-auto">
+          <div class="manga-card p-8 text-center laser-container">
+            <!-- Laser animation overlay -->
+            <div class="laser-line"></div>
+
+            <h2 class="font-heading font-extrabold text-3xl mb-2">
+              Shop Ka QR Code
+            </h2>
+            <p class="font-bold text-gray-600 mb-8">
+              Grahak isko scan karke seedha document bhej sakte hain.
+            </p>
+
+            <div
+              class="inline-block p-4 bg-white shadow-manga-lg rounded-xl mb-8 relative"
+            >
+              <!-- Simulated QR Code using HTML/CSS for visual -->
+              <div
+                class="w-64 h-64 p-2 grid grid-cols-5 grid-rows-5 gap-1 bg-white relative"
+              >
+                <!-- Corners -->
+                <div
+                  class="col-span-2 row-span-2 bg-white flex items-center justify-center"
+                >
+                  <div class="w-1/2 h-1/2 bg-ink"></div>
+                </div>
+                <div
+                  class="col-start-4 col-span-2 row-span-2 bg-white flex items-center justify-center"
+                >
+                  <div class="w-1/2 h-1/2 bg-ink"></div>
+                </div>
+                <div
+                  class="col-start-1 col-span-2 row-start-4 row-span-2 bg-white flex items-center justify-center"
+                >
+                  <div class="w-1/2 h-1/2 bg-ink"></div>
+                </div>
+                <!-- Random blocks -->
+                <div class="bg-ink col-start-3 row-start-1"></div>
+                <div class="bg-ink col-start-3 row-start-2 w-1/2"></div>
+                <div class="bg-ink col-start-1 row-start-3 w-3/4"></div>
+                <div class="bg-ink col-start-2 row-start-3 h-1/2"></div>
+                <div class="bg-ink col-start-4 row-start-3"></div>
+                <div class="bg-ink col-start-5 row-start-3 h-1/2"></div>
+                <div class="bg-ink col-start-3 row-start-4"></div>
+                <div class="bg-ink col-start-4 row-start-4 w-1/2"></div>
+                <div
+                  class="bg-ink col-start-5 row-start-4 w-1/2 h-1/2 self-end"
+                ></div>
+                <div class="bg-ink col-start-3 row-start-5 h-3/4"></div>
+                <div class="bg-ink col-start-4 row-start-5"></div>
+                <div class="col-start-5 row-start-5 bg-ink w-full h-full"></div>
+
+                <!-- Center Icon/Logo -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="bg-white p-1 rounded-full shadow-md">
+                    <i data-lucide="printer" class="w-6 h-6 text-stamp"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                class="manga-btn px-8 py-3 flex items-center justify-center gap-2 text-lg"
+              >
+                <i data-lucide="download" class="w-5 h-5"></i> Download PDF
+              </button>
+              <button
+                class="manga-btn-secondary px-8 py-3 flex items-center justify-center gap-2 text-lg font-bold"
+                onclick="alert('Printing QR Code...')"
+              >
+                <i data-lucide="printer" class="w-5 h-5"></i> QR Print Karein
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: EARNINGS -->
+        <section id="tab-earnings" class="tab-content hidden max-w-4xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="manga-card p-6 bg-highlight relative overflow-hidden">
+              <i
+                data-lucide="coins"
+                class="w-24 h-24 absolute -right-4 -bottom-4 opacity-20 text-ink"
+              ></i>
+              <h3 class="font-heading font-bold text-xl mb-2">
+                Is Mahine Ki Kamaayi
+              </h3>
+              <p class="font-heading font-extrabold text-5xl">₹12,450</p>
+              <p class="text-sm font-bold mt-2">
+                Pichle mahine se ₹2,000 zyada! 🚀
+              </p>
+            </div>
+            <div class="manga-card p-6 flex flex-col justify-center">
+              <button
+                class="manga-btn w-full py-4 text-xl flex items-center justify-center gap-2 mb-3"
+              >
+                <i data-lucide="landmark" class="w-6 h-6"></i> Bank Me Bhejein
+                (Withdraw)
+              </button>
+              <p class="text-xs text-center font-bold text-gray-500">
+                Minimum withdrawal ₹500
+              </p>
+            </div>
+          </div>
+
+          <h3 class="font-heading font-bold text-2xl mb-4">
+            Pichle Transactions (History)
+          </h3>
+          <div class="manga-card">
+            <div
+              class="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors rounded-t"
+            >
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-green-100 rounded text-green-700">
+                  <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <p class="font-bold">Customer Print (ORD-002)</p>
+                  <p class="text-xs font-bold text-gray-500">1 Sep, 10:15 AM</p>
+                </div>
+              </div>
+              <p class="font-heading font-bold text-lg text-green-700">+₹30</p>
+            </div>
+            <div
+              class="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
+            >
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-red-100 rounded text-stamp">
+                  <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <p class="font-bold">Bank Withdrawal</p>
+                  <p class="text-xs font-bold text-gray-500">
+                    30 Aug, 05:00 PM
+                  </p>
+                </div>
+              </div>
+              <p class="font-heading font-bold text-lg text-stamp">-₹5,000</p>
+            </div>
+            <div
+              class="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors rounded-b"
+            >
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-green-100 rounded text-green-700">
+                  <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <p class="font-bold">Customer Print (ORD-899)</p>
+                  <p class="text-xs font-bold text-gray-500">
+                    30 Aug, 02:20 PM
+                  </p>
+                </div>
+              </div>
+              <p class="font-heading font-bold text-lg text-green-700">+₹110</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: SETTINGS -->
+        <section
+          id="tab-settings"
+          class="tab-content hidden max-w-3xl mx-auto space-y-6"
+        >
+          <div class="manga-card p-6">
+            <h3
+              class="font-heading font-bold text-2xl mb-6 flex items-center gap-2 pb-2"
+            >
+              <i data-lucide="store" class="w-6 h-6"></i> Shop Profile
+            </h3>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block font-bold mb-1 text-sm"
+                  >Dukaan Ka Naam (Shop Name)</label
+                >
+                <input
+                  type="text"
+                  class="manga-input w-full font-bold"
+                  value="Mera Print Shop (Demo)"
+                />
+              </div>
+              <div>
+                <label class="block font-bold mb-1 text-sm"
+                  >Mobile Number</label
+                >
+                <input
+                  type="text"
+                  class="manga-input w-full font-bold bg-gray-100"
+                  value="+91 9876543210"
+                  disabled
+                />
+                <p class="text-xs text-gray-500 mt-1 font-bold">
+                  Number change karne ke liye support se baat karein.
+                </p>
+              </div>
+              <button class="manga-btn px-6 py-2 mt-2">Save Profile</button>
+            </div>
+          </div>
+
+          <div class="manga-card p-6 border-t-8 border-t-stamp">
+            <h3
+              class="font-heading font-bold text-2xl mb-6 flex items-center gap-2"
+            >
+              <i data-lucide="printer" class="w-6 h-6"></i> Printer Settings
+            </h3>
+
+            <div class="bg-gray-50 p-4 rounded mb-4">
+              <label class="block font-bold mb-2"
+                >Default Printer Chunein (Select Printer)</label
+              >
+              <select
+                class="manga-input w-full font-bold cursor-pointer bg-white"
+              >
+                <option>Epson L3150 Series (Online)</option>
+                <option>HP LaserJet 1020 (Offline)</option>
+                <option>Canon Pixma G2010</option>
+                <option>Save as PDF</option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="auto-print"
+                class="w-5 h-5 accent-ink cursor-pointer rounded-sm"
+              />
+              <label for="auto-print" class="font-bold cursor-pointer"
+                >Auto-Print On Rakhein (Direct print nikalne ke liye)</label
+              >
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      // Initialize Icons
+      lucide.createIcons();
+
+      // Mobile Menu Toggle
+      function toggleMenu() {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.classList.toggle("-translate-x-full");
+      }
+
+      // Tab Switching Logic
+      function switchTab(tabId, element) {
+        // Hide all sections
+        document.querySelectorAll(".tab-content").forEach((el) => {
+          el.classList.add("hidden");
+        });
+
+        // Show target section
+        document.getElementById("tab-" + tabId).classList.remove("hidden");
+
+        // Update Navigation UI
+        if (element) {
+          document.querySelectorAll(".nav-item").forEach((el) => {
+            el.classList.remove("active");
+          });
+          element.classList.add("active");
+
+          // Update Title
+          let title = element.innerText.split("(")[0].trim();
+          document.getElementById("page-title").innerText = title;
+
+          // Close mobile menu if open
+          if (window.innerWidth < 768) {
+            document
+              .getElementById("sidebar")
+              .classList.add("-translate-x-full");
+          }
+        }
+      }
+
+      // Custom Animations Logic
+      function startPrint(btnElement, cardId) {
+        const card = document.getElementById(cardId);
+        const icon = btnElement.querySelector("i");
+
+        // Change button state
+        btnElement.disabled = true;
+        btnElement.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Printing...`;
+        lucide.createIcons();
+
+        // 1. File Fly Animation
+        const fileIcon = card.querySelector(".lucide-file-pdf");
+        if (fileIcon) {
+          fileIcon.classList.add("animate-fly");
+        }
+
+        // Simulate Print Process
+        setTimeout(() => {
+          // 2. Printer Spit Animation (transform card appearance)
+          card.classList.add("animate-spit");
+          card.innerHTML = `
+                    <div class="text-center py-6">
+                        <div class="inline-block p-4 bg-green-100 rounded-full mb-4">
+                            <i data-lucide="check-check" class="w-10 h-10 text-green-700"></i>
+                        </div>
+                        <h3 class="font-heading font-extrabold text-2xl text-green-700 mb-2">Print Ho Gaya!</h3>
+                        <p class="font-bold text-gray-600 mb-4">Kagaz printer se bahar aa chuka hai.</p>
+                        <button class="manga-btn-secondary px-6 py-2" onclick="refreshOrders()">Done</button>
+                    </div>
+                `;
+          lucide.createIcons();
+        }, 1200);
+      }
+
+      function refreshOrders() {
+        // Simple refresh simulation
+        const btn = document.querySelector('[onclick="refreshOrders()"] i');
+        if (btn) btn.classList.add("animate-spin");
+        setTimeout(() => {
+          if (btn) btn.classList.remove("animate-spin");
+          alert("Naye orders check kiye gaye.");
+        }, 800);
+      }
+    </script>
+  </body>
+</html>
