@@ -117,7 +117,40 @@ async function submitSignup(event) {
   }
 
   showSignupSuccess(data);
+
+  // Fire the demo-activation email — don't block the success screen on it
+  sendDemoEmail(data).catch((err) => console.error("Email send failed:", err));
+
   return false;
+}
+
+async function sendDemoEmail(row) {
+  const QUICK_API_URL =
+    "https://gepkipszweqhftwaejbu.supabase.co/functions/v1/quick-api";
+
+  const response = await fetch(QUICK_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      apikey: SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({
+      ownerName: row.owner_name,
+      shopName: row.shop_name,
+      shopId: row.shop_id,
+      password: row.whatsapp_number,
+      email: row.email,
+      qrUrl: `https://qrseprint.in/print?shop_id=${encodeURIComponent(
+        row.shop_id,
+      )}`,
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body.error || `Email API returned ${response.status}`);
+  }
 }
 
 function showSignupSuccess(row) {
@@ -125,6 +158,7 @@ function showSignupSuccess(row) {
   document.getElementById("signupSuccessView").classList.remove("hidden");
   document.getElementById("successShopId").textContent = row.shop_id;
   document.getElementById("successQrToken").textContent = row.qr_token;
+  document.getElementById("successEmailAddress").textContent = row.email;
 }
 
 function copyToClipboard(elId) {

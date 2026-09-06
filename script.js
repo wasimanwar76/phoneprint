@@ -70,7 +70,6 @@ function handleDemoFile(event) {
     demoState.fileName = file.name;
     // Fake page count based on filename length just for demo
     demoState.pages = Math.max(1, file.name.length % 15);
-    if (demoState.pages === 0) demoState.pages = 1;
 
     document.getElementById("demoFileName").textContent = demoState.fileName;
     document.getElementById("demoFilePages").textContent =
@@ -250,68 +249,404 @@ function submitContact(e) {
   }, 1500);
   return false;
 }
-
 // --- 6. Modal Logic ---
+
 const modalRoot = document.getElementById("modalRoot");
 const modalTitle = document.getElementById("modalTitle");
 const modalBody = document.getElementById("modalBody");
 const modalContentBox = document.getElementById("modalContentBox");
 
+const DASHBOARD_URL = "http://127.0.0.1:5500/dashboard.html";
+
 const modalContents = {
   login: {
     title: "Dukaan Login",
+
     body: `
-                    <p class="mb-4 text-ink-700">PhonePrint Dashboard mein swagat hai.</p>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="text-sm font-semibold text-ink-900 block mb-1">Mobile Number</label>
-                            <input type="tel" class="w-full rounded-lg border border-ink-800/20 px-4 py-2.5 focus-ring" placeholder="9876543210" />
-                        </div>
-                        <div>
-                            <label class="text-sm font-semibold text-ink-900 block mb-1">Password ya OTP</label>
-                            <input type="password" class="w-full rounded-lg border border-ink-800/20 px-4 py-2.5 focus-ring" placeholder="••••••••" />
-                        </div>
-                        <button class="w-full py-3 rounded-lg bg-stamp text-white font-semibold mt-2 focus-ring" onclick="closeModal()">Login Karein</button>
-                        <p class="text-xs text-center mt-2 text-ink-700">Ye sirf ek design demo hai.</p>
-                    </div>
-                `,
+      <p class="mb-4 text-ink-700">
+        PhonePrint Dashboard mein swagat hai.
+      </p>
+
+      <div
+        id="loginError"
+        class="hidden mb-4 text-sm font-medium text-red-700
+        bg-red-50 border border-red-200 rounded-lg
+        px-4 py-2.5"
+        role="alert"
+      ></div>
+
+      <form
+        id="loginForm"
+        onsubmit="return submitLogin(event);"
+        class="space-y-4"
+        novalidate
+      >
+
+        <!-- Mobile Number -->
+        <div>
+          <label
+            class="text-sm font-semibold text-ink-900 block mb-1"
+            for="loginMobile"
+          >
+            Mobile Number
+          </label>
+
+          <input
+            id="loginMobile"
+            type="tel"
+            inputmode="numeric"
+            maxlength="10"
+            autocomplete="tel"
+            class="w-full rounded-lg border border-ink-800/20
+            px-4 py-2.5 focus-ring"
+            placeholder="9876543210"
+          />
+
+          <p
+            id="loginMobileHint"
+            class="hidden text-xs text-red-600 mt-1.5"
+          ></p>
+        </div>
+
+
+        <!-- Shop ID -->
+        <div>
+          <label
+            class="text-sm font-semibold text-ink-900 block mb-1"
+            for="loginPassword"
+          >
+            Shop ID / Password
+          </label>
+
+          <input
+            id="loginPassword"
+            type="password"
+            autocomplete="current-password"
+            class="w-full rounded-lg border border-ink-800/20
+            px-4 py-2.5 focus-ring"
+            placeholder="DEMO_XXXXXXXX"
+          />
+
+          <p
+            id="loginPasswordHint"
+            class="hidden text-xs text-red-600 mt-1.5"
+          ></p>
+        </div>
+
+
+        <!-- Login Button -->
+        <button
+          id="loginSubmitBtn"
+          type="submit"
+          class="w-full py-3 rounded-lg bg-stamp
+          text-white font-semibold mt-2 focus-ring
+          disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          Login Karein
+        </button>
+
+      </form>
+
+
+      <p class="text-xs text-center mt-3 text-ink-700">
+        Aapka Shop ID hi initial password hai.
+      </p>
+    `,
   },
+
   legal: {
     title: "Legal Information",
+
     body: `
-                    <h4 class="font-semibold text-ink-900 mb-2">Priya Grahak,</h4>
-                    <p class="mb-3">PhonePrint aapki privacy ka pura dhyaan rakhta hai. Humara lakshya gramin bharat aur chhote shaharo mein surakshit digital suvidhayein pahunchana hai.</p>
-                    <ul class="list-disc pl-5 space-y-2 mb-3">
-                        <li>Aapka data kisi 3rd party ko nahi becha jata.</li>
-                        <li>Print nikalne ke kuch ghanton baad server se files delete kar di jati hain.</li>
-                        <li>Payments RBI dwara manyata prapt gateways ke zariye hoti hain.</li>
-                    </ul>
-                    <p>Adhik jankari ke liye contact form ke zariye sampark karein.</p>
-                `,
+      <h4 class="font-semibold text-ink-900 mb-2">
+        Priya Grahak,
+      </h4>
+
+      <p class="mb-3">
+        PhonePrint aapki privacy ka pura dhyaan rakhta hai.
+        Humara lakshya gramin bharat aur chhote shaharo mein
+        surakshit digital suvidhayein pahunchana hai.
+      </p>
+
+      <ul class="list-disc pl-5 space-y-2 mb-3">
+        <li>
+          Aapka data kisi 3rd party ko nahi becha jata.
+        </li>
+
+        <li>
+          Print nikalne ke kuch ghanton baad server se
+          files delete kar di jati hain.
+        </li>
+
+        <li>
+          Payments RBI dwara manyata prapt gateways ke
+          zariye hoti hain.
+        </li>
+      </ul>
+
+      <p>
+        Adhik jankari ke liye contact form ke zariye
+        sampark karein.
+      </p>
+    `,
   },
 };
 
+// --- Open Modal ---
+
 function openModal(type, titleOverride) {
-  const content = modalContents[type] || modalContents["legal"];
+  const content = modalContents[type] || modalContents.legal;
+
   modalTitle.textContent = titleOverride || content.title;
+
   modalBody.innerHTML = content.body;
 
   modalRoot.classList.remove("hidden");
-  // Small timeout to allow display:block to apply before animating opacity
+
   setTimeout(() => {
     modalRoot.classList.remove("opacity-0");
+
     modalContentBox.classList.remove("scale-95");
+
     modalContentBox.classList.add("scale-100");
   }, 10);
+
+  // Login inputs are created dynamically
+  if (type === "login") {
+    wireLoginInputs();
+  }
 }
+
+// --- Close Modal ---
 
 function closeModal() {
   modalRoot.classList.add("opacity-0");
+
   modalContentBox.classList.remove("scale-100");
+
   modalContentBox.classList.add("scale-95");
 
-  // Wait for transition to finish before hiding
   setTimeout(() => {
     modalRoot.classList.add("hidden");
   }, 300);
+}
+
+// =====================================================
+// LOGIN LOGIC
+// =====================================================
+
+// --- Connect login inputs ---
+
+function wireLoginInputs() {
+  const mobileInput = document.getElementById("loginMobile");
+
+  const passwordInput = document.getElementById("loginPassword");
+
+  // Mobile input
+  if (mobileInput) {
+    mobileInput.addEventListener("input", () => {
+      mobileInput.value = mobileInput.value.replace(/\D/g, "").slice(0, 10);
+
+      if (mobileInput.value.length === 10) {
+        clearFieldError("loginMobileHint");
+      }
+    });
+  }
+
+  // Shop ID input
+  if (passwordInput) {
+    passwordInput.addEventListener("input", () => {
+      if (passwordInput.value.trim().length >= 4) {
+        clearFieldError("loginPasswordHint");
+      }
+    });
+  }
+}
+
+// --- Show field error ---
+
+function showFieldError(hintId, message) {
+  const el = document.getElementById(hintId);
+
+  if (!el) return;
+
+  el.textContent = message;
+
+  el.classList.remove("hidden");
+}
+
+// --- Clear field error ---
+
+function clearFieldError(hintId) {
+  const el = document.getElementById(hintId);
+
+  if (!el) return;
+
+  el.textContent = "";
+
+  el.classList.add("hidden");
+}
+
+// --- Show login error ---
+
+function showLoginError(message) {
+  const box = document.getElementById("loginError");
+
+  if (!box) return;
+
+  box.textContent = message;
+
+  box.classList.remove("hidden");
+}
+
+// --- Hide login error ---
+
+function hideLoginError() {
+  const box = document.getElementById("loginError");
+
+  if (!box) return;
+
+  box.textContent = "";
+
+  box.classList.add("hidden");
+}
+
+// --- Validate Login ---
+
+function validateLoginForm(mobile, shopId) {
+  let isValid = true;
+
+  clearFieldError("loginMobileHint");
+
+  clearFieldError("loginPasswordHint");
+
+  // Mobile validation
+  if (!mobile) {
+    showFieldError("loginMobileHint", "Mobile number dalna zaroori hai.");
+
+    isValid = false;
+  } else if (!/^\d{10}$/.test(mobile)) {
+    showFieldError("loginMobileHint", "Sahi 10-digit mobile number dalein.");
+
+    isValid = false;
+  }
+
+  // Shop ID validation
+  if (!shopId) {
+    showFieldError("loginPasswordHint", "Shop ID dalna zaroori hai.");
+
+    isValid = false;
+  } else if (shopId.length < 4) {
+    showFieldError("loginPasswordHint", "Valid Shop ID dalein.");
+
+    isValid = false;
+  }
+
+  return isValid;
+}
+
+// --- Supabase error handling ---
+
+function mapAuthError(error) {
+  const msg = (error?.message || "").toLowerCase();
+
+  if (msg.includes("invalid login credentials")) {
+    return "Mobile number ya Shop ID galat hai.";
+  }
+
+  if (msg.includes("email not confirmed")) {
+    return "Account verify nahi hua hai. Support se sampark karein.";
+  }
+
+  if (msg.includes("too many requests") || msg.includes("rate limit")) {
+    return "Bahut zyada attempts ho gaye. Thodi der baad try karein.";
+  }
+
+  if (msg.includes("network") || msg.includes("fetch")) {
+    return "Internet connection check karein aur dobara try karein.";
+  }
+
+  return "Login nahi ho paaya. Kripya dobara try karein.";
+}
+
+// =====================================================
+// SUBMIT LOGIN
+// =====================================================
+
+async function submitLogin(event) {
+  event.preventDefault();
+
+  hideLoginError();
+
+  const mobileInput = document.getElementById("loginMobile");
+  const passwordInput = document.getElementById("loginPassword");
+  const submitBtn = document.getElementById("loginSubmitBtn");
+
+  const mobile = mobileInput.value.trim();
+  const shopId = passwordInput.value.trim();
+
+  if (!validateLoginForm(mobile, shopId)) {
+    return false;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Login ho raha hai...";
+
+  try {
+
+    // Supabase database request
+    const { data, error } = await supabaseClient
+      .from("shops")
+      .select("*")
+      .eq("whatsapp_number", mobile)
+      .eq("shop_id", shopId)
+      .single();
+
+    console.log("Supabase response:", data);
+
+    if (error || !data) {
+      console.error("Login Error:", error);
+
+      showLoginError(
+        "Mobile number ya Shop ID galat hai."
+      );
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Login Karein";
+
+      return false;
+    }
+
+    // Shop found
+    console.log("Shop Login Successful:", data);
+
+    // Save shop information for dashboard
+    localStorage.setItem(
+      "loggedInShop",
+      JSON.stringify({
+        id: data.id,
+        shop_id: data.shop_id,
+        shop_name: data.shop_name,
+        whatsapp_number: data.whatsapp_number
+      })
+    );
+
+    submitBtn.textContent =
+      "Login safal! Redirect ho raha hai...";
+
+    window.location.href = DASHBOARD_URL;
+
+  } catch (err) {
+
+    console.error("Login error:", err);
+
+    showLoginError(
+      "Kuch galat ho gaya. Dobara try karein."
+    );
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Login Karein";
+  }
+
+  return false;
 }
