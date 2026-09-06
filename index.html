@@ -359,7 +359,7 @@
               Log in
             </button>
             <button
-              onclick="document.getElementById('contact').scrollIntoView()"
+              onclick="openSignupModal()"
               class="text-[15px] font-medium px-4 py-2.5 rounded-lg bg-stamp text-white hover:bg-stamp-600 transition-colors shadow-lg shadow-stamp/20 focus-ring"
             >
               Sign up
@@ -453,10 +453,7 @@
             Log in
           </button>
           <button
-            onclick="
-              document.getElementById('demo').scrollIntoView();
-              document.getElementById('menuBtn').click();
-            "
+            onclick="openSignupModal()"
             class="flex-1 py-2.5 rounded-lg bg-stamp text-white active:bg-stamp-600"
           >
             Sign up
@@ -2340,6 +2337,242 @@
       </div>
     </div>
 
+    <!-- Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- ============ SIGNUP MODAL ============ -->
+    <div
+      id="signupModalRoot"
+      class="fixed inset-0 z-[70] hidden items-center justify-center bg-ink-900/80 backdrop-blur-sm px-5 opacity-0 transition-opacity duration-300"
+      onclick="if (event.target === this) closeSignupModal();"
+    >
+      <div
+        class="bg-paper-100 rounded-3xl max-w-md w-full p-7 sm:p-8 shadow-2xl transform scale-95 transition-transform duration-300 border border-ink-800/10 relative"
+        role="dialog"
+        aria-modal="true"
+        id="signupModalBox"
+      >
+        <button
+          onclick="closeSignupModal()"
+          class="absolute top-5 right-5 p-1.5 text-ink-700 hover:bg-ink-800/10 hover:text-ink-900 focus-ring rounded-full transition-colors"
+          aria-label="Close"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
+
+        <!-- ===== Form View ===== -->
+        <div id="signupFormView">
+          <div class="text-center mb-6">
+            <p class="font-display font-bold text-xl sm:text-2xl text-ink-900">
+              🎯 24 Ghante Free Demo
+            </p>
+            <p class="text-sm text-ink-700 mt-2 leading-relaxed">
+              Details bharein — aapki Shop ID aur QR Token turant yahin dikh
+              jayenge.
+            </p>
+          </div>
+
+          <div class="flex justify-center mb-6">
+            <span
+              class="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-600 bg-teal-500/10 border border-teal-500/20 px-3 py-1.5 rounded-full"
+            >
+              🔒 Surakshit Form · Koi Payment Nahi · Koi Card Nahi
+            </span>
+          </div>
+
+          <div
+            id="signupError"
+            class="hidden mb-4 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5"
+          ></div>
+
+          <form
+            id="signupForm"
+            onsubmit="return submitSignup(event);"
+            class="space-y-3"
+          >
+            <input
+              id="suName"
+              required
+              placeholder="Aapka naam"
+              class="w-full rounded-xl border border-ink-800/15 bg-paper-200/60 px-4 py-3 text-sm text-ink-900 placeholder:text-ink-700/50 focus-ring outline-none transition-colors focus:border-stamp"
+            />
+            <input
+              id="suWhatsapp"
+              type="tel"
+              inputmode="numeric"
+              pattern="[0-9]{10}"
+              maxlength="10"
+              required
+              placeholder="WhatsApp number (10 digit)"
+              class="w-full rounded-xl border border-ink-800/15 bg-paper-200/60 px-4 py-3 text-sm text-ink-900 placeholder:text-ink-700/50 focus-ring outline-none transition-colors focus:border-stamp"
+            />
+            <input
+              id="suShopName"
+              required
+              placeholder="Dukaan ka naam"
+              class="w-full rounded-xl border border-ink-800/15 bg-paper-200/60 px-4 py-3 text-sm text-ink-900 placeholder:text-ink-700/50 focus-ring outline-none transition-colors focus:border-stamp"
+            />
+            <input
+              id="suShopAddress"
+              required
+              placeholder="Dukaan ka address"
+              class="w-full rounded-xl border border-ink-800/15 bg-paper-200/60 px-4 py-3 text-sm text-ink-900 placeholder:text-ink-700/50 focus-ring outline-none transition-colors focus:border-stamp"
+            />
+            <input
+              id="suEmail"
+              type="email"
+              required
+              placeholder="Email address"
+              class="w-full rounded-xl border border-ink-800/15 bg-paper-200/60 px-4 py-3 text-sm text-ink-900 placeholder:text-ink-700/50 focus-ring outline-none transition-colors focus:border-stamp"
+            />
+            <select
+              id="suPrinter"
+              required
+              class="w-full rounded-xl border border-ink-800/15 bg-paper-200/60 px-4 py-3 text-sm text-ink-900 focus-ring outline-none transition-colors focus:border-stamp cursor-pointer"
+            >
+              <option value="" disabled selected>Apna printer chunein</option>
+              <option value="HP">HP</option>
+              <option value="Canon">Canon</option>
+              <option value="Epson">Epson</option>
+              <option value="Brother">Brother</option>
+              <option value="Other">Koi aur</option>
+            </select>
+
+            <button
+              id="signupSubmitBtn"
+              type="submit"
+              class="w-full py-3.5 rounded-xl bg-stamp text-white font-semibold text-sm shadow-lg shadow-stamp/25 hover:bg-stamp-600 transition-colors focus-ring mt-2"
+            >
+              Demo Shuru Karein — Free ›
+            </button>
+          </form>
+
+          <p class="text-center text-[11px] text-ink-700/70 mt-4">
+            Shop ID aur QR Token turant screen par dikhenge · Koi payment nahi
+          </p>
+          <button
+            onclick="closeSignupModal()"
+            class="block mx-auto mt-3 text-xs text-ink-700/60 hover:text-ink-900 focus-ring rounded"
+          >
+            Band karein
+          </button>
+        </div>
+
+        <!-- ===== Success View ===== -->
+        <div id="signupSuccessView" class="hidden text-center py-2">
+          <div
+            class="w-16 h-16 mx-auto bg-teal-500/10 rounded-full flex items-center justify-center mb-4"
+          >
+            <svg
+              class="w-8 h-8 text-teal-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="3"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="font-display font-bold text-xl text-ink-900 mb-1">
+            Dukaan Register Ho Gayi! 🎉
+          </h3>
+          <p class="text-sm text-ink-700 mb-4">
+            In details ko sambhal ke rakhein — aage yehi login ke kaam aayenge.
+          </p>
+
+          <div
+            class="flex items-start gap-3 bg-teal-500/10 border border-teal-500/20 rounded-xl px-4 py-3 mb-6 text-left"
+          >
+            <svg
+              class="w-5 h-5 text-teal-600 shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              ></path>
+            </svg>
+            <p class="text-sm text-ink-800">
+              <span class="font-semibold">Apna email check karein</span> — humne
+              aapki details
+              <span id="successEmailAddress" class="font-semibold"></span> par
+              bhej di hain.
+            </p>
+          </div>
+
+          <div class="bg-paper-200 rounded-2xl p-5 text-left space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p
+                  class="text-[11px] text-ink-700/60 uppercase tracking-wider font-semibold"
+                >
+                  Shop ID
+                </p>
+                <p
+                  id="successShopId"
+                  class="font-mono font-bold text-ink-900 text-lg"
+                ></p>
+              </div>
+              <button
+                onclick="copyToClipboard('successShopId')"
+                class="text-xs font-semibold text-stamp hover:underline focus-ring rounded"
+              >
+                Copy
+              </button>
+            </div>
+            <div class="border-t border-dashed border-ink-800/15"></div>
+            <div class="flex items-center justify-between">
+              <div>
+                <p
+                  class="text-[11px] text-ink-700/60 uppercase tracking-wider font-semibold"
+                >
+                  QR Token
+                </p>
+                <p
+                  id="successQrToken"
+                  class="font-mono font-bold text-ink-900 text-lg"
+                ></p>
+              </div>
+              <button
+                onclick="copyToClipboard('successQrToken')"
+                class="text-xs font-semibold text-stamp hover:underline focus-ring rounded"
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+
+          <button
+            onclick="closeSignupModal()"
+            class="w-full mt-6 py-3.5 rounded-xl bg-ink-900 text-white font-semibold text-sm hover:bg-ink-800 transition-colors focus-ring"
+          >
+            Theek Hai, Band Karein
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./signup-modal.js"></script>
     <script src="./script.js"></script>
   </body>
 </html>
