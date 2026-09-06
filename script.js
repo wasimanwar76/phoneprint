@@ -602,7 +602,7 @@ async function submitLogin(event) {
       .eq("shop_id", shopId)
       .single();
 
-    console.log("Supabase response:", data);
+    // console.log("Supabase response:", data);
 
     if (error || !data) {
       console.error("Login Error:", error);
@@ -618,7 +618,7 @@ async function submitLogin(event) {
     }
 
     // Shop found
-    console.log("Shop Login Successful:", data);
+    // console.log("Shop Login Successful:", data);
 
     // Save shop information for dashboard
     localStorage.setItem(
