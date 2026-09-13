@@ -141,12 +141,13 @@ async function sendDemoEmail(row) {
       shopId: row.shop_id,
       password: row.whatsapp_number,
       email: row.email,
-      qrUrl: `https://qrseprint.in/print?shop_id=${encodeURIComponent(
+      qrUrl: `https://phoneprint.vercel.app/print?shop_id=${encodeURIComponent(
         row.shop_id,
       )}`,
     }),
   });
 
+  
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
     throw new Error(body.error || `Email API returned ${response.status}`);

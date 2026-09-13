@@ -222,7 +222,9 @@
     <div id="speedLines" class="speed-lines-bg"></div>
 
     <!-- Header -->
-    <header class="p-5 flex justify-between items-center z-10 glass-panel">
+    <header
+      class="px-5 pt-4 pb-2 flex justify-between items-center z-10 glass-panel"
+    >
       <div>
         <h1
           class="font-heading text-[22px] font-extrabold text-ink tracking-wide uppercase leading-tight"
@@ -247,7 +249,7 @@
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-1 p-5 z-10 overflow-y-auto pb-6" id="mainContainer">
+    <main class="flex-1 px-5 pb-6 pt-2 z-10 overflow-y-auto" id="mainContainer">
       <!-- Loading State: verifying shop_id with Supabase -->
       <div
         id="loadingState"
@@ -288,7 +290,10 @@
       </div>
 
       <!-- Step 1: Upload File -->
-      <div id="step1" class="flex flex-col h-full hidden">
+      <div
+        id="step2"
+        class="flex flex-col hidden anim-file-fly max-w-sm mx-auto w-full h-full pt-2"
+      >
         <h2 class="font-heading text-3xl font-bold mb-2">Print Document</h2>
         <p class="mb-4 opacity-80 text-sm">
           Select files to print at this shop.
@@ -351,166 +356,177 @@
       <!-- Step 2: Configuration -->
       <div
         id="step2"
-        class="flex flex-col hidden anim-file-fly max-w-sm mx-auto w-full pt-4"
+        class="flex flex-col hidden anim-file-fly max-w-sm mx-auto w-full h-full pt-4"
       >
-        <!-- Shop Info -->
-        <div class="mb-5 px-1">
-          <span
-            class="text-[10px] font-bold opacity-50 uppercase tracking-widest block mb-1"
-            >Dukaan</span
-          >
-          <div class="flex justify-between items-center gap-2">
-            <h2
-              class="font-heading text-xl font-bold text-ink truncate"
-              id="shopNameDisplay"
-            >
-              Raju E-Mitra &amp; Print
-            </h2>
+        <!-- Scrollable content area: everything except the payment footer
+             lives inside this wrapper. This keeps Cash/UPI pinned in view
+             below, no matter how many files are added. -->
+        <div
+          id="step2ScrollArea"
+          class="flex-1 min-h-0 overflow-y-auto"
+          style="-webkit-overflow-scrolling: touch"
+        >
+          <!-- Shop Info -->
+          <div class="mb-5 px-1">
             <span
-              id="shopStatusBadge"
-              class="bg-green-50 text-green-600 text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap ml-2 shadow-sm border border-green-200 shrink-0"
-              >Khula hai</span
+              class="text-[10px] font-bold opacity-50 uppercase tracking-widest block mb-1"
+              >Dukaan</span
             >
-          </div>
-          <div
-            class="border-b-2 border-dashed border-gray-200 mt-4 opacity-50"
-          ></div>
-        </div>
-
-        <!-- Error banner for step 2 (order/payment failures) -->
-        <div
-          id="step2ErrorBanner"
-          class="hidden mb-4 flex items-start gap-2 bg-red-50 border-2 border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-semibold"
-          role="alert"
-        >
-          <svg
-            class="w-5 h-5 shrink-0 mt-0.5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            ></path>
-          </svg>
-          <span id="step2ErrorText">Something went wrong.</span>
-        </div>
-
-        <!-- Dynamic File Cards Container (scrolls once more than 2 files are added) -->
-        <div
-          id="fileCardsContainer"
-          class="mb-2 max-h-[184px] overflow-y-auto overflow-x-hidden file-scroll-container pr-2"
-        >
-          <!-- File cards will be injected here by JS -->
-        </div>
-
-        <!-- Add more files -->
-        <label
-          for="fileInputStep2"
-          class="mb-4 flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 border-dashed border-gray-300 text-xs font-bold text-gray-500 cursor-pointer hover:border-stamp hover:text-stamp transition-colors"
-        >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 4v16m8-8H4"
-            ></path>
-          </svg>
-          Aur Files Jodein
-          <input
-            type="file"
-            id="fileInputStep2"
-            class="hidden"
-            accept=".pdf,.jpg,.jpeg,.png"
-            multiple
-          />
-        </label>
-
-        <!-- Paper Size (Full Width) -->
-        <div class="mb-6 px-1">
-          <label
-            class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2"
-            >Paper Size</label
-          >
-          <div class="relative">
-            <select
-              id="paperSizeSelect"
-              class="w-full appearance-none bg-white rounded-lg p-3 font-semibold text-sm text-ink manga-shadow focus:outline-none"
-            >
-              <option value="A4">A4 (Normal)</option>
-              <option value="A3">A3 (Large)</option>
-              <option value="Letter">Letter</option>
-            </select>
-            <div
-              class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400"
-            >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <div class="flex justify-between items-center gap-2">
+              <h2
+                class="font-heading text-xl font-bold text-ink truncate"
+                id="shopNameDisplay"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
+                Raju E-Mitra &amp; Print
+              </h2>
+              <span
+                id="shopStatusBadge"
+                class="bg-green-50 text-green-600 text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap ml-2 shadow-sm border border-green-200 shrink-0"
+                >Khula hai</span
+              >
+            </div>
+            <div
+              class="border-b-2 border-dashed border-gray-200 mt-4 opacity-50"
+            ></div>
+          </div>
+
+          <!-- Error banner for step 2 (order/payment failures) -->
+          <div
+            id="step2ErrorBanner"
+            class="hidden mb-4 flex items-start gap-2 bg-red-50 border-2 border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-semibold"
+            role="alert"
+          >
+            <svg
+              class="w-5 h-5 shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              ></path>
+            </svg>
+            <span id="step2ErrorText">Something went wrong.</span>
+          </div>
+
+          <!-- Dynamic File Cards Container (scrolls once more than 2 files are added) -->
+          <div
+            id="fileCardsContainer"
+            class="mb-2 max-h-[184px] overflow-y-auto overflow-x-hidden file-scroll-container pr-2"
+          >
+            <!-- File cards will be injected here by JS -->
+          </div>
+
+          <!-- Add more files -->
+          <label
+            for="fileInputStep2"
+            class="mb-4 flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 border-dashed border-gray-300 text-xs font-bold text-gray-500 cursor-pointer hover:border-stamp hover:text-stamp transition-colors"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              ></path>
+            </svg>
+            Aur Files Jodein
+            <input
+              type="file"
+              id="fileInputStep2"
+              class="hidden"
+              accept=".pdf,.jpg,.jpeg,.png"
+              multiple
+            />
+          </label>
+
+          <!-- Paper Size (Full Width) -->
+          <div class="mb-6 px-1">
+            <label
+              class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2"
+              >Paper Size</label
+            >
+            <div class="relative">
+              <select
+                id="paperSizeSelect"
+                class="w-full appearance-none bg-white rounded-lg p-3 font-semibold text-sm text-ink manga-shadow focus:outline-none"
+              >
+                <option value="A4">A4 (Normal)</option>
+                <option value="A3">A3 (Large)</option>
+                <option value="Letter">Letter</option>
+              </select>
+              <div
+                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  ></path>
+                </svg>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Print Type -->
-        <div class="mb-2 px-1">
-          <label
-            class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2"
-            >Print Type</label
-          >
-          <div class="flex bg-gray-200 p-1 rounded-lg manga-shadow">
-            <label class="flex-1 cursor-pointer">
-              <input
-                type="radio"
-                name="colorType"
-                value="BW"
-                class="hidden"
-                checked
-                onchange="updateTotal()"
-              />
-              <div
-                class="text-center py-2 rounded-md font-semibold text-sm transition-colors text-gray-600"
-              >
-                Black &amp; White
-              </div>
-            </label>
-            <label class="flex-1 cursor-pointer">
-              <input
-                type="radio"
-                name="colorType"
-                value="Color"
-                class="hidden"
-                onchange="updateTotal()"
-              />
-              <div
-                class="text-center py-2 rounded-md font-semibold text-sm transition-colors text-gray-600"
-              >
-                Colour
-              </div>
-            </label>
+          <!-- Print Type -->
+          <div class="mb-2 px-1">
+            <label
+              class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2"
+              >Print Type</label
+            >
+            <div class="flex bg-gray-200 p-1 rounded-lg manga-shadow">
+              <label class="flex-1 cursor-pointer">
+                <input
+                  type="radio"
+                  name="colorType"
+                  value="BW"
+                  class="hidden"
+                  checked
+                  onchange="updateTotal()"
+                />
+                <div
+                  class="text-center py-2 rounded-md font-semibold text-sm transition-colors text-gray-600"
+                >
+                  Black &amp; White
+                </div>
+              </label>
+              <label class="flex-1 cursor-pointer">
+                <input
+                  type="radio"
+                  name="colorType"
+                  value="Color"
+                  class="hidden"
+                  onchange="updateTotal()"
+                />
+                <div
+                  class="text-center py-2 rounded-md font-semibold text-sm transition-colors text-gray-600"
+                >
+                  Colour
+                </div>
+              </label>
+            </div>
           </div>
+          <!-- /step2ScrollArea -->
         </div>
 
-        <!-- STICKY FOOTER: Payable Amount + Payment Buttons. -->
-        <div class="sticky-payment-footer">
+        <!-- PINNED FOOTER: Payable Amount + Payment Buttons. Sits outside the
+             scrollable area above so it's always visible, even with many files. -->
+        <div class="sticky-payment-footer shrink-0">
           <!-- Payable Amount -->
           <div
             class="bg-ink text-white rounded-xl p-5 mb-4 manga-shadow flex justify-between items-center"
@@ -1238,7 +1254,7 @@
 
         paymentStatus.className = `mt-6 text-center font-bold text-sm px-4 py-2 rounded-lg manga-shadow block w-full border-2 border-ink ${paymentMode === "UPI" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`;
         paymentStatus.textContent =
-          paymentMode === "UPI" ? "Paid via UPI ✅" : "Pay Cash at Shop 💰";
+          paymentMode === "UPI" ? "Paid via UPI" : "Pay Cash at Shop";
       }
 
       function resetApp() {
