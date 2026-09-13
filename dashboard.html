@@ -14,6 +14,8 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
       tailwind.config = {
@@ -794,6 +796,7 @@
                 Naye print jobs yahan aayenge.
               </p>
               <button
+                id="refreshOrdersBtn"
                 class="manga-btn-secondary px-3 py-1.5 text-sm flex items-center gap-2"
                 onclick="refreshOrders()"
               >
@@ -801,128 +804,48 @@
               </button>
             </div>
 
-            <!-- Order Item 1 (Pending) -->
-            <div class="manga-card p-5 relative" id="order-card-1">
-              <div class="flex justify-between items-start mb-3 gap-3">
-                <div class="flex gap-3 min-w-0">
-                  <div class="p-3 bg-[#f4f4f2] rounded-lg h-fit shrink-0">
-                    <i data-lucide="file-text" class="w-8 h-8 text-stamp"></i>
-                  </div>
-                  <div class="min-w-0">
-                    <h3
-                      class="font-heading font-bold text-lg sm:text-xl truncate"
-                    >
-                      Ration_Card_Update.pdf
-                    </h3>
-                    <div
-                      class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm font-bold text-ink/60 mt-1"
-                    >
-                      <span class="flex items-center gap-1">
-                        <i data-lucide="calendar" class="w-4 h-4"></i> 01 Sep
-                        2026
-                      </span>
-                      <span class="flex items-center gap-1">
-                        <i data-lucide="clock" class="w-4 h-4"></i> 11:30 AM
-                      </span>
-                      <span class="font-mono bg-[#f4f4f2] px-1.5 rounded"
-                        >ID: PRT-882</span
-                      >
-                    </div>
-                  </div>
-                </div>
-                <div class="text-right shrink-0">
-                  <h2 class="font-heading font-extrabold text-xl sm:text-2xl">
-                    ₹15
-                  </h2>
-                  <span
-                    class="inline-block mt-1 bg-yellow-200 px-2 py-0.5 text-xs font-bold rounded"
-                  >
-                    Naya Order
-                  </span>
-                </div>
-              </div>
-
-              <div class="flex flex-wrap gap-2 mb-4 text-xs font-bold">
-                <span
-                  class="bg-[#f4f4f2] px-2 py-1 rounded flex items-center gap-1"
-                >
-                  <span class="w-2 h-2 rounded-full bg-black"></span> B&amp;W
-                  (Kala-Safed)
-                </span>
-                <span class="bg-green-100 px-2 py-1 rounded text-green-800"
-                  >Counter Cash</span
-                >
-                <span class="bg-[#f4f4f2] px-2 py-1 rounded"
-                  >3 Pages x 1 Copy</span
-                >
-              </div>
-
-              <div class="flex gap-3 pt-2">
-                <button
-                  class="manga-btn flex-1 py-3 text-base sm:text-lg flex items-center justify-center gap-2"
-                  onclick="startPrint(this, 'order-card-1')"
-                >
-                  <i data-lucide="printer" class="w-5 h-5"></i> Print Nikalein
-                </button>
-                <button
-                  class="manga-btn-secondary px-4 py-3 flex items-center justify-center"
-                  title="Reject Order"
-                  aria-label="Reject Order"
-                >
-                  <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-              </div>
-            </div>
-
-            <!-- Order Item 2 (Failed) -->
-            <div class="manga-card p-5 bg-red-50/50">
-              <div class="flex justify-between items-start mb-3 gap-3">
-                <div class="flex gap-3 min-w-0">
-                  <div class="p-3 bg-white rounded-lg h-fit shrink-0">
-                    <i data-lucide="file-text" class="w-8 h-8 text-ink/40"></i>
-                  </div>
-                  <div class="min-w-0">
-                    <h3
-                      class="font-heading font-bold text-lg sm:text-xl line-through text-ink/40 truncate"
-                    >
-                      document_test.pdf
-                    </h3>
-                    <div
-                      class="flex items-center gap-3 text-xs sm:text-sm font-bold text-ink/60 mt-1"
-                    >
-                      <span class="flex items-center gap-1">
-                        <i data-lucide="calendar" class="w-4 h-4"></i> 31 Aug
-                        2026
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div class="text-right shrink-0">
-                  <h2
-                    class="font-heading font-extrabold text-xl sm:text-2xl text-ink/40"
-                  >
-                    ₹5
-                  </h2>
-                </div>
-              </div>
-
+            <!-- Loading state -->
+            <div
+              id="ordersLoading"
+              class="flex flex-col items-center justify-center py-16 text-center"
+            >
               <div
-                class="p-3 bg-red-100 rounded-lg mt-2 flex items-start gap-2"
-              >
-                <i
-                  data-lucide="alert-triangle"
-                  class="w-5 h-5 text-stamp shrink-0 mt-0.5"
-                ></i>
-                <div>
-                  <p class="font-bold text-stamp">Fail: Print failed</p>
-                  <p class="text-xs font-medium text-red-800 mt-1">
-                    <i data-lucide="trash-2" class="w-3 h-3 inline"></i>
-                    File delete ho chuki hai — koi copy store nahi (privacy
-                    safe)
-                  </p>
-                </div>
-              </div>
+                class="w-8 h-8 border-4 border-ink/15 border-t-stamp rounded-full animate-spin mb-3"
+              ></div>
+              <p class="text-sm font-semibold text-ink/50">
+                Orders load ho rahe hain...
+              </p>
             </div>
+
+            <!-- Empty state -->
+            <div id="ordersEmpty" class="hidden manga-card p-10 text-center">
+              <i
+                data-lucide="inbox"
+                class="w-10 h-10 mx-auto mb-3 text-ink/30"
+              ></i>
+              <p class="font-bold text-ink/60">Abhi tak koi order nahi aaya.</p>
+              <p class="text-sm text-ink/40 mt-1">
+                Jaise hi koi customer QR scan karke print bhejega, yahan
+                dikhega.
+              </p>
+            </div>
+
+            <!-- Error state -->
+            <div
+              id="ordersError"
+              class="hidden manga-card p-5 bg-red-50 border-red-200 text-red-700 flex items-start gap-2"
+            >
+              <i
+                data-lucide="alert-triangle"
+                class="w-5 h-5 shrink-0 mt-0.5"
+              ></i>
+              <p id="ordersErrorText" class="text-sm font-semibold">
+                Orders load nahi ho paaye.
+              </p>
+            </div>
+
+            <!-- Real order cards get injected here -->
+            <div id="ordersContainer" class="space-y-6"></div>
           </section>
 
           <!-- ============ TAB: QR CODE ============ -->
@@ -1274,6 +1197,14 @@
         });
         document.getElementById("tab-" + tabId).classList.remove("hidden");
 
+        // Load real orders whenever the Orders tab opens, and stop
+        // polling once the user navigates away from it.
+        if (tabId === "orders") {
+          onOrdersTabShown();
+        } else {
+          onOrdersTabHidden();
+        }
+
         if (element) {
           document.querySelectorAll(".nav-item").forEach((el) => {
             el.classList.remove("active");
@@ -1304,46 +1235,8 @@
         switchTab(tabId, navLink);
       }
 
-      // ---- 6. Print job animation ----
-      function startPrint(btnElement, cardId) {
-        const card = document.getElementById(cardId);
-
-        btnElement.disabled = true;
-        btnElement.innerHTML =
-          '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Printing...';
-        lucide.createIcons();
-
-        const fileIcon = card.querySelector(".lucide-file-text");
-        if (fileIcon) {
-          fileIcon.classList.add("animate-fly");
-        }
-
-        setTimeout(() => {
-          card.classList.add("animate-spit");
-          card.innerHTML = `
-            <div class="text-center py-6">
-                <div class="inline-block p-4 bg-green-100 rounded-full mb-4">
-                    <i data-lucide="check-check" class="w-10 h-10 text-green-700"></i>
-                </div>
-                <h3 class="font-heading font-extrabold text-2xl text-green-700 mb-2">Print Ho Gaya!</h3>
-                <p class="font-bold text-ink/60 mb-4">Kagaz printer se bahar aa chuka hai.</p>
-                <button class="manga-btn-secondary px-6 py-2" onclick="refreshOrders()">Done</button>
-            </div>
-          `;
-          lucide.createIcons();
-        }, 1200);
-      }
-
-      function refreshOrders() {
-        const icon = document.querySelector('[onclick="refreshOrders()"] i');
-        if (icon) icon.classList.add("animate-spin");
-        setTimeout(() => {
-          if (icon) icon.classList.remove("animate-spin");
-          alert("Naye orders check kiye gaye.");
-        }, 800);
-      }
-
-      // ---- 7. Real demo countdown (was static text before) ----
+      // ---- 6. Print job + refresh actions live further down, wired
+      // to real Supabase data (see startPrint/refreshOrders below) ----
       function startDemoCountdown(totalSeconds) {
         const el = document.getElementById("demo-countdown");
         if (!el) return;
@@ -1376,6 +1269,347 @@
 
       // 19h 30m 3s, matching the original static placeholder
       startDemoCountdown(24 * 3600 + 0 * 60 + 0);
+
+      // ============================================================
+      // Supabase setup (same project used across the app)
+      // ============================================================
+      const SUPABASE_URL = "https://gepkipszweqhftwaejbu.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "sb_publishable_forPZqB40NrPCFGQsdqeZw_4QTxOgBH";
+
+      const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+      );
+      const STORAGE_BUCKET = "print-files";
+
+      // ============================================================
+      // Fetch real orders (+ their files) for the logged-in shop
+      // ============================================================
+      async function loadOrders() {
+        const loadingEl = document.getElementById("ordersLoading");
+        const emptyEl = document.getElementById("ordersEmpty");
+        const errorEl = document.getElementById("ordersError");
+        const container = document.getElementById("ordersContainer");
+
+        loadingEl.classList.remove("hidden");
+        emptyEl.classList.add("hidden");
+        errorEl.classList.add("hidden");
+        container.innerHTML = "";
+
+        if (!currentShop || !currentShop.shop_id) {
+          loadingEl.classList.add("hidden");
+          showOrdersError("Shop session nahi mili. Dobara login karein.");
+          return;
+        }
+
+        try {
+          // Orders newest-first, only ones not yet completed/failed by default
+          const { data: orders, error: ordersErr } = await supabaseClient
+            .from("print_orders")
+            .select("*")
+            .eq("shop_id", currentShop.shop_id)
+            .order("created_at", { ascending: false })
+            .limit(30);
+
+          if (ordersErr) throw ordersErr;
+
+          if (!orders || orders.length === 0) {
+            loadingEl.classList.add("hidden");
+            emptyEl.classList.remove("hidden");
+            return;
+          }
+
+          const orderIds = orders.map((o) => o.order_id);
+          const { data: jobs, error: jobsErr } = await supabaseClient
+            .from("print_jobs")
+            .select("*")
+            .in("order_id", orderIds);
+
+          if (jobsErr) throw jobsErr;
+
+          const jobsByOrder = {};
+          (jobs || []).forEach((job) => {
+            if (!jobsByOrder[job.order_id]) jobsByOrder[job.order_id] = [];
+            jobsByOrder[job.order_id].push(job);
+          });
+
+          loadingEl.classList.add("hidden");
+          container.innerHTML = orders
+            .map((order) =>
+              renderOrderCard(order, jobsByOrder[order.order_id] || []),
+            )
+            .join("");
+
+          lucide.createIcons();
+        } catch (err) {
+          console.error("Failed to load orders:", err);
+          loadingEl.classList.add("hidden");
+          showOrdersError(
+            err.message?.includes("fetch") || err.message?.includes("network")
+              ? "Internet connection check karein aur dobara try karein."
+              : "Orders load nahi ho paaye. Kripya dobara try karein.",
+          );
+        }
+      }
+
+      function showOrdersError(message) {
+        document.getElementById("ordersErrorText").textContent = message;
+        document.getElementById("ordersError").classList.remove("hidden");
+      }
+
+      // ============================================================
+      // Render one order as a card (mirrors the original static design)
+      // ============================================================
+      function renderOrderCard(order, jobs) {
+        const cardId = `order-card-${order.order_id}`;
+        const isFailed = order.status === "failed";
+        const isCompleted = order.status === "completed";
+
+        const dateStr = new Date(order.created_at).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+        const timeStr = new Date(order.created_at).toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        const fileNames =
+          jobs.map((j) => j.original_filename).join(", ") || "No files";
+        const primaryJob = jobs[0] || {};
+        const colorLabel =
+          primaryJob.color_type === "Color" ? "Colour" : "B&W (Kala-Safed)";
+        const paymentLabel =
+          order.payment_mode === "UPI" ? "Paid via UPI" : "Counter Cash";
+        const paymentClass =
+          order.payment_mode === "UPI"
+            ? "bg-green-100 text-green-800"
+            : "bg-yellow-100 text-yellow-800";
+
+        const statusBadge = isFailed
+          ? `<span class="inline-block mt-1 bg-red-100 text-red-700 px-2 py-0.5 text-xs font-bold rounded">Fail</span>`
+          : isCompleted
+            ? `<span class="inline-block mt-1 bg-green-100 text-green-700 px-2 py-0.5 text-xs font-bold rounded">Printed</span>`
+            : `<span class="inline-block mt-1 bg-yellow-200 px-2 py-0.5 text-xs font-bold rounded">Naya Order</span>`;
+
+        const fileButtonsHtml = jobs
+          .map(
+            (job) => `
+        <button
+          onclick="downloadJobFile('${job.storage_path}')"
+          class="text-xs font-bold text-stamp hover:underline flex items-center gap-1"
+        >
+          <i data-lucide="download" class="w-3.5 h-3.5"></i> ${escapeHtml(job.original_filename)}
+        </button>`,
+          )
+          .join("");
+
+        const actionButtons =
+          isFailed || isCompleted
+            ? `
+        <div class="p-3 ${isFailed ? "bg-red-100" : "bg-green-50"} rounded-lg mt-2 flex items-start gap-2">
+          <i data-lucide="${isFailed ? "alert-triangle" : "check-check"}" class="w-5 h-5 ${isFailed ? "text-stamp" : "text-green-600"} shrink-0 mt-0.5"></i>
+          <p class="text-xs font-medium ${isFailed ? "text-red-800" : "text-green-800"}">
+            ${isFailed ? "Print fail ho gaya." : "Print ho chuka hai."}
+          </p>
+        </div>`
+            : `
+        <div class="flex gap-3 pt-2">
+          <button
+            class="manga-btn flex-1 py-3 text-base sm:text-lg flex items-center justify-center gap-2"
+            onclick="startPrint(this, '${order.order_id}', '${cardId}')"
+          >
+            <i data-lucide="printer" class="w-5 h-5"></i> Print Nikalein
+          </button>
+          <button
+            class="manga-btn-secondary px-4 py-3 flex items-center justify-center"
+            title="Reject Order"
+            aria-label="Reject Order"
+            onclick="rejectOrder('${order.order_id}', '${cardId}')"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>`;
+
+        return `
+    <div class="manga-card p-5 relative ${isFailed ? "bg-red-50/50" : ""}" id="${cardId}">
+      <div class="flex justify-between items-start mb-3 gap-3">
+        <div class="flex gap-3 min-w-0">
+          <div class="p-3 ${isFailed ? "bg-white" : "bg-[#f4f4f2]"} rounded-lg h-fit shrink-0">
+            <i data-lucide="file-text" class="w-8 h-8 ${isFailed ? "text-ink/40" : "text-stamp"}"></i>
+          </div>
+          <div class="min-w-0">
+            <h3 class="font-heading font-bold text-lg sm:text-xl truncate ${isFailed ? "line-through text-ink/40" : ""}">
+              ${escapeHtml(fileNames)}
+            </h3>
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm font-bold text-ink/60 mt-1">
+              <span class="flex items-center gap-1">
+                <i data-lucide="calendar" class="w-4 h-4"></i> ${dateStr}
+              </span>
+              <span class="flex items-center gap-1">
+                <i data-lucide="clock" class="w-4 h-4"></i> ${timeStr}
+              </span>
+              <span class="font-mono bg-[#f4f4f2] px-1.5 rounded">
+                ID: ${order.order_id.slice(0, 8).toUpperCase()}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="text-right shrink-0">
+          <h2 class="font-heading font-extrabold text-xl sm:text-2xl ${isFailed ? "text-ink/40" : ""}">
+            ₹${order.amount_charged}
+          </h2>
+          ${statusBadge}
+        </div>
+      </div>
+
+      ${
+        !isFailed
+          ? `<div class="flex flex-wrap gap-2 mb-3 text-xs font-bold">
+              <span class="bg-[#f4f4f2] px-2 py-1 rounded flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-black"></span> ${colorLabel}
+              </span>
+              <span class="${paymentClass} px-2 py-1 rounded">${paymentLabel}</span>
+              <span class="bg-[#f4f4f2] px-2 py-1 rounded">${order.total_pages} Pages · ${order.total_files} File(s)</span>
+            </div>
+            <div class="flex flex-wrap gap-3 mb-4">${fileButtonsHtml}</div>`
+          : ""
+      }
+
+      ${actionButtons}
+    </div>
+  `;
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      // ============================================================
+      // File download — bucket is private, so we need a signed URL
+      // ============================================================
+      async function downloadJobFile(storagePath) {
+        try {
+          // storagePath is stored as "bucket/path/inside/bucket"
+          const relativePath = storagePath.replace(`${STORAGE_BUCKET}/`, "");
+          const { data, error } = await supabaseClient.storage
+            .from(STORAGE_BUCKET)
+            .createSignedUrl(relativePath, 60); // valid for 60 seconds
+
+          if (error) throw error;
+          window.open(data.signedUrl, "_blank");
+        } catch (err) {
+          console.error("Download failed:", err);
+          alert("File open nahi ho payi. Dobara try karein.");
+        }
+      }
+
+      // ============================================================
+      // Print action — marks the order (and its jobs) completed.
+      // The DB trigger on print_orders automatically increments
+      // shops.total_prints once status flips to 'completed'.
+      // ============================================================
+      async function startPrint(btnElement, orderId, cardId) {
+        const card = document.getElementById(cardId);
+
+        btnElement.disabled = true;
+        btnElement.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Printing...`;
+        lucide.createIcons();
+
+        try {
+          const { error: jobsError } = await supabaseClient
+            .from("print_jobs")
+            .update({ status: "completed" })
+            .eq("order_id", orderId);
+
+          if (jobsError) throw jobsError;
+
+          const { error: orderError } = await supabaseClient
+            .from("print_orders")
+            .update({
+              status: "completed",
+              completed_at: new Date().toISOString(),
+            })
+            .eq("order_id", orderId);
+
+          if (orderError) throw orderError;
+
+          card.innerHTML = `
+      <div class="text-center py-6">
+          <div class="inline-block p-4 bg-green-100 rounded-full mb-4">
+              <i data-lucide="check-check" class="w-10 h-10 text-green-700"></i>
+          </div>
+          <h3 class="font-heading font-extrabold text-2xl text-green-700 mb-2">Print Ho Gaya!</h3>
+          <p class="font-bold text-ink/60 mb-4">Kagaz printer se bahar aa chuka hai.</p>
+          <button class="manga-btn-secondary px-6 py-2" onclick="refreshOrders()">Done</button>
+      </div>
+    `;
+          lucide.createIcons();
+        } catch (err) {
+          console.error("Print update failed:", err);
+          btnElement.disabled = false;
+          btnElement.innerHTML = `<i data-lucide="printer" class="w-5 h-5"></i> Print Nikalein`;
+          lucide.createIcons();
+          alert("Print status update nahi ho paya. Dobara try karein.");
+        }
+      }
+
+      async function rejectOrder(orderId, cardId) {
+        if (!confirm("Is order ko reject karna hai?")) return;
+
+        try {
+          const { error } = await supabaseClient
+            .from("print_orders")
+            .update({ status: "failed" })
+            .eq("order_id", orderId);
+
+          if (error) throw error;
+
+          await supabaseClient
+            .from("print_jobs")
+            .update({ status: "failed" })
+            .eq("order_id", orderId);
+
+          refreshOrders();
+        } catch (err) {
+          console.error("Reject failed:", err);
+          alert("Order reject nahi ho paya. Dobara try karein.");
+        }
+      }
+
+      // ============================================================
+      // Refresh button
+      // ============================================================
+      function refreshOrders() {
+        const icon = document.querySelector("#refreshOrdersBtn i");
+        if (icon) icon.classList.add("animate-spin");
+        loadOrders().finally(() => {
+          if (icon) icon.classList.remove("animate-spin");
+        });
+      }
+
+      // ============================================================
+      // Load orders once when the Orders tab is first opened, and
+      // keep them fresh with a light auto-refresh while it's visible.
+      // ============================================================
+      let ordersPollTimer = null;
+
+      function onOrdersTabShown() {
+        loadOrders();
+        if (ordersPollTimer) clearInterval(ordersPollTimer);
+        ordersPollTimer = setInterval(loadOrders, 20000); // every 20s
+      }
+
+      function onOrdersTabHidden() {
+        if (ordersPollTimer) {
+          clearInterval(ordersPollTimer);
+          ordersPollTimer = null;
+        }
+      }
     </script>
   </body>
 </html>
