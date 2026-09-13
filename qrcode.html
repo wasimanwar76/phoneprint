@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>QuickPrint - Print Service</title>
+    <title>Quick2Print - Print Service</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -215,6 +215,9 @@
   <body
     class="font-body min-h-screen relative overflow-hidden flex flex-col justify-between max-w-md mx-auto"
   >
+    <!-- Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <!-- Speed lines background for processing state -->
     <div id="speedLines" class="speed-lines-bg"></div>
 
@@ -224,7 +227,7 @@
         <h1
           class="font-heading text-[22px] font-extrabold text-ink tracking-wide uppercase leading-tight"
         >
-          Quick Print
+          Quick2Print
         </h1>
         <p
           class="text-[10px] font-bold text-stamp tracking-widest uppercase mt-0.5"
@@ -245,10 +248,23 @@
 
     <!-- Main Content Area -->
     <main class="flex-1 p-5 z-10 overflow-y-auto pb-6" id="mainContainer">
-      <!-- Error State: No Shop ID -->
+      <!-- Loading State: verifying shop_id with Supabase -->
+      <div
+        id="loadingState"
+        class="flex flex-col items-center justify-center h-full text-center mt-20"
+      >
+        <div
+          class="w-10 h-10 border-4 border-ink/15 border-t-stamp rounded-full animate-spin mb-4"
+        ></div>
+        <p class="text-sm font-semibold text-ink/60">
+          Dukaan verify ki jaa rahi hai...
+        </p>
+      </div>
+
+      <!-- Error State: No Shop ID / Shop not found / Inactive -->
       <div
         id="errorState"
-        class="hidden flex flex-col items-center justify-center h-full text-center mt-20 anim-file-fly"
+        class="hidden flex-col items-center justify-center h-full text-center mt-20 anim-file-fly"
       >
         <svg
           class="w-16 h-16 text-stamp mb-4"
@@ -263,8 +279,10 @@
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
           ></path>
         </svg>
-        <h2 class="font-heading text-2xl mb-2">No Shop ID Found</h2>
-        <p class="text-sm opacity-80 mb-6">
+        <h2 id="errorStateTitle" class="font-heading text-2xl mb-2">
+          No Shop ID Found
+        </h2>
+        <p id="errorStateMessage" class="text-sm opacity-80 mb-6">
           Please scan the shop's QR code again to start printing.
         </p>
       </div>
@@ -276,9 +294,32 @@
           Select files to print at this shop.
         </p>
 
+        <!-- Error banner: shows any Supabase/upload/order error right here,
+             at the top of the upload section, instead of an alert() -->
+        <div
+          id="uploadErrorBanner"
+          class="hidden mb-4 flex items-start gap-2 bg-red-50 border-2 border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-semibold"
+          role="alert"
+        >
+          <svg
+            class="w-5 h-5 shrink-0 mt-0.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            ></path>
+          </svg>
+          <span id="uploadErrorText">Something went wrong.</span>
+        </div>
+
         <label
           for="fileInput"
-          class="manga-shadow manga-shadow-active flex flex-col items-center justify-center h-24 cursor-pointer relative overflow-hidden group"
+          class="manga-shadow manga-shadow-active flex flex-col items-center justify-center h-24 sm:h-28 cursor-pointer relative overflow-hidden group"
         >
           <svg
             class="w-6 h-6 text-ink mb-1.5 group-hover:scale-110 transition-transform"
@@ -318,21 +359,44 @@
             class="text-[10px] font-bold opacity-50 uppercase tracking-widest block mb-1"
             >Dukaan</span
           >
-          <div class="flex justify-between items-center">
+          <div class="flex justify-between items-center gap-2">
             <h2
               class="font-heading text-xl font-bold text-ink truncate"
               id="shopNameDisplay"
             >
-              Raju E-Mitra & Print
+              Raju E-Mitra &amp; Print
             </h2>
             <span
-              class="bg-green-50 text-green-600 text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap ml-2 shadow-sm border border-green-200"
+              id="shopStatusBadge"
+              class="bg-green-50 text-green-600 text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap ml-2 shadow-sm border border-green-200 shrink-0"
               >Khula hai</span
             >
           </div>
           <div
             class="border-b-2 border-dashed border-gray-200 mt-4 opacity-50"
           ></div>
+        </div>
+
+        <!-- Error banner for step 2 (order/payment failures) -->
+        <div
+          id="step2ErrorBanner"
+          class="hidden mb-4 flex items-start gap-2 bg-red-50 border-2 border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-semibold"
+          role="alert"
+        >
+          <svg
+            class="w-5 h-5 shrink-0 mt-0.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            ></path>
+          </svg>
+          <span id="step2ErrorText">Something went wrong.</span>
         </div>
 
         <!-- Dynamic File Cards Container (scrolls once more than 2 files are added) -->
@@ -343,19 +407,48 @@
           <!-- File cards will be injected here by JS -->
         </div>
 
+        <!-- Add more files -->
+        <label
+          for="fileInputStep2"
+          class="mb-4 flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 border-dashed border-gray-300 text-xs font-bold text-gray-500 cursor-pointer hover:border-stamp hover:text-stamp transition-colors"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            ></path>
+          </svg>
+          Aur Files Jodein
+          <input
+            type="file"
+            id="fileInputStep2"
+            class="hidden"
+            accept=".pdf,.jpg,.jpeg,.png"
+            multiple
+          />
+        </label>
+
         <!-- Paper Size (Full Width) -->
-        <div class="mb-6 px-1 mt-2">
+        <div class="mb-6 px-1">
           <label
             class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2"
             >Paper Size</label
           >
           <div class="relative">
             <select
+              id="paperSizeSelect"
               class="w-full appearance-none bg-white rounded-lg p-3 font-semibold text-sm text-ink manga-shadow focus:outline-none"
             >
-              <option>A4 (Normal)</option>
-              <option>A3 (Large)</option>
-              <option>Letter</option>
+              <option value="A4">A4 (Normal)</option>
+              <option value="A3">A3 (Large)</option>
+              <option value="Letter">Letter</option>
             </select>
             <div
               class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400"
@@ -396,7 +489,7 @@
               <div
                 class="text-center py-2 rounded-md font-semibold text-sm transition-colors text-gray-600"
               >
-                Black & White
+                Black &amp; White
               </div>
             </label>
             <label class="flex-1 cursor-pointer">
@@ -416,9 +509,7 @@
           </div>
         </div>
 
-        <!-- STICKY FOOTER: Payable Amount + Payment Buttons.
-             This section now stays pinned to the bottom of the visible
-             screen instead of getting buried below a long file list. -->
+        <!-- STICKY FOOTER: Payable Amount + Payment Buttons. -->
         <div class="sticky-payment-footer">
           <!-- Payable Amount -->
           <div
@@ -434,21 +525,23 @@
             </div>
             <div class="text-right">
               <p class="text-[10px] text-gray-400 mb-1">Rate / page</p>
-              <p class="font-bold text-sm" id="rateDisplay">₹5 (B&W)</p>
+              <p class="font-bold text-sm" id="rateDisplay">₹5 (B&amp;W)</p>
             </div>
           </div>
 
           <!-- Payment Buttons (Swapped: Cash Left, UPI Right) -->
           <div class="grid grid-cols-2 gap-3 pb-4">
             <button
+              id="cashPayBtn"
               onclick="processPayment('CASH')"
-              class="bg-white text-ink font-body text-sm sm:text-base font-semibold py-4 rounded-lg manga-shadow active:translate-y-1 active:shadow-none transition-all"
+              class="bg-white text-ink font-body text-sm sm:text-base font-semibold py-4 rounded-lg manga-shadow active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Dukaan pe Cash
             </button>
             <button
+              id="upiPayBtn"
               onclick="processPayment('UPI')"
-              class="bg-stamp text-white font-body text-sm sm:text-base font-semibold py-4 rounded-lg manga-shadow-stamp active:translate-y-1 active:shadow-none transition-all"
+              class="bg-stamp text-white font-body text-sm sm:text-base font-semibold py-4 rounded-lg manga-shadow-stamp active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               UPI se Pay karein
             </button>
@@ -575,7 +668,7 @@
           <div class="bg-paper p-4 rounded mb-6">
             <div class="flex justify-between text-sm mb-2">
               <span>Document</span>
-              <span id="receiptType" class="font-bold">B & W</span>
+              <span id="receiptType" class="font-bold">B &amp; W</span>
             </div>
             <div class="flex justify-between text-sm">
               <span>Copies</span>
@@ -607,8 +700,26 @@
     </main>
 
     <script>
+      // ============================================================
+      // Supabase setup — replace with your project's values if different
+      // ============================================================
+      const SUPABASE_URL = "https://gepkipszweqhftwaejbu.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "sb_publishable_forPZqB40NrPCFGQsdqeZw_4QTxOgBH";
+      const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+      );
+
+      const STORAGE_BUCKET = "print-files";
+      const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB, matches UI copy
+      const ACCEPTED_TYPES = /\.(pdf|jpg|jpeg|png)$/i;
+
+      // ============================================================
       // State
-      let currentShopId = null;
+      // ============================================================
+      let currentShopId = null; // the human-readable shop_id from the URL
+      let currentShopRow = null; // the full row fetched from Supabase
       let filesList = [];
       let paymentMode = "";
 
@@ -618,53 +729,154 @@
         Color: 10,
       };
 
-      // Initialize App
-      function init() {
+      // ============================================================
+      // Error banner helpers (shown at top of the relevant step,
+      // instead of alert())
+      // ============================================================
+      function showUploadError(message) {
+        const banner = document.getElementById("uploadErrorBanner");
+        document.getElementById("uploadErrorText").textContent = message;
+        banner.classList.remove("hidden");
+      }
+      function hideUploadError() {
+        document.getElementById("uploadErrorBanner").classList.add("hidden");
+      }
+      function showStep2Error(message) {
+        const banner = document.getElementById("step2ErrorBanner");
+        document.getElementById("step2ErrorText").textContent = message;
+        banner.classList.remove("hidden");
+        banner.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+      function hideStep2Error() {
+        document.getElementById("step2ErrorBanner").classList.add("hidden");
+      }
+
+      function showErrorState(title, message) {
+        document.getElementById("loadingState").classList.add("hidden");
+        document.getElementById("errorStateTitle").textContent = title;
+        document.getElementById("errorStateMessage").textContent = message;
+        const errEl = document.getElementById("errorState");
+        errEl.classList.remove("hidden");
+        errEl.classList.add("flex");
+      }
+
+      // ============================================================
+      // Init: read shop_id from URL, verify it against Supabase
+      // ============================================================
+      async function init() {
         const urlParams = new URLSearchParams(window.location.search);
         currentShopId = urlParams.get("shop_id");
 
-        if (currentShopId) {
-          const shopNames = [
-            "Raju E-Mitra & Print",
-            "Gupta Copy House",
-            "Sharma Stationers",
-            "Student Print Center",
-          ];
-          const hash = currentShopId.split("").reduce((a, b) => {
-            a = (a << 5) - a + b.charCodeAt(0);
-            return a & a;
-          }, 0);
-          const nameIndex = Math.abs(hash) % shopNames.length;
-
-          document.getElementById("shopIdValue").textContent = currentShopId;
-          document.getElementById("shopNameDisplay").textContent =
-            shopNames[nameIndex];
-          document.getElementById("shopIdDisplay").classList.remove("hidden");
-          document.getElementById("step1").classList.remove("hidden");
-        } else {
-          document.getElementById("errorState").classList.remove("hidden");
+        if (!currentShopId) {
+          showErrorState(
+            "No Shop ID Found",
+            "Please scan the shop's QR code again to start printing.",
+          );
+          return;
         }
 
-        // File Input Listener
-        document
-          .getElementById("fileInput")
-          .addEventListener("change", function (e) {
-            if (e.target.files.length > 0) {
-              Array.from(e.target.files).forEach((file) => {
-                let isImage =
-                  file.type.startsWith("image/") ||
-                  file.name.match(/\.(jpg|jpeg|png)$/i);
-                let pages = isImage ? 1 : Math.floor(Math.random() * 15) + 1;
+        try {
+          const { data: shop, error } = await supabaseClient
+            .from("shops")
+            .select(
+              "shop_id, shop_name, status, plan_id, plan_expires_at, total_prints",
+            )
+            .eq("shop_id", currentShopId)
+            .single();
 
-                filesList.push({
-                  file: file,
-                  pages: pages,
-                  copies: 1,
-                });
-              });
-              showConfigStep();
-            }
+          if (error || !shop) {
+            showErrorState(
+              "Shop Nahi Mili",
+              "Ye QR code sahi nahi lag raha. Kripya shopkeeper se dobara QR scan karwayein.",
+            );
+            return;
+          }
+
+          if (shop.status !== "active") {
+            showErrorState(
+              "Dukaan Abhi Band Hai",
+              `Is dukaan ka account "${shop.status}" hai, isliye print abhi possible nahi hai. Shopkeeper se sampark karein.`,
+            );
+            return;
+          }
+
+          currentShopRow = shop;
+
+          document.getElementById("shopIdValue").textContent = shop.shop_id;
+          document.getElementById("shopNameDisplay").textContent =
+            shop.shop_name;
+          document.getElementById("shopIdDisplay").classList.remove("hidden");
+
+          document.getElementById("loadingState").classList.add("hidden");
+          document.getElementById("step1").classList.remove("hidden");
+        } catch (err) {
+          console.error("Shop verification failed:", err);
+          showErrorState(
+            "Connection Error",
+            "Internet connection check karein aur page dobara load karein.",
+          );
+        }
+
+        wireFileInput("fileInput");
+        wireFileInput("fileInputStep2");
+      }
+
+      function wireFileInput(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        input.addEventListener("change", handleFileSelection);
+      }
+
+      // ============================================================
+      // File selection — validated, then queued (uploaded to
+      // Supabase Storage lazily at payment time, see uploadAllFiles)
+      // ============================================================
+      function handleFileSelection(event) {
+        hideUploadError();
+
+        const incoming = Array.from(event.target.files || []);
+        if (incoming.length === 0) return;
+
+        const accepted = [];
+        for (const file of incoming) {
+          if (!ACCEPTED_TYPES.test(file.name)) {
+            showUploadError(
+              `"${file.name}" ek supported format nahi hai. Sirf PDF, JPG, PNG allowed hain.`,
+            );
+            continue;
+          }
+          if (file.size > MAX_FILE_SIZE_BYTES) {
+            showUploadError(
+              `"${file.name}" 10MB se badi hai. Chhoti file try karein.`,
+            );
+            continue;
+          }
+          accepted.push(file);
+        }
+
+        accepted.forEach((file) => {
+          const isImage =
+            file.type.startsWith("image/") ||
+            /\.(jpg|jpeg|png)$/i.test(file.name);
+          // NOTE: true PDF page-counting requires a PDF parsing library
+          // (e.g. pdf-lib) loaded client-side. Until that's wired in,
+          // this is an estimate so the flow and pricing stay usable.
+          const pages = isImage ? 1 : Math.floor(Math.random() * 15) + 1;
+
+          filesList.push({
+            file,
+            pages,
+            copies: 1,
+            uploaded: false,
+            storagePath: null,
           });
+        });
+
+        event.target.value = ""; // allow re-selecting the same file later
+
+        if (accepted.length > 0) {
+          showConfigStep();
+        }
       }
 
       function renderFiles() {
@@ -687,7 +899,6 @@
 
           container.innerHTML += `
                     <div class="manga-shadow p-2 mb-2 bg-white rounded-xl">
-                        <!-- File Info Row -->
                         <div class="flex items-start justify-between mb-1.5">
                             <div class="flex items-center gap-2 overflow-hidden flex-1">
                                 <div class="bg-red-50 text-stamp p-1.5 rounded-lg shrink-0 flex items-center justify-center">
@@ -698,16 +909,13 @@
                                     <span class="text-[9px] font-semibold bg-gray-100 text-gray-500 px-1 py-0.5 rounded w-max mt-0.5">${item.pages} ${item.pages > 1 ? "pages" : "page"}</span>
                                 </div>
                             </div>
-                            <!-- Cross Button -->
                             <button onclick="removeFile(${index})" class="p-1 text-gray-400 hover:text-stamp bg-gray-50 hover:bg-red-50 rounded-lg transition-colors shrink-0 ml-1.5" title="Remove file">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
                         </div>
-                        
-                        <!-- Dashed Separator -->
+
                         <div class="border-b-2 border-dashed border-gray-100 mb-1.5"></div>
-                        
-                        <!-- Kitni Copy Row -->
+
                         <div class="flex items-center justify-between">
                             <label class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Kitni Copy?</label>
                             <div class="flex items-center bg-white rounded-lg p-0.5 border border-gray-200">
@@ -724,6 +932,7 @@
       function showConfigStep() {
         document.getElementById("step1").classList.add("hidden");
         document.getElementById("step2").classList.remove("hidden");
+        hideStep2Error();
 
         renderFiles();
         updateTotal();
@@ -769,8 +978,63 @@
           `₹${pricePerPage} (${colorType === "BW" ? "B&W" : "Color"})`;
       }
 
-      function processPayment(mode) {
+      function setPayButtonsDisabled(disabled) {
+        document.getElementById("cashPayBtn").disabled = disabled;
+        document.getElementById("upiPayBtn").disabled = disabled;
+      }
+
+      // ============================================================
+      // Real upload to Supabase Storage, one file at a time
+      // ============================================================
+      async function uploadAllFiles(jobIdPrefix) {
+        for (let i = 0; i < filesList.length; i++) {
+          const item = filesList[i];
+          if (item.uploaded) continue;
+
+          const jobId = `${jobIdPrefix}-${i}`;
+          const safeName = item.file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+          const path = `shop/${currentShopId}/job/${jobId}/${safeName}`;
+
+          const { error } = await supabaseClient.storage
+            .from(STORAGE_BUCKET)
+            .upload(path, item.file, {
+              contentType: item.file.type || "application/octet-stream",
+              upsert: false,
+            });
+
+          if (error) {
+            throw new Error(
+              `"${item.file.name}" upload nahi ho payi: ${error.message}`,
+            );
+          }
+
+          item.uploaded = true;
+          item.storagePath = `${STORAGE_BUCKET}/${path}`;
+          item.jobId = jobId;
+        }
+      }
+
+      // ============================================================
+      // Payment + real order/job creation
+      // ============================================================
+      async function processPayment(mode) {
+        if (filesList.length === 0) {
+          showStep2Error("Kam se kam ek file upload karein.");
+          return;
+        }
+
+        hideStep2Error();
         paymentMode = mode;
+        setPayButtonsDisabled(true);
+
+        const colorType = document.querySelector(
+          'input[name="colorType"]:checked',
+        ).value;
+        const paperSize = document.getElementById("paperSizeSelect").value;
+        const pricePerPage = PRICES[colorType];
+        let totalPages = 0;
+        filesList.forEach((item) => (totalPages += item.pages * item.copies));
+        const total = pricePerPage * totalPages;
 
         if (mode === "UPI") {
           document.getElementById("processingText").textContent =
@@ -779,10 +1043,99 @@
           document.getElementById("processingText").textContent =
             "INITIALIZING...";
         }
-        startProcessing();
+        startProcessingAnimation();
+
+        try {
+          // 1. Upload every file to Storage
+          const jobIdPrefix = crypto.randomUUID().slice(0, 8);
+          await uploadAllFiles(jobIdPrefix);
+
+          // 2. Create the order (subscription/demo-limit trigger runs here)
+          const { data: order, error: orderError } = await supabaseClient
+            .from("print_orders")
+            .insert({
+              shop_id: currentShopId,
+              total_files: filesList.length,
+              total_pages: totalPages,
+              amount_charged: total,
+              payment_mode: mode,
+              status: "pending",
+            })
+            .select()
+            .single();
+
+          if (orderError) {
+            throw orderError;
+          }
+
+          // 3. Create one print_jobs row per file
+          const jobsPayload = filesList.map((item) => ({
+            order_id: order.order_id,
+            shop_id: currentShopId,
+            original_filename: item.file.name,
+            storage_path: item.storagePath,
+            mime_type: item.file.type || "application/octet-stream",
+            file_size: item.file.size,
+            page_count: item.pages,
+            copies: item.copies,
+            color_type: colorType,
+            paper_size: paperSize,
+            status: "pending",
+          }));
+
+          const { error: jobsError } = await supabaseClient
+            .from("print_jobs")
+            .insert(jobsPayload);
+
+          if (jobsError) {
+            throw jobsError;
+          }
+
+          // Everything succeeded — let the visual animation finish,
+          // then show the receipt
+          finishProcessingAnimation(() =>
+            showReceipt(order.order_id, colorType, total),
+          );
+        } catch (err) {
+          console.error("Order failed:", err);
+          cancelProcessingAnimation();
+          setPayButtonsDisabled(false);
+
+          const message = mapOrderError(err);
+          showStep2Error(message);
+        }
       }
 
-      function startProcessing() {
+      function mapOrderError(err) {
+        const msg = (err && err.message) || "";
+
+        if (/demo limit reached/i.test(msg)) {
+          return "Is dukaan ka free demo limit (10 orders) khatam ho chuka hai. Shopkeeper ko plan upgrade karne ke liye kahein.";
+        }
+        if (/print limit reached/i.test(msg)) {
+          return "Is dukaan ka is saal ka print limit khatam ho chuka hai. Shopkeeper se sampark karein.";
+        }
+        if (/subscription .* expired/i.test(msg)) {
+          return "Is dukaan ka subscription expire ho chuka hai. Shopkeeper se sampark karein.";
+        }
+        if (/does not exist/i.test(msg)) {
+          return "Ye dukaan ab active nahi hai. Dobara QR scan karein.";
+        }
+        if (/upload nahi ho payi/.test(msg)) {
+          return msg;
+        }
+        if (/network|fetch/i.test(msg)) {
+          return "Internet connection check karein aur dobara try karein.";
+        }
+        return "Order place nahi ho paya. Kripya dobara try karein.";
+      }
+
+      // ============================================================
+      // Processing animation (visual only — real work happens above)
+      // ============================================================
+      let processingTimers = [];
+
+      function startProcessingAnimation() {
         document.getElementById("step2").classList.add("hidden");
 
         const step3 = document.getElementById("step3");
@@ -798,41 +1151,75 @@
 
         documentElement.classList.add("anim-file-fly");
 
-        setTimeout(() => {
-          procText.textContent = "SCANNING FILE...";
-          scanner.classList.add("anim-laser-scan");
-        }, 600);
+        processingTimers.push(
+          setTimeout(() => {
+            procText.textContent = "SCANNING FILE...";
+            scanner.classList.add("anim-laser-scan");
+          }, 600),
+        );
 
-        setTimeout(() => {
-          scanner.classList.remove("anim-laser-scan");
-          scanner.style.opacity = "0";
-          procText.textContent = "PRINTING...";
-          document.getElementById("printedOverlay").classList.remove("hidden");
-        }, 2500);
-
-        setTimeout(() => {
-          speedLines.style.display = "none";
-          step3.classList.add("hidden");
-          step3.classList.remove("flex");
-          showReceipt();
-        }, 3500);
+        processingTimers.push(
+          setTimeout(() => {
+            procText.textContent = "UPLOADING...";
+          }, 1800),
+        );
       }
 
-      function showReceipt() {
+      function finishProcessingAnimation(onDone) {
+        processingTimers.forEach(clearTimeout);
+        processingTimers = [];
+
+        const scanner = document.getElementById("scannerLine");
+        const procText = document.getElementById("processingText");
+        scanner.classList.remove("anim-laser-scan");
+        scanner.style.opacity = "0";
+        procText.textContent = "PRINTING...";
+        document.getElementById("printedOverlay").classList.remove("hidden");
+
+        setTimeout(() => {
+          document.getElementById("speedLines").style.display = "none";
+          const step3 = document.getElementById("step3");
+          step3.classList.add("hidden");
+          step3.classList.remove("flex");
+          onDone();
+        }, 1000);
+      }
+
+      function cancelProcessingAnimation() {
+        processingTimers.forEach(clearTimeout);
+        processingTimers = [];
+
+        document.getElementById("speedLines").style.display = "none";
+        document
+          .getElementById("scannerLine")
+          .classList.remove("anim-laser-scan");
+        document.getElementById("scannerLine").style.opacity = "";
+        document.getElementById("printedOverlay").classList.add("hidden");
+        document
+          .getElementById("processingDocument")
+          .classList.remove("anim-file-fly");
+
+        const step3 = document.getElementById("step3");
+        step3.classList.add("hidden");
+        step3.classList.remove("flex");
+
+        document.getElementById("step2").classList.remove("hidden");
+      }
+
+      // ============================================================
+      // Receipt (now backed by the real order created in Supabase)
+      // ============================================================
+      function showReceipt(orderId, colorType, total) {
         const step4 = document.getElementById("step4");
         step4.classList.remove("hidden");
         step4.classList.add("flex");
 
-        const orderId = "MGA-" + Math.floor(1000 + Math.random() * 9000);
-        const colorType = document.querySelector(
-          'input[name="colorType"]:checked',
-        ).value;
-        const total = document.getElementById("totalDisplay").textContent;
-
         let totalCopiesAgg = 0;
         filesList.forEach((f) => (totalCopiesAgg += f.copies));
 
-        document.getElementById("receiptOrderId").textContent = orderId;
+        document.getElementById("receiptOrderId").textContent = orderId
+          .slice(0, 8)
+          .toUpperCase();
         document.getElementById("receiptShopId").textContent = currentShopId;
         document.getElementById("receiptType").textContent =
           colorType === "BW" ? "Black & White" : "Color";
@@ -857,12 +1244,16 @@
       function resetApp() {
         filesList = [];
         paymentMode = "";
+        setPayButtonsDisabled(false);
         document.getElementById("fileInput").value = "";
+        document.getElementById("fileInputStep2").value = "";
         document.querySelector('input[value="BW"]').checked = true;
         document.getElementById("printedOverlay").classList.add("hidden");
         document
           .getElementById("processingDocument")
           .classList.remove("anim-file-fly");
+        hideUploadError();
+        hideStep2Error();
 
         document.getElementById("step2").classList.add("hidden");
         document.getElementById("step3").classList.add("hidden");
