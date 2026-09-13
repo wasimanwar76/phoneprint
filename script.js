@@ -256,7 +256,7 @@ const modalTitle = document.getElementById("modalTitle");
 const modalBody = document.getElementById("modalBody");
 const modalContentBox = document.getElementById("modalContentBox");
 
-const DASHBOARD_URL = "http://127.0.0.1:5500/dashboard.html";
+const DASHBOARD_URL = "/dashboard.html";
 
 const modalContents = {
   login: {
