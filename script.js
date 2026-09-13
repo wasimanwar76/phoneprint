@@ -3,29 +3,29 @@ const htmlElement = document.documentElement;
 const themeToggleDesktop = document.getElementById("themeToggle");
 const themeToggleMobile = document.getElementById("themeToggleMobile");
 
-function toggleTheme() {
-  if (htmlElement.classList.contains("dark")) {
-    htmlElement.classList.remove("dark");
-    localStorage.setItem("theme", "light");
-  } else {
-    htmlElement.classList.add("dark");
-    localStorage.setItem("theme", "dark");
-  }
-}
+// function toggleTheme() {
+//   if (htmlElement.classList.contains("dark")) {
+//     htmlElement.classList.remove("dark");
+//     localStorage.setItem("theme", "light");
+//   } else {
+//     htmlElement.classList.add("dark");
+//     localStorage.setItem("theme", "dark");
+//   }
+// }
 
-// Check local storage or system preference on load
-if (
-  localStorage.theme === "dark" ||
-  (!("theme" in localStorage) &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches)
-) {
-  htmlElement.classList.add("dark");
-} else {
-  htmlElement.classList.remove("dark");
-}
+// // Check local storage or system preference on load
+// if (
+//   localStorage.theme === "dark" ||
+//   (!("theme" in localStorage) &&
+//     window.matchMedia("(prefers-color-scheme: dark)").matches)
+// ) {
+//   htmlElement.classList.add("dark");
+// } else {
+//   htmlElement.classList.remove("dark");
+// }
 
-themeToggleDesktop.addEventListener("click", toggleTheme);
-themeToggleMobile.addEventListener("click", toggleTheme);
+// themeToggleDesktop.addEventListener("click", toggleTheme);
+// themeToggleMobile.addEventListener("click", toggleTheme);
 
 // --- 2. Mobile Menu Logic ---
 const menuBtn = document.getElementById("menuBtn");
@@ -593,7 +593,6 @@ async function submitLogin(event) {
   submitBtn.textContent = "Login ho raha hai...";
 
   try {
-
     // Supabase database request
     const { data, error } = await supabaseClient
       .from("shops")
@@ -607,9 +606,7 @@ async function submitLogin(event) {
     if (error || !data) {
       console.error("Login Error:", error);
 
-      showLoginError(
-        "Mobile number ya Shop ID galat hai."
-      );
+      showLoginError("Mobile number ya Shop ID galat hai.");
 
       submitBtn.disabled = false;
       submitBtn.textContent = "Login Karein";
@@ -627,22 +624,17 @@ async function submitLogin(event) {
         id: data.id,
         shop_id: data.shop_id,
         shop_name: data.shop_name,
-        whatsapp_number: data.whatsapp_number
-      })
+        whatsapp_number: data.whatsapp_number,
+      }),
     );
 
-    submitBtn.textContent =
-      "Login safal! Redirect ho raha hai...";
+    submitBtn.textContent = "Login safal! Redirect ho raha hai...";
 
     window.location.href = DASHBOARD_URL;
-
   } catch (err) {
-
     console.error("Login error:", err);
 
-    showLoginError(
-      "Kuch galat ho gaya. Dobara try karein."
-    );
+    showLoginError("Kuch galat ho gaya. Dobara try karein.");
 
     submitBtn.disabled = false;
     submitBtn.textContent = "Login Karein";
