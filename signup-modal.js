@@ -141,7 +141,7 @@ async function sendDemoEmail(row) {
       shopId: row.shop_id,
       password: row.whatsapp_number,
       email: row.email,
-      qrUrl: `https://phoneprint.vercel.app/print?shop_id=${encodeURIComponent(
+      qrUrl: `https://quick2print.vercel.app/print?shop_id=${encodeURIComponent(
         row.shop_id,
       )}`,
     }),

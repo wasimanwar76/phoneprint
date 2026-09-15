@@ -192,7 +192,7 @@ const faqs = [
   },
   {
     q: "Mera Adhaar card ya private photo leak toh nahi hogi?",
-    a: "Nahi. WhatsApp ya dukaan ke computer pe bhejne se file save reh jati hai. PhonePrint mein print nikalne ke baad file server se apne aap delete ho jati hai. Ye 100% safe hai.",
+    a: "Nahi. WhatsApp ya dukaan ke computer pe bhejne se file save reh jati hai. Quick2print mein print nikalne ke baad file server se apne aap delete ho jati hai. Ye 100% safe hai.",
   },
   {
     q: "Dukaan wale bhaiya, iske liye kon sa printer chahiye?",
@@ -264,7 +264,7 @@ const modalContents = {
 
     body: `
       <p class="mb-4 text-ink-700">
-        PhonePrint Dashboard mein swagat hai.
+        Quick2Print Dashboard mein swagat hai.
       </p>
 
       <div
@@ -363,7 +363,7 @@ const modalContents = {
       </h4>
 
       <p class="mb-3">
-        PhonePrint aapki privacy ka pura dhyaan rakhta hai.
+        Quick2Print aapki privacy ka pura dhyaan rakhta hai.
         Humara lakshya gramin bharat aur chhote shaharo mein
         surakshit digital suvidhayein pahunchana hai.
       </p>
