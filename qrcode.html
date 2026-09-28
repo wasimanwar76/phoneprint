@@ -211,13 +211,13 @@
         z-index: 20;
       }
     </style>
+
+    <!-- Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body
     class="font-body min-h-screen relative overflow-hidden flex flex-col justify-between max-w-md mx-auto"
   >
-    <!-- Supabase client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <!-- Speed lines background for processing state -->
     <div id="speedLines" class="speed-lines-bg"></div>
 
@@ -228,7 +228,7 @@
       <div>
         <a href="#" class="flex items-center shrink-0">
           <img
-            src="./logo.jpeg"
+            src="./logo.png"
             alt="Quick2Print"
             class="h-12 w-auto max-w-[240px] object-contain sm:h-14 sm:max-w-[280px] md:h-16 md:max-w-[320px]"
           />
@@ -253,7 +253,7 @@
         class="flex flex-col items-center justify-center h-full text-center mt-20"
       >
         <div
-          class="w-10 h-10 border-4 border-ink/15 border-t-stamp rounded-full animate-spin mb-4"
+          class="w-10 h-10 border-4 border-ink/15 border-t-[#211B8F] rounded-full animate-spin mb-4"
         ></div>
         <p class="text-sm font-semibold text-ink/60">
           Dukaan verify ki jaa rahi hai...
@@ -266,7 +266,7 @@
         class="hidden flex-col items-center justify-center h-full text-center mt-20 anim-file-fly"
       >
         <svg
-          class="w-16 h-16 text-stamp mb-4"
+          class="w-16 h-16 text-[#211B8F] mb-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -296,10 +296,10 @@
         <div class="mb-5">
           <div class="flex items-center gap-3 mb-2">
             <div
-              class="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 border border-red-100"
+              class="flex h-11 w-11 items-center justify-center rounded-xl bg-[#EEF2FF] border border-[#D9DDFF]"
             >
               <svg
-                class="h-6 w-6 text-[#EF3340]"
+                class="h-6 w-6 text-[#211B8F]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -368,11 +368,11 @@
         <!-- Upload Card -->
         <label
           for="fileInput"
-          class="group relative flex min-h-[190px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-white px-6 py-8 text-center shadow-sm transition-all duration-200 hover:border-[#EF3340] hover:bg-red-50/30 hover:shadow-md"
+          class="group relative flex min-h-[190px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-white px-6 py-8 text-center shadow-sm transition-all duration-200 hover:border-[#211B8F] hover:bg-[#EEF2FF]/60 hover:shadow-md"
         >
           <!-- Decorative background -->
           <div
-            class="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-red-50 transition-transform duration-300 group-hover:scale-125"
+            class="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#EEF2FF] transition-transform duration-300 group-hover:scale-125"
           ></div>
 
           <div
@@ -381,7 +381,7 @@
 
           <!-- Upload Icon -->
           <div
-            class="relative mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 text-[#EF3340] ring-8 ring-red-50/50 transition-all duration-300 group-hover:-translate-y-1 group-hover:bg-[#EF3340] group-hover:text-white group-hover:ring-red-100"
+            class="relative mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#EEF2FF] text-[#211B8F] ring-8 ring-[#EEF2FF]/70 transition-all duration-300 group-hover:-translate-y-1 group-hover:bg-[#211B8F] group-hover:text-white group-hover:ring-[#D9DDFF]"
           >
             <svg
               class="h-7 w-7"
@@ -408,7 +408,7 @@
           <!-- Text -->
           <div class="relative">
             <span
-              class="block text-base font-extrabold text-[#111827] transition-colors group-hover:text-[#EF3340]"
+              class="block text-base font-extrabold text-[#111827] transition-colors group-hover:text-[#211B8F]"
             >
               Upload your documents
             </span>
@@ -442,7 +442,7 @@
         >
           <div class="flex items-center gap-2">
             <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-[#EF3340] shadow-sm"
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-[#211B8F] shadow-sm"
             >
               <svg
                 class="h-4 w-4"
@@ -479,7 +479,7 @@
       <!-- Step 2: Configuration -->
       <div
         id="step2"
-        class="flex flex-col hidden anim-file-fly max-w-sm mx-auto w-full h-full pt-4"
+        class="hidden flex flex-col anim-file-fly max-w-sm mx-auto w-full h-[calc(100dvh-105px)] min-h-0 pt-4 overflow-hidden"
       >
         <!-- Scrollable content area: everything except the payment footer
              lives inside this wrapper. This keeps Cash/UPI pinned in view
@@ -538,7 +538,7 @@
           <!-- Dynamic File Cards Container (scrolls once more than 2 files are added) -->
           <div
             id="fileCardsContainer"
-            class="mb-2 max-h-[184px] overflow-y-auto overflow-x-hidden file-scroll-container pr-2"
+            class="mb-2 max-h-[170px] overflow-y-auto overflow-x-hidden file-scroll-container pr-2 min-h-0"
           >
             <!-- File cards will be injected here by JS -->
           </div>
@@ -546,7 +546,7 @@
           <!-- Add more files -->
           <label
             for="fileInputStep2"
-            class="mb-4 flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 border-dashed border-gray-300 text-xs font-bold text-gray-500 cursor-pointer hover:border-stamp hover:text-stamp transition-colors"
+            class="mb-4 flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 border-dashed border-gray-300 text-xs font-bold text-gray-500 cursor-pointer hover:border-[#211B8F] hover:text-[#211B8F] transition-colors"
           >
             <svg
               class="w-4 h-4"
@@ -649,10 +649,10 @@
 
         <!-- PINNED FOOTER: Payable Amount + Payment Buttons. Sits outside the
              scrollable area above so it's always visible, even with many files. -->
-        <div class="sticky-payment-footer shrink-0">
+        <div class="shrink-0 bg-white pt-3 border-t border-gray-100">
           <!-- Payable Amount -->
           <div
-            class="bg-ink text-white rounded-xl p-5 mb-4 manga-shadow flex justify-between items-center"
+            id="payableCard" class="bg-[#211B8F] text-white rounded-xl p-5 mb-4 manga-shadow flex justify-between items-center transition-all duration-300"
           >
             <div>
               <p class="text-xs text-gray-400 mb-1">Payable Amount</p>
@@ -673,14 +673,14 @@
             <button
               id="cashPayBtn"
               onclick="processPayment('CASH')"
-              class="bg-white text-ink font-body text-sm sm:text-base font-semibold py-4 rounded-lg manga-shadow active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              class="bg-white text-[#211B8F] border-2 border-[#211B8F]/15 font-body text-sm sm:text-base font-semibold py-4 rounded-xl shadow-sm active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Dukaan pe Cash
             </button>
             <button
               id="upiPayBtn"
               onclick="processPayment('UPI')"
-              class="bg-stamp text-white font-body text-sm sm:text-base font-semibold py-4 rounded-lg manga-shadow-stamp active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              class="bg-[#FFB800] text-[#211B8F] font-body text-sm sm:text-base font-semibold py-4 rounded-xl shadow-lg shadow-[#FFB800]/25 active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               UPI se Pay karein
             </button>
@@ -771,7 +771,7 @@
 
           <div class="text-center mb-6">
             <h2
-              class="font-heading text-3xl font-bold text-stamp uppercase mb-1"
+              class="font-heading text-3xl font-bold text-[#211B8F] uppercase mb-1"
             >
               Ordered
             </h2>
@@ -823,7 +823,7 @@
             <span class="font-heading text-lg font-bold">Total Pay</span>
             <span
               id="receiptTotal"
-              class="font-mono font-bold text-3xl text-stamp"
+              class="font-mono font-bold text-3xl text-[#211B8F]"
               >₹5</span
             >
           </div>
@@ -837,6 +837,27 @@
         </button>
       </div>
     </main>
+<script>
+  function updatePayableTheme() {
+    const selected = document.querySelector('input[name="colorType"]:checked');
+    const card = document.getElementById('payableCard');
+    if (!selected || !card) return;
+
+    if (selected.value === 'Color') {
+      card.classList.remove('bg-black', 'text-white');
+      card.classList.add('bg-[#FFB800]', 'text-[#211B8F]');
+    } else {
+      card.classList.remove('bg-[#FFB800]', 'text-[#211B8F]');
+      card.classList.add('bg-black', 'text-white');
+    }
+  }
+
+  document.querySelectorAll('input[name="colorType"]').forEach((radio) => {
+    radio.addEventListener('change', updatePayableTheme);
+  });
+
+  document.addEventListener('DOMContentLoaded', updatePayableTheme);
+</script>
 
     <script>
       // ============================================================
