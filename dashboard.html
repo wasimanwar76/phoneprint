@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dukaan Panel — QuickQrPrint</title>
+    <title>Quick2Print | Dukaan Dashboard</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,12 +27,15 @@
               mono: ["Space Mono", "monospace"],
             },
             colors: {
-              ink: "#15181C",
-              paper: "#F9F9F7",
-              stamp: "#E63946",
-              "stamp-600": "#D62828",
-              teal: "#2A9D8F",
-              highlight: "#FFF3C4",
+              ink: "#17135F",
+              paper: "#FFFFFF",
+              stamp: "#FFB800",
+              "stamp-600": "#E59F00",
+              teal: "#00B8D9",
+              highlight: "#FFF7D6",
+              brand: "#211B8F",
+              cyan: "#00B8D9",
+              magenta: "#E83E8C",
             },
           },
         },
@@ -45,7 +48,7 @@
       }
       body {
         font-family: "Inter", sans-serif;
-        background-color: #f4f4f2;
+        background-color: #f7f8fc;
         color: #15181c;
       }
       .font-heading {
@@ -61,50 +64,64 @@
         inset: 0;
         z-index: 0;
         pointer-events: none;
-        opacity: 0.04;
-        background-image: repeating-linear-gradient(
-          115deg,
-          transparent 0px,
-          transparent 22px,
-          #15181c 22px,
-          #15181c 23px
-        );
+        opacity: 0.55;
+        background-image:
+          radial-gradient(
+            circle at 15% 20%,
+            rgba(0, 184, 217, 0.1),
+            transparent 22%
+          ),
+          radial-gradient(
+            circle at 85% 15%,
+            rgba(232, 62, 140, 0.08),
+            transparent 20%
+          ),
+          linear-gradient(
+            135deg,
+            rgba(33, 27, 143, 0.035) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 184, 0, 0.035) 50%,
+            rgba(255, 184, 0, 0.035) 75%,
+            transparent 75%
+          );
+        background-size:
+          auto,
+          auto,
+          56px 56px;
       }
 
       /* Manga hard-shadow components (reused across the whole product) */
       .manga-card {
         background: #ffffff;
-        border: 2px solid #15181c;
-        border-radius: 16px;
-        box-shadow: 4px 4px 0px #15181c;
+        border: 1px solid #e6e8f0;
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(23, 19, 95, 0.07);
       }
-      .shadow-manga {
-        box-shadow: 4px 4px 0px #15181c;
+      .shadow-sm {
+        box-shadow: 0 8px 24px rgba(23, 19, 95, 0.08);
       }
-      .shadow-manga-lg {
-        box-shadow: 8px 8px 0px #15181c;
-      }
-      .bg-highlight {
-        background-color: #fff3c4;
+      .shadow-sm-lg {
+        box-shadow: 0 18px 40px rgba(23, 19, 95, 0.1);
       }
 
       .manga-btn {
-        background: #15181c;
-        color: #f9f9f7;
+        background: #211b8f;
+        color: #ffffff;
         font-weight: 700;
-        border-radius: 10px;
-        box-shadow: 3px 3px 0px #e63946;
-        border: 2px solid #15181c;
+        border-radius: 12px;
+        box-shadow: 0 8px 18px rgba(33, 27, 143, 0.22);
+        border: 1px solid #211b8f;
         transition:
           transform 0.12s ease,
           box-shadow 0.12s ease;
       }
       .manga-btn:hover {
-        background: #1f242b;
+        background: #17135f;
       }
       .manga-btn:active {
         transform: translate(3px, 3px);
-        box-shadow: 0px 0px 0px #e63946;
+        box-shadow: none;
       }
       .manga-btn:disabled {
         opacity: 0.6;
@@ -117,14 +134,14 @@
         color: #15181c;
         font-weight: 700;
         border-radius: 10px;
-        border: 2px solid #15181c;
-        box-shadow: 3px 3px 0px #15181c;
+        border: 1px solid #dde1ee;
+        box-shadow: 0 6px 16px rgba(23, 19, 95, 0.06);
         transition:
           transform 0.12s ease,
           box-shadow 0.12s ease;
       }
       .manga-btn-secondary:hover {
-        background: #f4f4f2;
+        background: #f7f8fc;
       }
       .manga-btn-secondary:active {
         transform: translate(3px, 3px);
@@ -139,8 +156,8 @@
         outline: none;
       }
       .manga-input:focus {
-        border-color: #e63946;
-        box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.15);
+        border-color: #00b8d9;
+        box-shadow: 0 0 0 3px rgba(0, 184, 217, 0.14);
       }
 
       /* Sidebar nav states */
@@ -148,9 +165,9 @@
         color: rgba(21, 24, 28, 0.65);
       }
       .nav-item.active {
-        background: #fff3c4;
-        color: #15181c;
-        box-shadow: 3px 3px 0px #15181c;
+        background: linear-gradient(135deg, #eef0ff, #fff7d6);
+        color: #211b8f;
+        box-shadow: 0 6px 16px rgba(33, 27, 143, 0.08);
       }
 
       /* Laser scan (QR tab) */
@@ -164,10 +181,10 @@
         right: 8%;
         top: 0;
         height: 3px;
-        background: #e63946;
+        background: #00b8d9;
         box-shadow:
-          0 0 10px #e63946,
-          0 0 20px #e63946;
+          0 0 10px #00b8d9,
+          0 0 20px #00b8d9;
         opacity: 0;
         animation: laserScan 2.2s ease-in-out infinite;
       }
@@ -230,23 +247,54 @@
         height: 8px;
       }
       ::-webkit-scrollbar-thumb {
-        background: rgba(21, 24, 28, 0.25);
+        background: rgba(33, 27, 143, 0.25);
         border-radius: 8px;
+      }
+      .brand-gradient {
+        background: linear-gradient(
+          135deg,
+          #211b8f 0%,
+          #17135f 58%,
+          #00b8d9 100%
+        );
+      }
+      .brand-accent {
+        background: linear-gradient(90deg, #ffb800, #00b8d9, #e83e8c);
+      }
+      .q2p-card {
+        border: 1px solid #e6e8f0;
+        box-shadow: 0 10px 30px rgba(23, 19, 95, 0.07);
+        border-radius: 18px;
+        background: #fff;
+      }
+      .q2p-status {
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+      }
+      .q2p-cyan {
+        color: #008eaa;
+      }
+      .q2p-yellow {
+        color: #c88700;
+      }
+      .q2p-magenta {
+        color: #c02669;
       }
     </style>
   </head>
 
-  <body class="h-screen overflow-hidden bg-[#f4f4f2] relative">
+  <body class="h-screen overflow-hidden bg-[#F7F8FC] relative">
     <div class="bg-speed-lines"></div>
 
     <div class="flex h-full relative z-10">
       <!-- Mobile Header -->
       <div
-        class="md:hidden flex justify-between items-center p-4 bg-white z-50 fixed w-full top-0 shadow-manga"
+        class="md:hidden flex justify-between items-center p-4 bg-white z-50 fixed w-full top-0 shadow-sm"
       >
         <div class="flex items-center gap-2">
-          <i data-lucide="printer" class="w-6 h-6 text-ink"></i>
-          <span class="font-heading font-bold text-xl text-ink"
+          <i data-lucide="printer" class="w-6 h-6 text-[#17135F]"></i>
+          <span class="font-heading font-bold text-xl text-[#17135F]"
             >Dukaan Panel</span
           >
         </div>
@@ -257,7 +305,7 @@
             aria-label="Logout"
             title="Logout"
           >
-            <i data-lucide="log-out" class="w-5 h-5 text-ink"></i>
+            <i data-lucide="log-out" class="w-5 h-5 text-[#17135F]"></i>
           </button>
           <button
             id="menu-btn"
@@ -267,7 +315,7 @@
             aria-expanded="false"
             aria-controls="sidebar"
           >
-            <i data-lucide="menu" class="w-6 h-6 text-ink"></i>
+            <i data-lucide="menu" class="w-6 h-6 text-[#17135F]"></i>
           </button>
         </div>
       </div>
@@ -275,21 +323,27 @@
       <!-- Mobile sidebar backdrop -->
       <div
         id="sidebar-backdrop"
-        class="fixed inset-0 bg-ink/50 z-30 hidden opacity-0 md:hidden"
+        class="fixed inset-0 bg-[#211B8F]/50 z-30 hidden opacity-0 md:hidden"
         onclick="closeMenu()"
       ></div>
 
       <!-- Sidebar -->
       <aside
         id="sidebar"
-        class="bg-white w-72 max-w-[85vw] flex-shrink-0 flex flex-col h-full fixed md:relative z-40 -translate-x-full md:translate-x-0 pt-16 md:pt-0 border-r-2 border-ink"
+        class="bg-white w-72 max-w-[85vw] flex-shrink-0 flex flex-col h-full fixed md:relative z-40 -translate-x-full md:translate-x-0 pt-16 md:pt-0 border-r-2 border-[#211B8F]"
       >
         <!-- Logo Area -->
         <div
-          class="p-6 flex items-center gap-3 bg-highlight border-b-2 border-ink"
+          class="p-6 flex items-center gap-3 bg-[#FFF7D6] border-b-2 border-[#211B8F]"
         >
-          <div class="p-2 bg-ink text-paper rounded-lg shrink-0">
-            <i data-lucide="printer" class="w-6 h-6"></i>
+          <div
+            class="w-11 h-11 rounded-xl bg-white border border-[#E6E8F0] flex items-center justify-center shrink-0 overflow-hidden shadow-sm"
+          >
+            <img
+              src="logo.png"
+              alt="Quick2Print"
+              class="w-8 h-8 object-contain"
+            />
           </div>
           <div class="min-w-0">
             <h1
@@ -329,10 +383,10 @@
             <span class="truncate">Orders (Print Jobs)</span>
             <span class="absolute top-2 right-3 flex h-3 w-3">
               <span
-                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-stamp opacity-75"
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFB800] opacity-75"
               ></span>
               <span
-                class="relative inline-flex rounded-full h-3 w-3 bg-stamp"
+                class="relative inline-flex rounded-full h-3 w-3 bg-[#FFB800]"
               ></span>
             </span>
           </a>
@@ -372,8 +426,8 @@
         </nav>
 
         <!-- Help + Logout -->
-        <div class="p-4 bg-[#f4f4f2] border-t-2 border-ink space-y-3">
-          <div class="manga-card p-3 text-center bg-highlight">
+        <div class="p-4 bg-[#F7F8FC] border-t-2 border-[#211B8F] space-y-3">
+          <div class="manga-card p-3 text-center bg-[#FFF7D6]">
             <p class="font-bold text-sm mb-2">Madad chahiye?</p>
             <p class="text-xs mb-3">Support team se baat karein</p>
             <button
@@ -399,7 +453,7 @@
       >
         <!-- Desktop Topbar -->
         <header
-          class="h-16 bg-white items-center justify-between px-6 flex-shrink-0 z-10 hidden md:flex border-b-2 border-ink"
+          class="h-16 bg-white items-center justify-between px-6 flex-shrink-0 z-10 hidden md:flex border-b-2 border-[#211B8F]"
         >
           <h2 id="page-title" class="font-heading font-bold text-2xl">
             Overview
@@ -407,7 +461,7 @@
 
           <div class="flex items-center gap-3">
             <div
-              class="flex items-center gap-2 px-3 py-1 bg-green-100 rounded-full shadow-manga"
+              class="flex items-center gap-2 px-3 py-1 bg-green-100 rounded-full shadow-sm"
             >
               <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
               <span class="font-bold text-sm">Shop Online Hai</span>
@@ -445,17 +499,17 @@
                 >
                   <div class="flex items-center gap-4">
                     <div
-                      class="w-14 h-14 rounded-2xl border-2 border-ink bg-highlight flex items-center justify-center text-2xl shrink-0"
+                      class="w-14 h-14 rounded-2xl border-2 border-[#211B8F] bg-[#FFF7D6] flex items-center justify-center text-2xl shrink-0"
                     >
                       ⬇️
                     </div>
                     <div>
                       <h2
-                        class="text-lg sm:text-xl font-heading font-bold text-ink"
+                        class="text-lg sm:text-xl font-heading font-bold text-[#17135F]"
                       >
                         Software Version V36 Available
                       </h2>
-                      <p class="text-sm text-ink/70 mt-1">
+                      <p class="text-sm text-[#17135F]/70 mt-1">
                         Always keep the latest version installed — new features
                         + bug fixes
                       </p>
@@ -477,7 +531,7 @@
                 </button>
 
                 <p
-                  class="text-center text-ink/60 font-medium text-xs sm:text-sm"
+                  class="text-center text-[#17135F]/60 font-medium text-xs sm:text-sm"
                 >
                   Ek click me download — phir file kholo, install apne aap ho
                   jayega
@@ -485,19 +539,66 @@
               </div>
             </div>
 
-            <!-- Demo Countdown -->
+            <!-- Demo Countdown + Agent Connection -->
             <div class="manga-card overflow-hidden">
-              <div class="bg-ink text-white text-center px-6 py-8">
+              <div
+                class="bg-[#211B8F] text-white text-center px-5 sm:px-8 py-7 sm:py-8"
+              >
                 <div class="text-3xl sm:text-4xl mb-2">⏳</div>
+
                 <h2 class="text-xl sm:text-2xl font-heading font-bold">
                   Your Demo Is Running
                 </h2>
 
                 <div
-                  id="demo-countdown"
-                  class="inline-flex mt-4 rounded-full border-2 border-stamp bg-stamp/15 px-6 sm:px-7 py-2 text-2xl sm:text-3xl font-mono font-bold tracking-wider text-white"
+                  class="mx-auto mt-4 max-w-md rounded-2xl border border-white/15 bg-white/5 px-4 py-4 text-left"
                 >
-                  19:30:03
+                  <div class="flex items-start gap-3">
+                    <div
+                      class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFB800] text-[#17135F]"
+                    >
+                      <i data-lucide="badge-check" class="w-5 h-5"></i>
+                    </div>
+
+                    <div class="min-w-0 flex-1">
+                      <p
+                        class="text-xs font-bold uppercase tracking-wider text-white/50"
+                      >
+                        Connected with
+                      </p>
+                      <p
+                        id="demo-account-name"
+                        class="mt-0.5 truncate font-heading text-base sm:text-lg font-extrabold text-white"
+                      >
+                        Demo Account
+                      </p>
+
+                      <div
+                        class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/65"
+                      >
+                        <span class="inline-flex items-center gap-1.5">
+                          <i data-lucide="store" class="w-3.5 h-3.5"></i>
+                          <span id="demo-account-shop-id">Shop ID —</span>
+                        </span>
+
+                        <span class="inline-flex items-center gap-1.5">
+                          <i
+                            data-lucide="calendar-plus"
+                            class="w-3.5 h-3.5"
+                          ></i>
+                          Created:
+                          <span id="demo-account-created">Loading...</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  id="demo-countdown"
+                  class="inline-flex mt-5 rounded-full border-2 border-[#FFB800] bg-[#FFB800]/15 px-6 sm:px-7 py-2 text-2xl sm:text-3xl font-mono font-bold tracking-wider text-white"
+                >
+                  24:00:00
                 </div>
 
                 <p class="mt-3 text-sm font-medium text-white/70">
@@ -518,7 +619,7 @@
                       .getElementById('pricing-cards')
                       .scrollIntoView({ behavior: 'smooth' });
                   "
-                  class="mt-5 manga-btn bg-stamp shadow-[3px_3px_0px_#15181C] px-6 py-3 inline-flex items-center gap-2"
+                  class="mt-5 manga-btn bg-[#FFB800] !text-[#17135F] shadow-[3px_3px_0px_#00B8D9] px-6 py-3 inline-flex items-center gap-2"
                 >
                   Plan Dekhein →
                 </button>
@@ -534,21 +635,21 @@
 
               <!-- Shop Availability -->
               <div
-                class="flex flex-col gap-4 border-b-2 border-dashed border-ink/15 pb-5 sm:flex-row sm:items-center sm:justify-between"
+                class="flex flex-col gap-4 border-b-2 border-dashed border-[#211B8F]/15 pb-5 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>
                   <div class="flex items-center gap-2">
                     <span class="h-3.5 w-3.5 rounded-full bg-green-500"></span>
                     <span class="text-lg font-bold">Shop is Open</span>
                   </div>
-                  <p class="text-sm text-ink/60 mt-1">
+                  <p class="text-sm text-[#17135F]/60 mt-1">
                     Your shop is currently accepting new print orders.
                   </p>
                 </div>
 
                 <button
                   type="button"
-                  class="manga-btn-secondary inline-flex items-center justify-center gap-2 px-6 py-3 text-stamp"
+                  class="manga-btn-secondary inline-flex items-center justify-center gap-2 px-6 py-3 text-[#E59F00]"
                 >
                   <span>⏸️</span>
                   Close Shop
@@ -560,7 +661,7 @@
                 <div class="mb-3 flex flex-wrap items-center gap-2">
                   <span class="text-lg">🖨️</span>
                   <h3 class="font-bold">Ink &amp; Paper Status</h3>
-                  <span class="text-xs font-normal text-ink/50">
+                  <span class="text-xs font-normal text-[#17135F]/50">
                     (Visible to customers)
                   </span>
                 </div>
@@ -568,7 +669,7 @@
                 <div class="flex flex-wrap gap-3">
                   <button
                     type="button"
-                    class="inline-flex items-center gap-2 rounded-xl border-2 border-ink bg-highlight px-5 py-2.5 font-semibold shadow-manga"
+                    class="inline-flex items-center gap-2 rounded-xl border-2 border-[#211B8F] bg-[#FFF7D6] px-5 py-2.5 font-semibold shadow-sm"
                   >
                     <span class="text-green-600">✅</span>
                     All Good
@@ -576,7 +677,7 @@
 
                   <button
                     type="button"
-                    class="inline-flex items-center gap-2 rounded-xl border-2 border-ink/15 bg-white px-5 py-2.5 font-semibold transition hover:border-yellow-400 hover:bg-yellow-50"
+                    class="inline-flex items-center gap-2 rounded-xl border-2 border-[#211B8F]/15 bg-white px-5 py-2.5 font-semibold transition hover:border-yellow-400 hover:bg-yellow-50"
                   >
                     <span class="h-3 w-3 rounded-full bg-yellow-400"></span>
                     Low on Ink
@@ -584,9 +685,9 @@
 
                   <button
                     type="button"
-                    class="inline-flex items-center gap-2 rounded-xl border-2 border-ink/15 bg-white px-5 py-2.5 font-semibold transition hover:border-red-400 hover:bg-red-50"
+                    class="inline-flex items-center gap-2 rounded-xl border-2 border-[#211B8F]/15 bg-white px-5 py-2.5 font-semibold transition hover:border-red-400 hover:bg-red-50"
                   >
-                    <span class="h-3 w-3 rounded-full bg-stamp"></span>
+                    <span class="h-3 w-3 rounded-full bg-[#FFB800]"></span>
                     Out of Paper
                   </button>
                 </div>
@@ -606,30 +707,32 @@
               >
                 <!-- FREE -->
                 <div
-                  class="flex min-h-[440px] flex-col rounded-2xl border-2 border-ink bg-white p-6 shadow-manga"
+                  class="flex min-h-[440px] flex-col rounded-2xl border-2 border-[#211B8F] bg-white p-6 shadow-sm"
                 >
                   <h3 class="text-xl font-heading font-extrabold">
                     Muft (Free)
                   </h3>
-                  <p class="mt-2 min-h-[40px] text-sm leading-5 text-ink/60">
+                  <p
+                    class="mt-2 min-h-[40px] text-sm leading-5 text-[#17135F]/60"
+                  >
                     Chhoti dukaan aur CSC centres ke liye
                   </p>
                   <div class="mt-5">
                     <span class="text-3xl font-heading font-extrabold">₹0</span>
-                    <span class="text-sm text-ink/60">/year</span>
+                    <span class="text-sm text-[#17135F]/60">/year</span>
                   </div>
                   <ul class="mt-6 space-y-3 text-sm font-medium flex-1">
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> 1 Printer Support
+                      <span class="text-[#008EAA]">✓</span> 1 Printer Support
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> 10 Orders / Only
+                      <span class="text-[#008EAA]">✓</span> 10 Orders / Only
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> Apna Rate Set Karein
+                      <span class="text-[#008EAA]">✓</span> Apna Rate Set Karein
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> Community Support
+                      <span class="text-[#008EAA]">✓</span> Community Support
                     </li>
                   </ul>
                   <button class="manga-btn-secondary mt-6 py-2.5">Free</button>
@@ -637,31 +740,33 @@
 
                 <!-- STARTER -->
                 <div
-                  class="flex min-h-[440px] flex-col rounded-2xl border-2 border-ink bg-white p-6 shadow-manga"
+                  class="flex min-h-[440px] flex-col rounded-2xl border-2 border-[#211B8F] bg-white p-6 shadow-sm"
                 >
                   <h3 class="text-xl font-heading font-extrabold">Starter</h3>
-                  <p class="mt-2 min-h-[40px] text-sm leading-5 text-ink/60">
+                  <p
+                    class="mt-2 min-h-[40px] text-sm leading-5 text-[#17135F]/60"
+                  >
                     Chhoti dukaan shuru karne walon ke liye
                   </p>
                   <div class="mt-5">
                     <span class="text-3xl font-heading font-extrabold"
                       >₹99</span
                     >
-                    <span class="text-sm text-ink/60">/year</span>
+                    <span class="text-sm text-[#17135F]/60">/year</span>
                   </div>
                   <ul class="mt-6 space-y-3 text-sm font-medium flex-1">
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> 1 Printer Support
+                      <span class="text-[#008EAA]">✓</span> 1 Printer Support
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> 10,000 Printouts / Year
-                      Tak
+                      <span class="text-[#008EAA]">✓</span> 10,000 Printouts /
+                      Year Tak
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> Apna Rate Set Karein
+                      <span class="text-[#008EAA]">✓</span> Apna Rate Set Karein
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> Email Support
+                      <span class="text-[#008EAA]">✓</span> Email Support
                     </li>
                   </ul>
                   <button class="manga-btn-secondary mt-6 py-2.5">
@@ -671,39 +776,41 @@
 
                 <!-- SMART - POPULAR -->
                 <div
-                  class="relative flex min-h-[440px] flex-col rounded-2xl border-2 border-stamp bg-white p-6 shadow-manga-lg lg:-translate-y-2"
+                  class="relative flex min-h-[440px] flex-col rounded-2xl border-2 border-[#FFB800] bg-white p-6 shadow-sm-lg lg:-translate-y-2"
                 >
                   <div
-                    class="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-stamp px-4 py-1.5 text-xs font-extrabold text-white shadow-manga"
+                    class="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#FFB800] px-4 py-1.5 text-xs font-extrabold text-white shadow-sm"
                   >
                     SABSE ZYADA BIKNE WALA
                   </div>
                   <h3 class="text-xl font-heading font-extrabold mt-2">
                     Smart
                   </h3>
-                  <p class="mt-2 min-h-[40px] text-sm leading-5 text-ink/60">
+                  <p
+                    class="mt-2 min-h-[40px] text-sm leading-5 text-[#17135F]/60"
+                  >
                     Badhti hui dukaan ke liye
                   </p>
                   <div class="mt-5">
                     <span class="text-3xl font-heading font-extrabold"
                       >₹249</span
                     >
-                    <span class="text-sm text-ink/60">/year</span>
+                    <span class="text-sm text-[#17135F]/60">/year</span>
                   </div>
                   <ul class="mt-6 space-y-3 text-sm font-medium flex-1">
                     <li class="flex gap-2">
-                      <span class="text-stamp">✓</span> 2 Printers Support
+                      <span class="text-[#E59F00]">✓</span> 2 Printers Support
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-stamp">✓</span> 50,000 Printouts / Year
-                      Tak
+                      <span class="text-[#E59F00]">✓</span> 50,000 Printouts /
+                      Year Tak
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-stamp">✓</span> Call Support - 1 Ghante
-                      Mein Jawab
+                      <span class="text-[#E59F00]">✓</span> Call Support - 1
+                      Ghante Mein Jawab
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-stamp">✓</span> Apna Rate Set Karein
+                      <span class="text-[#E59F00]">✓</span> Apna Rate Set Karein
                     </li>
                   </ul>
                   <button class="manga-btn mt-6 py-2.5">Smart Plan Le</button>
@@ -711,32 +818,35 @@
 
                 <!-- BUSINESS -->
                 <div
-                  class="flex min-h-[440px] flex-col rounded-2xl border-2 border-ink bg-white p-6 shadow-manga"
+                  class="flex min-h-[440px] flex-col rounded-2xl border-2 border-[#211B8F] bg-white p-6 shadow-sm"
                 >
                   <h3 class="text-xl font-heading font-extrabold">Business</h3>
-                  <p class="mt-2 min-h-[40px] text-sm leading-5 text-ink/60">
+                  <p
+                    class="mt-2 min-h-[40px] text-sm leading-5 text-[#17135F]/60"
+                  >
                     Badi dukaan jahan bheed hoti hai
                   </p>
                   <div class="mt-5">
                     <span class="text-3xl font-heading font-extrabold"
                       >₹499</span
                     >
-                    <span class="text-sm text-ink/60">/year</span>
+                    <span class="text-sm text-[#17135F]/60">/year</span>
                   </div>
                   <ul class="mt-6 space-y-3 text-sm font-medium flex-1">
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> 3 Printers Tak Support
+                      <span class="text-[#008EAA]">✓</span> 3 Printers Tak
+                      Support
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> Unlimited Printouts
+                      <span class="text-[#008EAA]">✓</span> Unlimited Printouts
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> Installation Call -
+                      <span class="text-[#008EAA]">✓</span> Installation Call -
                       Turant Reply
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> Online UPI Payments (0%
-                      fee)*
+                      <span class="text-[#008EAA]">✓</span> Online UPI Payments
+                      (0% fee)*
                     </li>
                   </ul>
                   <button class="manga-btn-secondary mt-6 py-2.5">
@@ -746,32 +856,35 @@
 
                 <!-- PRO -->
                 <div
-                  class="flex min-h-[440px] flex-col rounded-2xl border-2 border-ink bg-white p-6 shadow-manga"
+                  class="flex min-h-[440px] flex-col rounded-2xl border-2 border-[#211B8F] bg-white p-6 shadow-sm"
                 >
                   <h3 class="text-xl font-heading font-extrabold">Pro</h3>
-                  <p class="mt-2 min-h-[40px] text-sm leading-5 text-ink/60">
+                  <p
+                    class="mt-2 min-h-[40px] text-sm leading-5 text-[#17135F]/60"
+                  >
                     Bade setup, zero dikkat
                   </p>
                   <div class="mt-5">
                     <span class="text-3xl font-heading font-extrabold"
                       >₹899</span
                     >
-                    <span class="text-sm text-ink/60">/year</span>
+                    <span class="text-sm text-[#17135F]/60">/year</span>
                   </div>
                   <ul class="mt-6 space-y-3 text-sm font-medium flex-1">
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> Unlimited Printers
+                      <span class="text-[#008EAA]">✓</span> Unlimited Printers
                       Support
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> Unlimited Printouts
+                      <span class="text-[#008EAA]">✓</span> Unlimited Printouts
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> Technician Site Visit
+                      <span class="text-[#008EAA]">✓</span> Technician Site
+                      Visit
                     </li>
                     <li class="flex gap-2">
-                      <span class="text-teal">✓</span> Priority Call + WhatsApp
-                      Support
+                      <span class="text-[#008EAA]">✓</span> Priority Call +
+                      WhatsApp Support
                     </li>
                   </ul>
                   <button class="manga-btn-secondary mt-6 py-2.5">
@@ -780,7 +893,7 @@
                 </div>
               </div>
 
-              <p class="mt-8 text-center text-xs text-ink/50">
+              <p class="mt-8 text-center text-xs text-[#17135F]/50">
                 * Payment gateway charges as per actuals.
               </p>
             </section>
@@ -792,7 +905,7 @@
             class="tab-content hidden max-w-4xl mx-auto space-y-6"
           >
             <div class="flex justify-between items-end mb-2">
-              <p class="font-bold text-ink/60">
+              <p class="font-bold text-[#17135F]/60">
                 Naye print jobs yahan aayenge.
               </p>
               <button
@@ -810,9 +923,9 @@
               class="flex flex-col items-center justify-center py-16 text-center"
             >
               <div
-                class="w-8 h-8 border-4 border-ink/15 border-t-stamp rounded-full animate-spin mb-3"
+                class="w-8 h-8 border-4 border-[#211B8F]/15 border-t-stamp rounded-full animate-spin mb-3"
               ></div>
-              <p class="text-sm font-semibold text-ink/50">
+              <p class="text-sm font-semibold text-[#17135F]/50">
                 Orders load ho rahe hain...
               </p>
             </div>
@@ -821,10 +934,12 @@
             <div id="ordersEmpty" class="hidden manga-card p-10 text-center">
               <i
                 data-lucide="inbox"
-                class="w-10 h-10 mx-auto mb-3 text-ink/30"
+                class="w-10 h-10 mx-auto mb-3 text-[#17135F]/30"
               ></i>
-              <p class="font-bold text-ink/60">Abhi tak koi order nahi aaya.</p>
-              <p class="text-sm text-ink/40 mt-1">
+              <p class="font-bold text-[#17135F]/60">
+                Abhi tak koi order nahi aaya.
+              </p>
+              <p class="text-sm text-[#17135F]/40 mt-1">
                 Jaise hi koi customer QR scan karke print bhejega, yahan
                 dikhega.
               </p>
@@ -856,12 +971,12 @@
               <h2 class="font-heading font-extrabold text-2xl sm:text-3xl mb-2">
                 Shop Ka QR Code
               </h2>
-              <p class="font-bold text-ink/60 mb-8 text-sm sm:text-base">
+              <p class="font-bold text-[#17135F]/60 mb-8 text-sm sm:text-base">
                 Grahak isko scan karke seedha document bhej sakte hain.
               </p>
 
               <div
-                class="inline-block p-4 bg-white shadow-manga-lg rounded-2xl mb-8 relative"
+                class="inline-block p-4 bg-white shadow-sm-lg rounded-2xl mb-8 relative"
               >
                 <div
                   class="w-52 h-52 sm:w-64 sm:h-64 p-2 grid grid-cols-5 grid-rows-5 gap-1 bg-white relative"
@@ -869,40 +984,43 @@
                   <div
                     class="col-span-2 row-span-2 bg-white flex items-center justify-center"
                   >
-                    <div class="w-1/2 h-1/2 bg-ink"></div>
+                    <div class="w-1/2 h-1/2 bg-[#211B8F]"></div>
                   </div>
                   <div
                     class="col-start-4 col-span-2 row-span-2 bg-white flex items-center justify-center"
                   >
-                    <div class="w-1/2 h-1/2 bg-ink"></div>
+                    <div class="w-1/2 h-1/2 bg-[#211B8F]"></div>
                   </div>
                   <div
                     class="col-start-1 col-span-2 row-start-4 row-span-2 bg-white flex items-center justify-center"
                   >
-                    <div class="w-1/2 h-1/2 bg-ink"></div>
+                    <div class="w-1/2 h-1/2 bg-[#211B8F]"></div>
                   </div>
-                  <div class="bg-ink col-start-3 row-start-1"></div>
-                  <div class="bg-ink col-start-3 row-start-2 w-1/2"></div>
-                  <div class="bg-ink col-start-1 row-start-3 w-3/4"></div>
-                  <div class="bg-ink col-start-2 row-start-3 h-1/2"></div>
-                  <div class="bg-ink col-start-4 row-start-3"></div>
-                  <div class="bg-ink col-start-5 row-start-3 h-1/2"></div>
-                  <div class="bg-ink col-start-3 row-start-4"></div>
-                  <div class="bg-ink col-start-4 row-start-4 w-1/2"></div>
+                  <div class="bg-[#211B8F] col-start-3 row-start-1"></div>
+                  <div class="bg-[#211B8F] col-start-3 row-start-2 w-1/2"></div>
+                  <div class="bg-[#211B8F] col-start-1 row-start-3 w-3/4"></div>
+                  <div class="bg-[#211B8F] col-start-2 row-start-3 h-1/2"></div>
+                  <div class="bg-[#211B8F] col-start-4 row-start-3"></div>
+                  <div class="bg-[#211B8F] col-start-5 row-start-3 h-1/2"></div>
+                  <div class="bg-[#211B8F] col-start-3 row-start-4"></div>
+                  <div class="bg-[#211B8F] col-start-4 row-start-4 w-1/2"></div>
                   <div
-                    class="bg-ink col-start-5 row-start-4 w-1/2 h-1/2 self-end"
+                    class="bg-[#211B8F] col-start-5 row-start-4 w-1/2 h-1/2 self-end"
                   ></div>
-                  <div class="bg-ink col-start-3 row-start-5 h-3/4"></div>
-                  <div class="bg-ink col-start-4 row-start-5"></div>
+                  <div class="bg-[#211B8F] col-start-3 row-start-5 h-3/4"></div>
+                  <div class="bg-[#211B8F] col-start-4 row-start-5"></div>
                   <div
-                    class="col-start-5 row-start-5 bg-ink w-full h-full"
+                    class="col-start-5 row-start-5 bg-[#211B8F] w-full h-full"
                   ></div>
 
                   <div
                     class="absolute inset-0 flex items-center justify-center"
                   >
                     <div class="bg-white p-1 rounded-full shadow-md">
-                      <i data-lucide="printer" class="w-6 h-6 text-stamp"></i>
+                      <i
+                        data-lucide="printer"
+                        class="w-6 h-6 text-[#E59F00]"
+                      ></i>
                     </div>
                   </div>
                 </div>
@@ -930,10 +1048,10 @@
             class="tab-content hidden max-w-4xl mx-auto"
           >
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-              <div class="manga-card p-6 bg-highlight relative overflow-hidden">
+              <div class="manga-card p-6 bg-[#FFF7D6] relative overflow-hidden">
                 <i
                   data-lucide="coins"
-                  class="w-24 h-24 absolute -right-4 -bottom-4 opacity-20 text-ink"
+                  class="w-24 h-24 absolute -right-4 -bottom-4 opacity-20 text-[#17135F]"
                 ></i>
                 <h3 class="font-heading font-bold text-lg sm:text-xl mb-2">
                   Is Mahine Ki Kamaayi
@@ -952,7 +1070,7 @@
                   <i data-lucide="landmark" class="w-6 h-6"></i> Bank Me Bhejein
                   (Withdraw)
                 </button>
-                <p class="text-xs text-center font-bold text-ink/50">
+                <p class="text-xs text-center font-bold text-[#17135F]/50">
                   Minimum withdrawal ₹500
                 </p>
               </div>
@@ -963,7 +1081,7 @@
             </h3>
             <div class="manga-card divide-y-2 divide-ink/10">
               <div
-                class="p-4 flex justify-between items-center gap-3 hover:bg-[#f4f4f2] transition-colors rounded-t-2xl"
+                class="p-4 flex justify-between items-center gap-3 hover:bg-[#F7F8FC] transition-colors rounded-t-2xl"
               >
                 <div class="flex items-center gap-3 min-w-0">
                   <div
@@ -973,7 +1091,9 @@
                   </div>
                   <div class="min-w-0">
                     <p class="font-bold truncate">Customer Print (ORD-002)</p>
-                    <p class="text-xs font-bold text-ink/50">1 Sep, 10:15 AM</p>
+                    <p class="text-xs font-bold text-[#17135F]/50">
+                      1 Sep, 10:15 AM
+                    </p>
                   </div>
                 </div>
                 <p
@@ -983,25 +1103,29 @@
                 </p>
               </div>
               <div
-                class="p-4 flex justify-between items-center gap-3 hover:bg-[#f4f4f2] transition-colors"
+                class="p-4 flex justify-between items-center gap-3 hover:bg-[#F7F8FC] transition-colors"
               >
                 <div class="flex items-center gap-3 min-w-0">
-                  <div class="p-2 bg-red-100 rounded-lg text-stamp shrink-0">
+                  <div
+                    class="p-2 bg-red-100 rounded-lg text-[#E59F00] shrink-0"
+                  >
                     <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
                   </div>
                   <div class="min-w-0">
                     <p class="font-bold truncate">Bank Withdrawal</p>
-                    <p class="text-xs font-bold text-ink/50">
+                    <p class="text-xs font-bold text-[#17135F]/50">
                       30 Aug, 05:00 PM
                     </p>
                   </div>
                 </div>
-                <p class="font-heading font-bold text-lg text-stamp shrink-0">
+                <p
+                  class="font-heading font-bold text-lg text-[#E59F00] shrink-0"
+                >
                   -₹5,000
                 </p>
               </div>
               <div
-                class="p-4 flex justify-between items-center gap-3 hover:bg-[#f4f4f2] transition-colors rounded-b-2xl"
+                class="p-4 flex justify-between items-center gap-3 hover:bg-[#F7F8FC] transition-colors rounded-b-2xl"
               >
                 <div class="flex items-center gap-3 min-w-0">
                   <div
@@ -1011,7 +1135,7 @@
                   </div>
                   <div class="min-w-0">
                     <p class="font-bold truncate">Customer Print (ORD-899)</p>
-                    <p class="text-xs font-bold text-ink/50">
+                    <p class="text-xs font-bold text-[#17135F]/50">
                       30 Aug, 02:20 PM
                     </p>
                   </div>
@@ -1056,11 +1180,11 @@
                   <input
                     id="settings-mobile"
                     type="text"
-                    class="manga-input w-full font-bold bg-[#f4f4f2]"
+                    class="manga-input w-full font-bold bg-[#F7F8FC]"
                     value="+91 9876543210"
                     disabled
                   />
-                  <p class="text-xs text-ink/50 mt-1 font-bold">
+                  <p class="text-xs text-[#17135F]/50 mt-1 font-bold">
                     Number change karne ke liye support se baat karein.
                   </p>
                 </div>
@@ -1075,7 +1199,7 @@
                 <i data-lucide="printer" class="w-6 h-6"></i> Printer Settings
               </h3>
 
-              <div class="bg-[#f4f4f2] p-4 rounded-xl mb-4">
+              <div class="bg-[#F7F8FC] p-4 rounded-xl mb-4">
                 <label class="block font-bold mb-2">
                   Default Printer Chunein (Select Printer)
                 </label>
@@ -1267,9 +1391,6 @@
         }, 1000);
       }
 
-      // 19h 30m 3s, matching the original static placeholder
-      startDemoCountdown(24 * 3600 + 0 * 60 + 0);
-
       // ============================================================
       // Supabase setup (same project used across the app)
       // ============================================================
@@ -1282,6 +1403,74 @@
         SUPABASE_ANON_KEY,
       );
       const STORAGE_BUCKET = "print-files";
+
+      // ============================================================
+      // Demo account information from Supabase
+      // ============================================================
+      function formatCreatedAt(value) {
+        if (!value) return "—";
+
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "—";
+
+        return date.toLocaleString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      async function loadDemoAccountInfo() {
+        if (!currentShop?.shop_id) return;
+
+        const nameEl = document.getElementById("demo-account-name");
+        const idEl = document.getElementById("demo-account-shop-id");
+        const createdEl = document.getElementById("demo-account-created");
+
+        if (idEl) idEl.textContent = "Shop ID " + currentShop.shop_id;
+        if (nameEl)
+          nameEl.textContent = currentShop.shop_name || "Demo Account";
+
+        try {
+          const { data, error } = await supabaseClient
+            .from("shops")
+            .select("shop_id, shop_name, created_at, status")
+            .eq("shop_id", currentShop.shop_id)
+            .maybeSingle();
+
+          if (error) throw error;
+
+          if (data) {
+            if (nameEl) nameEl.textContent = data.shop_name || "Demo Account";
+            if (idEl)
+              idEl.textContent =
+                "Shop ID " + (data.shop_id || currentShop.shop_id);
+            if (createdEl)
+              createdEl.textContent = formatCreatedAt(data.created_at);
+          } else if (createdEl) {
+            createdEl.textContent = "Not available";
+          }
+        } catch (error) {
+          console.error("Failed to load demo account info:", error);
+
+          if (createdEl && currentShop.created_at) {
+            createdEl.textContent = formatCreatedAt(currentShop.created_at);
+          } else if (createdEl) {
+            createdEl.textContent = "Not available";
+          }
+        }
+      }
+
+      // Start the demo timer after Supabase is initialized.
+      startDemoCountdown(24 * 3600);
+
+      // Load the real account creation time from Supabase.
+      loadDemoAccountInfo();
+
+      // Render icons added dynamically above.
+      lucide.createIcons();
 
       // ============================================================
       // Fetch real orders (+ their files) for the logged-in shop
@@ -1399,7 +1588,7 @@
             (job) => `
         <button
           onclick="downloadJobFile('${job.storage_path}')"
-          class="text-xs font-bold text-stamp hover:underline flex items-center gap-1"
+          class="text-xs font-bold text-[#E59F00] hover:underline flex items-center gap-1"
         >
           <i data-lucide="download" class="w-3.5 h-3.5"></i> ${escapeHtml(job.original_filename)}
         </button>`,
@@ -1410,7 +1599,7 @@
           isFailed || isCompleted
             ? `
         <div class="p-3 ${isFailed ? "bg-red-100" : "bg-green-50"} rounded-lg mt-2 flex items-start gap-2">
-          <i data-lucide="${isFailed ? "alert-triangle" : "check-check"}" class="w-5 h-5 ${isFailed ? "text-stamp" : "text-green-600"} shrink-0 mt-0.5"></i>
+          <i data-lucide="${isFailed ? "alert-triangle" : "check-check"}" class="w-5 h-5 ${isFailed ? "text-[#E59F00]" : "text-green-600"} shrink-0 mt-0.5"></i>
           <p class="text-xs font-medium ${isFailed ? "text-red-800" : "text-green-800"}">
             ${isFailed ? "Print fail ho gaya." : "Print ho chuka hai."}
           </p>
@@ -1437,28 +1626,28 @@
     <div class="manga-card p-5 relative ${isFailed ? "bg-red-50/50" : ""}" id="${cardId}">
       <div class="flex justify-between items-start mb-3 gap-3">
         <div class="flex gap-3 min-w-0">
-          <div class="p-3 ${isFailed ? "bg-white" : "bg-[#f4f4f2]"} rounded-lg h-fit shrink-0">
-            <i data-lucide="file-text" class="w-8 h-8 ${isFailed ? "text-ink/40" : "text-stamp"}"></i>
+          <div class="p-3 ${isFailed ? "bg-white" : "bg-[#F7F8FC]"} rounded-lg h-fit shrink-0">
+            <i data-lucide="file-text" class="w-8 h-8 ${isFailed ? "text-[#17135F]/40" : "text-[#E59F00]"}"></i>
           </div>
           <div class="min-w-0">
-            <h3 class="font-heading font-bold text-lg sm:text-xl truncate ${isFailed ? "line-through text-ink/40" : ""}">
+            <h3 class="font-heading font-bold text-lg sm:text-xl truncate ${isFailed ? "line-through text-[#17135F]/40" : ""}">
               ${escapeHtml(fileNames)}
             </h3>
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm font-bold text-ink/60 mt-1">
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm font-bold text-[#17135F]/60 mt-1">
               <span class="flex items-center gap-1">
                 <i data-lucide="calendar" class="w-4 h-4"></i> ${dateStr}
               </span>
               <span class="flex items-center gap-1">
                 <i data-lucide="clock" class="w-4 h-4"></i> ${timeStr}
               </span>
-              <span class="font-mono bg-[#f4f4f2] px-1.5 rounded">
+              <span class="font-mono bg-[#F7F8FC] px-1.5 rounded">
                 ID: ${order.order_id.slice(0, 8).toUpperCase()}
               </span>
             </div>
           </div>
         </div>
         <div class="text-right shrink-0">
-          <h2 class="font-heading font-extrabold text-xl sm:text-2xl ${isFailed ? "text-ink/40" : ""}">
+          <h2 class="font-heading font-extrabold text-xl sm:text-2xl ${isFailed ? "text-[#17135F]/40" : ""}">
             ₹${order.amount_charged}
           </h2>
           ${statusBadge}
@@ -1468,11 +1657,11 @@
       ${
         !isFailed
           ? `<div class="flex flex-wrap gap-2 mb-3 text-xs font-bold">
-              <span class="bg-[#f4f4f2] px-2 py-1 rounded flex items-center gap-1">
+              <span class="bg-[#F7F8FC] px-2 py-1 rounded flex items-center gap-1">
                 <span class="w-2 h-2 rounded-full bg-black"></span> ${colorLabel}
               </span>
               <span class="${paymentClass} px-2 py-1 rounded">${paymentLabel}</span>
-              <span class="bg-[#f4f4f2] px-2 py-1 rounded">${order.total_pages} Pages · ${order.total_files} File(s)</span>
+              <span class="bg-[#F7F8FC] px-2 py-1 rounded">${order.total_pages} Pages · ${order.total_files} File(s)</span>
             </div>
             <div class="flex flex-wrap gap-3 mb-4">${fileButtonsHtml}</div>`
           : ""
@@ -1544,7 +1733,7 @@
               <i data-lucide="check-check" class="w-10 h-10 text-green-700"></i>
           </div>
           <h3 class="font-heading font-extrabold text-2xl text-green-700 mb-2">Print Ho Gaya!</h3>
-          <p class="font-bold text-ink/60 mb-4">Kagaz printer se bahar aa chuka hai.</p>
+          <p class="font-bold text-[#17135F]/60 mb-4">Kagaz printer se bahar aa chuka hai.</p>
           <button class="manga-btn-secondary px-6 py-2" onclick="refreshOrders()">Done</button>
       </div>
     `;

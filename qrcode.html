@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Quick2Print - Print Service</title>
+    <title>Quick2Print | Fast & Easy Online Printing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,6 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&family=Space+Mono:wght@700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
     <script>
       tailwind.config = {
@@ -218,7 +219,7 @@
   <body
     class="font-body min-h-screen relative overflow-hidden flex flex-col justify-between max-w-md mx-auto"
   >
-    <!-- Speed lines background for processing state -->
+    <!-- Speed lines background -->
     <div id="speedLines" class="speed-lines-bg"></div>
 
     <!-- Header -->
@@ -234,9 +235,10 @@
           />
         </a>
       </div>
+
       <div
         id="shopIdDisplay"
-        class="bg-ink text-white font-heading text-[11px] font-bold px-4 py-1.5 rounded-full hidden tracking-widest flex items-center gap-1.5"
+        class="bg-[#211B8F] text-white font-heading text-[11px] font-bold px-4 py-1.5 rounded-full hidden tracking-widest flex items-center gap-1.5"
       >
         SHOP:
         <span id="shopIdValue" class="font-mono text-xs tracking-normal"
@@ -245,22 +247,23 @@
       </div>
     </header>
 
-    <!-- Main Content Area -->
+    <!-- Main -->
     <main class="flex-1 px-5 pb-6 pt-2 z-10 overflow-y-auto" id="mainContainer">
-      <!-- Loading State: verifying shop_id with Supabase -->
+      <!-- Loading -->
       <div
         id="loadingState"
         class="flex flex-col items-center justify-center h-full text-center mt-20"
       >
         <div
-          class="w-10 h-10 border-4 border-ink/15 border-t-[#211B8F] rounded-full animate-spin mb-4"
+          class="w-10 h-10 border-4 border-[#211B8F]/15 border-t-[#211B8F] rounded-full animate-spin mb-4"
         ></div>
+
         <p class="text-sm font-semibold text-ink/60">
           Dukaan verify ki jaa rahi hai...
         </p>
       </div>
 
-      <!-- Error State: No Shop ID / Shop not found / Inactive -->
+      <!-- Error -->
       <div
         id="errorState"
         class="hidden flex-col items-center justify-center h-full text-center mt-20 anim-file-fly"
@@ -276,23 +279,26 @@
             stroke-linejoin="round"
             stroke-width="2"
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-          ></path>
+          />
         </svg>
+
         <h2 id="errorStateTitle" class="font-heading text-2xl mb-2">
           No Shop ID Found
         </h2>
+
         <p id="errorStateMessage" class="text-sm opacity-80 mb-6">
           Please scan the shop's QR code again to start printing.
         </p>
       </div>
 
-      <!-- Step 1: Upload File -->
-      <!-- Step 1: Upload File -->
+      <!-- ========================================================= -->
+      <!-- STEP 1 -->
+      <!-- ========================================================= -->
+
       <div
         id="step1"
         class="hidden flex h-full w-full max-w-md mx-auto flex-col pt-2 anim-file-fly"
       >
-        <!-- Header -->
         <div class="mb-5">
           <div class="flex items-center gap-3 mb-2">
             <div
@@ -333,7 +339,7 @@
           </div>
         </div>
 
-        <!-- Error Banner -->
+        <!-- Upload Error -->
         <div
           id="uploadErrorBanner"
           class="hidden mb-4 items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"
@@ -359,6 +365,7 @@
 
           <div class="min-w-0">
             <p class="font-bold">Upload failed</p>
+
             <span id="uploadErrorText" class="mt-0.5 block font-medium">
               Something went wrong.
             </span>
@@ -370,7 +377,6 @@
           for="fileInput"
           class="group relative flex min-h-[190px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-white px-6 py-8 text-center shadow-sm transition-all duration-200 hover:border-[#211B8F] hover:bg-[#EEF2FF]/60 hover:shadow-md"
         >
-          <!-- Decorative background -->
           <div
             class="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#EEF2FF] transition-transform duration-300 group-hover:scale-125"
           ></div>
@@ -379,7 +385,6 @@
             class="pointer-events-none absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-gray-50"
           ></div>
 
-          <!-- Upload Icon -->
           <div
             class="relative mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#EEF2FF] text-[#211B8F] ring-8 ring-[#EEF2FF]/70 transition-all duration-300 group-hover:-translate-y-1 group-hover:bg-[#211B8F] group-hover:text-white group-hover:ring-[#D9DDFF]"
           >
@@ -395,7 +400,6 @@
                 stroke-width="1.7"
                 d="M12 16V4m0 0L8 8m4-4l4 4"
               />
-
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -405,7 +409,6 @@
             </svg>
           </div>
 
-          <!-- Text -->
           <div class="relative">
             <span
               class="block text-base font-extrabold text-[#111827] transition-colors group-hover:text-[#211B8F]"
@@ -426,12 +429,11 @@
             </span>
           </div>
 
-          <!-- Hidden Input -->
           <input
             type="file"
             id="fileInput"
             class="hidden"
-            accept=".pdf,.jpg,.jpeg,.png"
+            accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
             multiple
           />
         </label>
@@ -476,44 +478,49 @@
         </div>
       </div>
 
-      <!-- Step 2: Configuration -->
+      <!-- ========================================================= -->
+      <!-- STEP 2 -->
+      <!-- ========================================================= -->
+
       <div
         id="step2"
         class="hidden flex flex-col anim-file-fly max-w-sm mx-auto w-full h-[calc(100dvh-105px)] min-h-0 pt-4 overflow-hidden"
       >
-        <!-- Scrollable content area: everything except the payment footer
-             lives inside this wrapper. This keeps Cash/UPI pinned in view
-             below, no matter how many files are added. -->
         <div
           id="step2ScrollArea"
           class="flex-1 min-h-0 overflow-y-auto"
           style="-webkit-overflow-scrolling: touch"
         >
-          <!-- Shop Info -->
+          <!-- Shop -->
           <div class="mb-5 px-1">
             <span
               class="text-[10px] font-bold opacity-50 uppercase tracking-widest block mb-1"
-              >Dukaan</span
             >
+              Dukaan
+            </span>
+
             <div class="flex justify-between items-center gap-2">
               <h2
                 class="font-heading text-xl font-bold text-ink truncate"
                 id="shopNameDisplay"
               >
-                Raju E-Mitra &amp; Print
+                Raju E-Mitra & Print
               </h2>
+
               <span
                 id="shopStatusBadge"
                 class="bg-green-50 text-green-600 text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap ml-2 shadow-sm border border-green-200 shrink-0"
-                >Khula hai</span
               >
+                Khula hai
+              </span>
             </div>
+
             <div
               class="border-b-2 border-dashed border-gray-200 mt-4 opacity-50"
             ></div>
           </div>
 
-          <!-- Error banner for step 2 (order/payment failures) -->
+          <!-- Step 2 Error -->
           <div
             id="step2ErrorBanner"
             class="hidden mb-4 flex items-start gap-2 bg-red-50 border-2 border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-semibold"
@@ -529,21 +536,20 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              ></path>
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c.77-1.333 1.732 3 3.464 3z"
+              />
             </svg>
-            <span id="step2ErrorText">Something went wrong.</span>
+
+            <span id="step2ErrorText"> Something went wrong. </span>
           </div>
 
-          <!-- Dynamic File Cards Container (scrolls once more than 2 files are added) -->
+          <!-- File Cards -->
           <div
             id="fileCardsContainer"
             class="mb-2 max-h-[170px] overflow-y-auto overflow-x-hidden file-scroll-container pr-2 min-h-0"
-          >
-            <!-- File cards will be injected here by JS -->
-          </div>
+          ></div>
 
-          <!-- Add more files -->
+          <!-- Add Files -->
           <label
             for="fileInputStep2"
             class="mb-4 flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 border-dashed border-gray-300 text-xs font-bold text-gray-500 cursor-pointer hover:border-[#211B8F] hover:text-[#211B8F] transition-colors"
@@ -559,24 +565,28 @@
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M12 4v16m8-8H4"
-              ></path>
+              />
             </svg>
+
             Aur Files Jodein
+
             <input
               type="file"
               id="fileInputStep2"
               class="hidden"
-              accept=".pdf,.jpg,.jpeg,.png"
+              accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
               multiple
             />
           </label>
 
-          <!-- Paper Size (Full Width) -->
+          <!-- Paper Size -->
           <div class="mb-6 px-1">
             <label
               class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2"
-              >Paper Size</label
             >
+              Paper Size
+            </label>
+
             <div class="relative">
               <select
                 id="paperSizeSelect"
@@ -586,6 +596,7 @@
                 <option value="A3">A3 (Large)</option>
                 <option value="Letter">Letter</option>
               </select>
+
               <div
                 class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400"
               >
@@ -600,7 +611,7 @@
                     stroke-linejoin="round"
                     stroke-width="2"
                     d="M19 9l-7 7-7-7"
-                  ></path>
+                  />
                 </svg>
               </div>
             </div>
@@ -610,8 +621,10 @@
           <div class="mb-2 px-1">
             <label
               class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2"
-              >Print Type</label
             >
+              Print Type
+            </label>
+
             <div class="flex bg-gray-200 p-1 rounded-lg manga-shadow">
               <label class="flex-1 cursor-pointer">
                 <input
@@ -622,12 +635,14 @@
                   checked
                   onchange="updateTotal()"
                 />
+
                 <div
                   class="text-center py-2 rounded-md font-semibold text-sm transition-colors text-gray-600"
                 >
-                  Black &amp; White
+                  Black & White
                 </div>
               </label>
+
               <label class="flex-1 cursor-pointer">
                 <input
                   type="radio"
@@ -636,6 +651,7 @@
                   class="hidden"
                   onchange="updateTotal()"
                 />
+
                 <div
                   class="text-center py-2 rounded-md font-semibold text-sm transition-colors text-gray-600"
                 >
@@ -644,41 +660,45 @@
               </label>
             </div>
           </div>
-          <!-- /step2ScrollArea -->
         </div>
 
-        <!-- PINNED FOOTER: Payable Amount + Payment Buttons. Sits outside the
-             scrollable area above so it's always visible, even with many files. -->
+        <!-- Payment Footer -->
         <div class="shrink-0 bg-white pt-3 border-t border-gray-100">
-          <!-- Payable Amount -->
           <div
-            id="payableCard" class="bg-[#211B8F] text-white rounded-xl p-5 mb-4 manga-shadow flex justify-between items-center transition-all duration-300"
+            id="payableCard"
+            class="bg-[#211B8F] text-white rounded-xl p-5 mb-4 manga-shadow flex justify-between items-center transition-all duration-300"
           >
             <div>
-              <p class="text-xs text-gray-400 mb-1">Payable Amount</p>
+              <p class="text-xs opacity-70 mb-1">Payable Amount</p>
+
               <p
                 class="font-heading text-3xl font-bold flex items-center tracking-tight"
               >
-                ₹<span id="totalDisplay">20</span>
+                ₹<span id="totalDisplay">0</span>
               </p>
             </div>
+
             <div class="text-right">
-              <p class="text-[10px] text-gray-400 mb-1">Rate / page</p>
-              <p class="font-bold text-sm" id="rateDisplay">₹5 (B&amp;W)</p>
+              <p class="text-[10px] opacity-70 mb-1">Rate / page</p>
+
+              <p class="font-bold text-sm" id="rateDisplay">₹5 (B&W)</p>
             </div>
           </div>
 
-          <!-- Payment Buttons (Swapped: Cash Left, UPI Right) -->
+          <!-- Payment -->
           <div class="grid grid-cols-2 gap-3 pb-4">
             <button
               id="cashPayBtn"
+              type="button"
               onclick="processPayment('CASH')"
               class="bg-white text-[#211B8F] border-2 border-[#211B8F]/15 font-body text-sm sm:text-base font-semibold py-4 rounded-xl shadow-sm active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Dukaan pe Cash
             </button>
+
             <button
               id="upiPayBtn"
+              type="button"
               onclick="processPayment('UPI')"
               class="bg-[#FFB800] text-[#211B8F] font-body text-sm sm:text-base font-semibold py-4 rounded-xl shadow-lg shadow-[#FFB800]/25 active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -688,7 +708,10 @@
         </div>
       </div>
 
-      <!-- Step 3: Processing (Animations) -->
+      <!-- ========================================================= -->
+      <!-- STEP 3 -->
+      <!-- ========================================================= -->
+
       <div
         id="step3"
         class="hidden flex-col items-center justify-center h-full mt-10"
@@ -704,7 +727,6 @@
           class="relative w-48 h-64 bg-white manga-shadow flex items-center justify-center overflow-hidden"
           id="processingDocument"
         >
-          <!-- Laser Scanner -->
           <div id="scannerLine" class="scanner-line"></div>
 
           <svg
@@ -718,28 +740,30 @@
               stroke-linejoin="round"
               stroke-width="1"
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            ></path>
+            />
           </svg>
 
-          <!-- Overlay for "Printed" effect -->
           <div
             id="printedOverlay"
-            class="absolute inset-0 bg-ink flex items-center justify-center hidden"
+            class="absolute inset-0 bg-[#211B8F] flex items-center justify-center hidden"
           >
             <span
-              class="text-paper font-heading font-bold text-xl uppercase tracking-widest"
-              >Done</span
+              class="text-white font-heading font-bold text-xl uppercase tracking-widest"
             >
+              Done
+            </span>
           </div>
         </div>
       </div>
 
-      <!-- Step 4: Success / Receipt -->
+      <!-- ========================================================= -->
+      <!-- STEP 4 -->
+      <!-- ========================================================= -->
+
       <div id="step4" class="hidden flex-col items-center h-full pt-10">
         <div
           class="w-full bg-white manga-shadow p-6 relative anim-printer-spit"
         >
-          <!-- Jagged top edge for receipt -->
           <div
             class="absolute -top-2 left-0 w-full h-4 bg-paper"
             style="
@@ -775,6 +799,7 @@
             >
               Ordered
             </h2>
+
             <p class="text-sm font-semibold opacity-70">
               Hand this to the shopkeeper
             </p>
@@ -785,33 +810,37 @@
           ></div>
 
           <div class="flex justify-between items-center mb-4">
-            <span class="text-sm font-bold opacity-70 uppercase tracking-wider"
-              >Order ID</span
-            >
+            <span class="text-sm font-bold opacity-70 uppercase tracking-wider">
+              Order ID
+            </span>
+
             <span
               id="receiptOrderId"
               class="font-mono font-bold text-lg bg-paper px-2 py-1 rounded"
-              >#12345</span
             >
+              #12345
+            </span>
           </div>
 
           <div class="flex justify-between items-center mb-6">
-            <span class="text-sm font-bold opacity-70 uppercase tracking-wider"
-              >Shop ID</span
-            >
-            <span id="receiptShopId" class="font-mono font-bold text-lg"
-              >---</span
-            >
+            <span class="text-sm font-bold opacity-70 uppercase tracking-wider">
+              Shop ID
+            </span>
+
+            <span id="receiptShopId" class="font-mono font-bold text-lg">
+              ---
+            </span>
           </div>
 
           <div class="bg-paper p-4 rounded mb-6">
             <div class="flex justify-between text-sm mb-2">
               <span>Document</span>
-              <span id="receiptType" class="font-bold">B &amp; W</span>
+              <span id="receiptType" class="font-bold"> B & W </span>
             </div>
+
             <div class="flex justify-between text-sm">
               <span>Copies</span>
-              <span id="receiptCopies" class="font-bold">1</span>
+              <span id="receiptCopies" class="font-bold"> 1 </span>
             </div>
           </div>
 
@@ -820,12 +849,14 @@
           ></div>
 
           <div class="flex justify-between items-end">
-            <span class="font-heading text-lg font-bold">Total Pay</span>
+            <span class="font-heading text-lg font-bold"> Total Pay </span>
+
             <span
               id="receiptTotal"
               class="font-mono font-bold text-3xl text-[#211B8F]"
-              >₹5</span
             >
+              ₹5
+            </span>
           </div>
         </div>
 
@@ -837,94 +868,138 @@
         </button>
       </div>
     </main>
-<script>
-  function updatePayableTheme() {
-    const selected = document.querySelector('input[name="colorType"]:checked');
-    const card = document.getElementById('payableCard');
-    if (!selected || !card) return;
 
-    if (selected.value === 'Color') {
-      card.classList.remove('bg-black', 'text-white');
-      card.classList.add('bg-[#FFB800]', 'text-[#211B8F]');
-    } else {
-      card.classList.remove('bg-[#FFB800]', 'text-[#211B8F]');
-      card.classList.add('bg-black', 'text-white');
-    }
-  }
+    <!-- =========================================================== -->
+    <!-- PDF LIB -->
+    <!-- =========================================================== -->
 
-  document.querySelectorAll('input[name="colorType"]').forEach((radio) => {
-    radio.addEventListener('change', updatePayableTheme);
-  });
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
-  document.addEventListener('DOMContentLoaded', updatePayableTheme);
-</script>
+    <!-- =========================================================== -->
+    <!-- APPLICATION -->
+    <!-- =========================================================== -->
 
     <script>
       // ============================================================
-      // Supabase setup — replace with your project's values if different
+      // Supabase
       // ============================================================
+
       const SUPABASE_URL = "https://gepkipszweqhftwaejbu.supabase.co";
+
       const SUPABASE_ANON_KEY =
         "sb_publishable_forPZqB40NrPCFGQsdqeZw_4QTxOgBH";
+
       const supabaseClient = window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_ANON_KEY,
       );
 
       const STORAGE_BUCKET = "print-files";
-      const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB, matches UI copy
+
+      const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+
       const ACCEPTED_TYPES = /\.(pdf|jpg|jpeg|png)$/i;
 
       // ============================================================
       // State
       // ============================================================
-      let currentShopId = null; // the human-readable shop_id from the URL
-      let currentShopRow = null; // the full row fetched from Supabase
+
+      let currentShopId = null;
+
+      let currentShopRow = null;
+
       let filesList = [];
+
       let paymentMode = "";
 
-      // Prices based on user instructions
+      let processingTimers = [];
+
       const PRICES = {
         BW: 5,
         Color: 10,
       };
 
       // ============================================================
-      // Error banner helpers (shown at top of the relevant step,
-      // instead of alert())
+      // Theme
       // ============================================================
+
+      function updatePayableTheme() {
+        const selected = document.querySelector(
+          'input[name="colorType"]:checked',
+        );
+
+        const card = document.getElementById("payableCard");
+
+        if (!selected || !card) return;
+
+        if (selected.value === "Color") {
+          card.classList.remove("bg-[#211B8F]", "text-white");
+
+          card.classList.add("bg-[#FFB800]", "text-[#211B8F]");
+        } else {
+          card.classList.remove("bg-[#FFB800]", "text-[#211B8F]");
+
+          card.classList.add("bg-[#211B8F]", "text-white");
+        }
+      }
+
+      // ============================================================
+      // Errors
+      // ============================================================
+
       function showUploadError(message) {
         const banner = document.getElementById("uploadErrorBanner");
+
         document.getElementById("uploadErrorText").textContent = message;
+
         banner.classList.remove("hidden");
+        banner.classList.add("flex");
       }
+
       function hideUploadError() {
-        document.getElementById("uploadErrorBanner").classList.add("hidden");
+        const banner = document.getElementById("uploadErrorBanner");
+
+        banner.classList.add("hidden");
+        banner.classList.remove("flex");
       }
+
       function showStep2Error(message) {
         const banner = document.getElementById("step2ErrorBanner");
+
         document.getElementById("step2ErrorText").textContent = message;
+
         banner.classList.remove("hidden");
-        banner.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+        banner.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
       }
+
       function hideStep2Error() {
         document.getElementById("step2ErrorBanner").classList.add("hidden");
       }
 
       function showErrorState(title, message) {
         document.getElementById("loadingState").classList.add("hidden");
+
         document.getElementById("errorStateTitle").textContent = title;
+
         document.getElementById("errorStateMessage").textContent = message;
-        const errEl = document.getElementById("errorState");
-        errEl.classList.remove("hidden");
-        errEl.classList.add("flex");
+
+        const error = document.getElementById("errorState");
+
+        error.classList.remove("hidden");
+        error.classList.add("flex");
       }
 
       // ============================================================
-      // Init: read shop_id from URL, verify it against Supabase
+      // INIT
       // ============================================================
+
       async function init() {
         const urlParams = new URLSearchParams(window.location.search);
+
         currentShopId = urlParams.get("shop_id");
 
         if (!currentShopId) {
@@ -932,6 +1007,7 @@
             "No Shop ID Found",
             "Please scan the shop's QR code again to start printing.",
           );
+
           return;
         }
 
@@ -945,220 +1021,467 @@
             .single();
 
           if (error || !shop) {
+            console.error("Shop lookup error:", error);
+
             showErrorState(
               "Shop Nahi Mili",
               "Ye QR code sahi nahi lag raha. Kripya shopkeeper se dobara QR scan karwayein.",
             );
+
             return;
           }
 
           if (shop.status !== "active") {
             showErrorState(
               "Dukaan Abhi Band Hai",
-              `Is dukaan ka account "${shop.status}" hai, isliye print abhi possible nahi hai. Shopkeeper se sampark karein.`,
+              `Is dukaan ka account "${shop.status}" hai, isliye print abhi possible nahi hai.`,
             );
+
             return;
           }
 
           currentShopRow = shop;
 
-          document.getElementById("shopIdValue").textContent = shop.shop_name;
+          document.getElementById("shopIdValue").textContent = shop.shop_id;
+
           document.getElementById("shopNameDisplay").textContent =
             shop.shop_name;
+
           document.getElementById("shopIdDisplay").classList.remove("hidden");
 
           document.getElementById("loadingState").classList.add("hidden");
+
           document.getElementById("step1").classList.remove("hidden");
+
+          wireFileInput("fileInput");
+
+          wireFileInput("fileInputStep2");
         } catch (err) {
           console.error("Shop verification failed:", err);
+
           showErrorState(
             "Connection Error",
             "Internet connection check karein aur page dobara load karein.",
           );
         }
-
-        wireFileInput("fileInput");
-        wireFileInput("fileInputStep2");
       }
+
+      // ============================================================
+      // FILE INPUT
+      // ============================================================
 
       function wireFileInput(inputId) {
         const input = document.getElementById(inputId);
+
         if (!input) return;
-        input.addEventListener("change", handleFileSelection);
+
+        input.onchange = handleFileSelection;
       }
 
       // ============================================================
-      // File selection — validated, then queued (uploaded to
-      // Supabase Storage lazily at payment time, see uploadAllFiles)
+      // GET REAL PDF PAGE COUNT
       // ============================================================
-      function handleFileSelection(event) {
+
+      async function getPdfPageCount(file) {
+        if (file.type !== "application/pdf" && !/\.pdf$/i.test(file.name)) {
+          return 1;
+        }
+
+        if (typeof PDFLib === "undefined") {
+          throw new Error("PDF reader load nahi hua.");
+        }
+
+        const buffer = await file.arrayBuffer();
+
+        const pdfDoc = await PDFLib.PDFDocument.load(buffer, {
+          ignoreEncryption: false,
+        });
+
+        const pageCount = pdfDoc.getPageCount();
+
+        if (!Number.isInteger(pageCount) || pageCount < 1) {
+          throw new Error("PDF me koi valid page nahi mila.");
+        }
+
+        return pageCount;
+      }
+
+      // ============================================================
+      // FILE SELECTION
+      // ============================================================
+
+      async function handleFileSelection(event) {
         hideUploadError();
 
         const incoming = Array.from(event.target.files || []);
-        if (incoming.length === 0) return;
+
+        if (incoming.length === 0) {
+          return;
+        }
 
         const accepted = [];
+
         for (const file of incoming) {
           if (!ACCEPTED_TYPES.test(file.name)) {
             showUploadError(
-              `"${file.name}" ek supported format nahi hai. Sirf PDF, JPG, PNG allowed hain.`,
+              `"${file.name}" supported format nahi hai. Sirf PDF, JPG aur PNG allowed hain.`,
             );
+
             continue;
           }
+
           if (file.size > MAX_FILE_SIZE_BYTES) {
-            showUploadError(
-              `"${file.name}" 10MB se badi hai. Chhoti file try karein.`,
-            );
+            showUploadError(`"${file.name}" 10MB se badi hai.`);
+
             continue;
           }
+
           accepted.push(file);
         }
 
-        accepted.forEach((file) => {
+        event.target.value = "";
+
+        if (accepted.length === 0) {
+          return;
+        }
+
+        // Read actual page count
+        for (const file of accepted) {
           const isImage =
             file.type.startsWith("image/") ||
             /\.(jpg|jpeg|png)$/i.test(file.name);
-          // NOTE: true PDF page-counting requires a PDF parsing library
-          // (e.g. pdf-lib) loaded client-side. Until that's wired in,
-          // this is an estimate so the flow and pricing stay usable.
-          const pages = isImage ? 1 : Math.floor(Math.random() * 15) + 1;
+
+          let pages = 1;
+
+          if (isImage) {
+            pages = 1;
+          } else {
+            try {
+              pages = await getPdfPageCount(file);
+            } catch (error) {
+              console.error("PDF page count error:", error);
+
+              showUploadError(
+                `"${file.name}" PDF read nahi ho payi. PDF valid hai ya nahi check karein.`,
+              );
+
+              continue;
+            }
+          }
 
           filesList.push({
             file,
+
             pages,
+
             copies: 1,
+
             uploaded: false,
+
             storagePath: null,
+
+            jobId: null,
           });
-        });
+        }
 
-        event.target.value = ""; // allow re-selecting the same file later
-
-        if (accepted.length > 0) {
+        if (filesList.length > 0) {
           showConfigStep();
         }
       }
 
+      // ============================================================
+      // RENDER FILES
+      // ============================================================
+
       function renderFiles() {
         const container = document.getElementById("fileCardsContainer");
+
         container.innerHTML = "";
 
         filesList.forEach((item, index) => {
           let fileName = item.file.name;
+
           if (fileName.length > 20) {
             const extIndex = fileName.lastIndexOf(".");
+
             const ext = extIndex !== -1 ? fileName.substring(extIndex) : "";
+
             const name =
               extIndex !== -1 ? fileName.substring(0, extIndex) : fileName;
+
             fileName =
               name.substring(0, 11) +
               "..." +
-              name.substring(name.length - 3) +
+              name.substring(Math.max(0, name.length - 3)) +
               ext;
           }
 
-          container.innerHTML += `
-                    <div class="manga-shadow p-2 mb-2 bg-white rounded-xl">
-                        <div class="flex items-start justify-between mb-1.5">
-                            <div class="flex items-center gap-2 overflow-hidden flex-1">
-                                <div class="bg-red-50 text-stamp p-1.5 rounded-lg shrink-0 flex items-center justify-center">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                                </div>
-                                <div class="flex flex-col overflow-hidden">
-                                    <span class="font-heading font-bold text-xs text-ink truncate">${fileName}</span>
-                                    <span class="text-[9px] font-semibold bg-gray-100 text-gray-500 px-1 py-0.5 rounded w-max mt-0.5">${item.pages} ${item.pages > 1 ? "pages" : "page"}</span>
-                                </div>
-                            </div>
-                            <button onclick="removeFile(${index})" class="p-1 text-gray-400 hover:text-stamp bg-gray-50 hover:bg-red-50 rounded-lg transition-colors shrink-0 ml-1.5" title="Remove file">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            </button>
-                        </div>
+          const pageText = item.pages === 1 ? "1 page" : `${item.pages} pages`;
 
-                        <div class="border-b-2 border-dashed border-gray-100 mb-1.5"></div>
+          container.insertAdjacentHTML(
+            "beforeend",
+            `
+            <div class="manga-shadow p-2 mb-2 bg-white rounded-xl">
 
-                        <div class="flex items-center justify-between">
-                            <label class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Kitni Copy?</label>
-                            <div class="flex items-center bg-white rounded-lg p-0.5 border border-gray-200">
-                                <button onclick="updateFileCopies(${index}, -1)" class="w-5 h-5 flex items-center justify-center hover:bg-gray-50 rounded text-sm font-bold text-gray-500 active:scale-95 transition-transform">-</button>
-                                <span class="w-5 text-center font-body text-xs font-bold text-ink">${item.copies}</span>
-                                <button onclick="updateFileCopies(${index}, 1)" class="w-5 h-5 flex items-center justify-center hover:bg-gray-50 rounded text-sm font-bold text-gray-500 active:scale-95 transition-transform">+</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
+              <div class="flex items-start justify-between mb-1.5">
+
+                <div class="flex items-center gap-2 overflow-hidden flex-1">
+
+                  <div
+                    class="bg-[#EEF2FF] text-[#211B8F] p-1.5 rounded-lg shrink-0 flex items-center justify-center"
+                  >
+                    <svg
+                      class="w-3.5 h-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.5"
+                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+
+                  <div class="flex flex-col overflow-hidden">
+
+                    <span
+                      class="font-heading font-bold text-xs text-ink truncate"
+                    >
+                      ${escapeHtml(fileName)}
+                    </span>
+
+                    <span
+                      class="text-[9px] font-semibold bg-gray-100 text-gray-500 px-1 py-0.5 rounded w-max mt-0.5"
+                    >
+                      ${pageText}
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <button
+                  type="button"
+                  onclick="removeFile(${index})"
+                  class="p-1 text-gray-400 hover:text-red-600 bg-gray-50 hover:bg-red-50 rounded-lg transition-colors shrink-0 ml-1.5"
+                  title="Remove file"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+
+              </div>
+
+
+              <div
+                class="border-b-2 border-dashed border-gray-100 mb-1.5"
+              ></div>
+
+
+              <div
+                class="flex items-center justify-between"
+              >
+
+                <label
+                  class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block"
+                >
+                  Kitni Copy?
+                </label>
+
+
+                <div
+                  class="flex items-center bg-white rounded-lg p-0.5 border border-gray-200"
+                >
+
+                  <button
+                    type="button"
+                    onclick="updateFileCopies(${index}, -1)"
+                    class="w-5 h-5 flex items-center justify-center hover:bg-gray-50 rounded text-sm font-bold text-gray-500"
+                  >
+                    -
+                  </button>
+
+
+                  <span
+                    class="w-5 text-center text-xs font-bold text-ink"
+                  >
+                    ${item.copies}
+                  </span>
+
+
+                  <button
+                    type="button"
+                    onclick="updateFileCopies(${index}, 1)"
+                    class="w-5 h-5 flex items-center justify-center hover:bg-gray-50 rounded text-sm font-bold text-gray-500"
+                  >
+                    +
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+            `,
+          );
         });
       }
 
+      // ============================================================
+      // ESCAPE HTML
+      // ============================================================
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      // ============================================================
+      // SHOW CONFIG
+      // ============================================================
+
       function showConfigStep() {
         document.getElementById("step1").classList.add("hidden");
+
         document.getElementById("step2").classList.remove("hidden");
+
         hideStep2Error();
 
         renderFiles();
+
         updateTotal();
+
+        updatePayableTheme();
       }
 
+      // ============================================================
+      // REMOVE FILE
+      // ============================================================
+
       function removeFile(index) {
+        if (index < 0 || index >= filesList.length) {
+          return;
+        }
+
         filesList.splice(index, 1);
 
         if (filesList.length === 0) {
-          document.getElementById("fileInput").value = "";
           document.getElementById("step2").classList.add("hidden");
+
           document.getElementById("step1").classList.remove("hidden");
         } else {
           renderFiles();
+
           updateTotal();
         }
       }
 
+      // ============================================================
+      // COPIES
+      // ============================================================
+
       function updateFileCopies(index, change) {
+        if (!filesList[index]) {
+          return;
+        }
+
         filesList[index].copies += change;
-        if (filesList[index].copies < 1) filesList[index].copies = 1;
-        if (filesList[index].copies > 50) filesList[index].copies = 50;
+
+        filesList[index].copies = Math.max(
+          1,
+          Math.min(50, filesList[index].copies),
+        );
 
         renderFiles();
+
         updateTotal();
       }
 
+      // ============================================================
+      // TOTAL
+      // ============================================================
+
       function updateTotal() {
-        const colorType = document.querySelector(
+        const selected = document.querySelector(
           'input[name="colorType"]:checked',
-        ).value;
+        );
+
+        if (!selected) {
+          return;
+        }
+
+        const colorType = selected.value;
+
         const pricePerPage = PRICES[colorType];
 
-        let totalPagesAcrossAllFiles = 0;
+        let totalPages = 0;
+
         filesList.forEach((item) => {
-          totalPagesAcrossAllFiles += item.pages * item.copies;
+          totalPages += Number(item.pages || 1) * Number(item.copies || 1);
         });
 
-        const total = pricePerPage * totalPagesAcrossAllFiles;
+        const total = pricePerPage * totalPages;
 
         document.getElementById("totalDisplay").textContent = total;
+
         document.getElementById("rateDisplay").textContent =
           `₹${pricePerPage} (${colorType === "BW" ? "B&W" : "Color"})`;
+
+        updatePayableTheme();
       }
+
+      // ============================================================
+      // PAYMENT BUTTONS
+      // ============================================================
 
       function setPayButtonsDisabled(disabled) {
         document.getElementById("cashPayBtn").disabled = disabled;
+
         document.getElementById("upiPayBtn").disabled = disabled;
       }
 
       // ============================================================
-      // Real upload to Supabase Storage, one file at a time
+      // UPLOAD
       // ============================================================
+
       async function uploadAllFiles(jobIdPrefix) {
         for (let i = 0; i < filesList.length; i++) {
           const item = filesList[i];
-          if (item.uploaded) continue;
+
+          if (item.uploaded) {
+            continue;
+          }
 
           const jobId = `${jobIdPrefix}-${i}`;
+
           const safeName = item.file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+
           const path = `shop/${currentShopId}/job/${jobId}/${safeName}`;
 
           const { error } = await supabaseClient.storage
             .from(STORAGE_BUCKET)
             .upload(path, item.file, {
               contentType: item.file.type || "application/octet-stream",
+
               upsert: false,
             });
 
@@ -1169,31 +1492,54 @@
           }
 
           item.uploaded = true;
+
           item.storagePath = `${STORAGE_BUCKET}/${path}`;
+
           item.jobId = jobId;
         }
       }
 
       // ============================================================
-      // Payment + real order/job creation
+      // PROCESS PAYMENT / ORDER
       // ============================================================
+
       async function processPayment(mode) {
         if (filesList.length === 0) {
           showStep2Error("Kam se kam ek file upload karein.");
+
           return;
         }
 
         hideStep2Error();
+
         paymentMode = mode;
+
         setPayButtonsDisabled(true);
 
-        const colorType = document.querySelector(
+        const selected = document.querySelector(
           'input[name="colorType"]:checked',
-        ).value;
+        );
+
+        if (!selected) {
+          setPayButtonsDisabled(false);
+
+          showStep2Error("Print type select karein.");
+
+          return;
+        }
+
+        const colorType = selected.value;
+
         const paperSize = document.getElementById("paperSizeSelect").value;
+
         const pricePerPage = PRICES[colorType];
+
         let totalPages = 0;
-        filesList.forEach((item) => (totalPages += item.pages * item.copies));
+
+        filesList.forEach((item) => {
+          totalPages += Number(item.pages || 1) * Number(item.copies || 1);
+        });
+
         const total = pricePerPage * totalPages;
 
         if (mode === "UPI") {
@@ -1203,22 +1549,31 @@
           document.getElementById("processingText").textContent =
             "INITIALIZING...";
         }
+
         startProcessingAnimation();
 
         try {
-          // 1. Upload every file to Storage
+          // 1. Upload files
+
           const jobIdPrefix = crypto.randomUUID().slice(0, 8);
+
           await uploadAllFiles(jobIdPrefix);
 
-          // 2. Create the order (subscription/demo-limit trigger runs here)
+          // 2. Create order
+
           const { data: order, error: orderError } = await supabaseClient
             .from("print_orders")
             .insert({
               shop_id: currentShopId,
+
               total_files: filesList.length,
+
               total_pages: totalPages,
+
               amount_charged: total,
+
               payment_mode: mode,
+
               status: "pending",
             })
             .select()
@@ -1228,18 +1583,29 @@
             throw orderError;
           }
 
-          // 3. Create one print_jobs row per file
+          // 3. Create jobs
+
           const jobsPayload = filesList.map((item) => ({
             order_id: order.order_id,
+
             shop_id: currentShopId,
+
             original_filename: item.file.name,
+
             storage_path: item.storagePath,
+
             mime_type: item.file.type || "application/octet-stream",
+
             file_size: item.file.size,
-            page_count: item.pages,
-            copies: item.copies,
+
+            page_count: Number(item.pages || 1),
+
+            copies: Number(item.copies || 1),
+
             color_type: colorType,
+
             paper_size: paperSize,
+
             status: "pending",
           }));
 
@@ -1251,186 +1617,298 @@
             throw jobsError;
           }
 
-          // Everything succeeded — let the visual animation finish,
-          // then show the receipt
+          // Done
+
           finishProcessingAnimation(() =>
             showReceipt(order.order_id, colorType, total),
           );
         } catch (err) {
           console.error("Order failed:", err);
+
           cancelProcessingAnimation();
+
           setPayButtonsDisabled(false);
 
-          const message = mapOrderError(err);
-          showStep2Error(message);
+          showStep2Error(mapOrderError(err));
         }
       }
+
+      // ============================================================
+      // ORDER ERROR
+      // ============================================================
 
       function mapOrderError(err) {
-        const msg = (err && err.message) || "";
+        const msg = String(err?.message || "");
 
         if (/demo limit reached/i.test(msg)) {
-          return "Is dukaan ka free demo limit (10 orders) khatam ho chuka hai. Shopkeeper ko plan upgrade karne ke liye kahein.";
+          return "Is dukaan ka free demo limit khatam ho chuka hai.";
         }
+
         if (/print limit reached/i.test(msg)) {
-          return "Is dukaan ka is saal ka print limit khatam ho chuka hai. Shopkeeper se sampark karein.";
+          return "Is dukaan ka print limit khatam ho chuka hai.";
         }
-        if (/subscription .* expired/i.test(msg)) {
-          return "Is dukaan ka subscription expire ho chuka hai. Shopkeeper se sampark karein.";
+
+        if (/subscription.*expired/i.test(msg)) {
+          return "Is dukaan ka subscription expire ho chuka hai.";
         }
+
         if (/does not exist/i.test(msg)) {
-          return "Ye dukaan ab active nahi hai. Dobara QR scan karein.";
+          return "Ye dukaan ab active nahi hai.";
         }
-        if (/upload nahi ho payi/.test(msg)) {
+
+        if (/upload nahi ho payi/i.test(msg)) {
           return msg;
         }
-        if (/network|fetch/i.test(msg)) {
+
+        if (/network|fetch|failed to fetch/i.test(msg)) {
           return "Internet connection check karein aur dobara try karein.";
         }
-        return "Order place nahi ho paya. Kripya dobara try karein.";
+
+        return msg || "Order place nahi ho paya. Kripya dobara try karein.";
       }
 
       // ============================================================
-      // Processing animation (visual only — real work happens above)
+      // PROCESSING ANIMATION
       // ============================================================
-      let processingTimers = [];
 
       function startProcessingAnimation() {
+        processingTimers.forEach(clearTimeout);
+
+        processingTimers = [];
+
         document.getElementById("step2").classList.add("hidden");
 
         const step3 = document.getElementById("step3");
+
         step3.classList.remove("hidden");
+
         step3.classList.add("flex");
 
-        const speedLines = document.getElementById("speedLines");
-        speedLines.style.display = "block";
+        document.getElementById("speedLines").style.display = "block";
 
-        const procText = document.getElementById("processingText");
         const scanner = document.getElementById("scannerLine");
+
         const documentElement = document.getElementById("processingDocument");
 
         documentElement.classList.add("anim-file-fly");
 
         processingTimers.push(
           setTimeout(() => {
-            procText.textContent = "SCANNING FILE...";
+            document.getElementById("processingText").textContent =
+              "SCANNING FILE...";
+
             scanner.classList.add("anim-laser-scan");
           }, 600),
         );
 
         processingTimers.push(
           setTimeout(() => {
-            procText.textContent = "UPLOADING...";
+            document.getElementById("processingText").textContent =
+              "UPLOADING...";
           }, 1800),
         );
       }
 
       function finishProcessingAnimation(onDone) {
         processingTimers.forEach(clearTimeout);
+
         processingTimers = [];
 
         const scanner = document.getElementById("scannerLine");
-        const procText = document.getElementById("processingText");
+
         scanner.classList.remove("anim-laser-scan");
+
         scanner.style.opacity = "0";
-        procText.textContent = "PRINTING...";
+
+        document.getElementById("processingText").textContent = "ORDERED";
+
         document.getElementById("printedOverlay").classList.remove("hidden");
 
         setTimeout(() => {
           document.getElementById("speedLines").style.display = "none";
+
           const step3 = document.getElementById("step3");
+
           step3.classList.add("hidden");
+
           step3.classList.remove("flex");
-          onDone();
+
+          if (typeof onDone === "function") {
+            onDone();
+          }
         }, 1000);
       }
 
       function cancelProcessingAnimation() {
         processingTimers.forEach(clearTimeout);
+
         processingTimers = [];
 
         document.getElementById("speedLines").style.display = "none";
-        document
-          .getElementById("scannerLine")
-          .classList.remove("anim-laser-scan");
-        document.getElementById("scannerLine").style.opacity = "";
+
+        const scanner = document.getElementById("scannerLine");
+
+        scanner.classList.remove("anim-laser-scan");
+
+        scanner.style.opacity = "";
+
         document.getElementById("printedOverlay").classList.add("hidden");
+
         document
           .getElementById("processingDocument")
           .classList.remove("anim-file-fly");
 
         const step3 = document.getElementById("step3");
+
         step3.classList.add("hidden");
+
         step3.classList.remove("flex");
 
         document.getElementById("step2").classList.remove("hidden");
       }
 
       // ============================================================
-      // Receipt (now backed by the real order created in Supabase)
+      // RECEIPT
       // ============================================================
+
       function showReceipt(orderId, colorType, total) {
         const step4 = document.getElementById("step4");
+
         step4.classList.remove("hidden");
+
         step4.classList.add("flex");
 
-        let totalCopiesAgg = 0;
-        filesList.forEach((f) => (totalCopiesAgg += f.copies));
+        let totalCopies = 0;
+
+        let totalPages = 0;
+
+        filesList.forEach((file) => {
+          totalCopies += Number(file.copies || 1);
+
+          totalPages += Number(file.pages || 1) * Number(file.copies || 1);
+        });
 
         document.getElementById("receiptOrderId").textContent = orderId
           .slice(0, 8)
           .toUpperCase();
+
         document.getElementById("receiptShopId").textContent = currentShopId;
+
         document.getElementById("receiptType").textContent =
           colorType === "BW" ? "Black & White" : "Color";
+
         document.getElementById("receiptCopies").textContent =
-          `${filesList.length} Files (${totalCopiesAgg} copies total)`;
+          `${filesList.length} Files • ${totalCopies} copies • ${totalPages} pages`;
+
         document.getElementById("receiptTotal").textContent = `₹${total}`;
 
         let paymentStatus = document.getElementById("paymentStatusElement");
+
         if (!paymentStatus) {
           paymentStatus = document.createElement("div");
+
           paymentStatus.id = "paymentStatusElement";
-          const receiptTotalDiv =
-            document.getElementById("receiptTotal").parentElement;
-          receiptTotalDiv.parentElement.appendChild(paymentStatus);
+
+          document
+            .getElementById("receiptTotal")
+            .parentElement.parentElement.appendChild(paymentStatus);
         }
 
-        paymentStatus.className = `mt-6 text-center font-bold text-sm px-4 py-2 rounded-lg manga-shadow block w-full border-2 border-ink ${paymentMode === "UPI" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`;
+        paymentStatus.className = `mt-6 text-center font-bold text-sm px-4 py-2 rounded-lg manga-shadow block w-full border-2 border-ink ${
+          paymentMode === "UPI"
+            ? "bg-green-100 text-green-800"
+            : "bg-yellow-100 text-yellow-800"
+        }`;
+
         paymentStatus.textContent =
           paymentMode === "UPI" ? "Paid via UPI" : "Pay Cash at Shop";
       }
 
+      // ============================================================
+      // RESET
+      // ============================================================
+
       function resetApp() {
+        processingTimers.forEach(clearTimeout);
+
+        processingTimers = [];
+
         filesList = [];
+
         paymentMode = "";
+
         setPayButtonsDisabled(false);
+
         document.getElementById("fileInput").value = "";
+
         document.getElementById("fileInputStep2").value = "";
-        document.querySelector('input[value="BW"]').checked = true;
+
+        const bw = document.querySelector(
+          'input[name="colorType"][value="BW"]',
+        );
+
+        if (bw) {
+          bw.checked = true;
+        }
+
+        document.getElementById("paperSizeSelect").value = "A4";
+
         document.getElementById("printedOverlay").classList.add("hidden");
+
         document
           .getElementById("processingDocument")
           .classList.remove("anim-file-fly");
-        hideUploadError();
-        hideStep2Error();
 
         document.getElementById("step2").classList.add("hidden");
+
         document.getElementById("step3").classList.add("hidden");
+
         document.getElementById("step3").classList.remove("flex");
+
         document.getElementById("step4").classList.add("hidden");
+
         document.getElementById("step4").classList.remove("flex");
+
         document.getElementById("speedLines").style.display = "none";
 
-        const ps = document.getElementById("paymentStatusElement");
-        if (ps) ps.remove();
+        const paymentStatus = document.getElementById("paymentStatusElement");
+
+        if (paymentStatus) {
+          paymentStatus.remove();
+        }
+
+        hideUploadError();
+
+        hideStep2Error();
+
+        updateTotal();
+
+        updatePayableTheme();
 
         if (currentShopId) {
           document.getElementById("step1").classList.remove("hidden");
         }
       }
 
-      window.addEventListener("DOMContentLoaded", init);
+      // ============================================================
+      // EVENTS
+      // ============================================================
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .querySelectorAll('input[name="colorType"]')
+          .forEach((radio) => {
+            radio.addEventListener("change", () => {
+              updatePayableTheme();
+
+              updateTotal();
+            });
+          });
+
+        updatePayableTheme();
+
+        init();
+      });
     </script>
   </body>
 </html>
