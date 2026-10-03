@@ -1045,106 +1045,299 @@
           <!-- ============ TAB: EARNINGS ============ -->
           <section
             id="tab-earnings"
-            class="tab-content hidden max-w-4xl mx-auto"
+            class="tab-content hidden max-w-5xl mx-auto space-y-6"
           >
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-              <div class="manga-card p-6 bg-[#FFF7D6] relative overflow-hidden">
-                <i
-                  data-lucide="coins"
-                  class="w-24 h-24 absolute -right-4 -bottom-4 opacity-20 text-[#17135F]"
-                ></i>
-                <h3 class="font-heading font-bold text-lg sm:text-xl mb-2">
-                  Is Mahine Ki Kamaayi
-                </h3>
-                <p class="font-heading font-extrabold text-4xl sm:text-5xl">
-                  ₹12,450
+            <!-- =========================
+       CASHFREE PAYMENT DETAILS
+  ========================== -->
+            <div class="manga-card p-6">
+              <div class="flex items-start justify-between gap-4 mb-6">
+                <div>
+                  <h2 class="font-heading font-extrabold text-2xl">
+                    Cashfree Payment Details
+                  </h2>
+
+                  <p class="text-sm font-bold text-[#17135F]/50 mt-1">
+                    Apne shop ke Cashfree credentials yahan save karein.
+                  </p>
+                </div>
+
+                <span
+                  id="cashfreeEnvironmentBadge"
+                  class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-bold"
+                >
+                  SANDBOX
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- App ID -->
+                <div>
+                  <label class="block text-sm font-bold mb-2">
+                    Cashfree App ID
+                  </label>
+
+                  <input
+                    id="earningsCashfreeAppId"
+                    type="password"
+                    autocomplete="off"
+                    placeholder="Cashfree App ID"
+                    class="manga-input w-full font-bold"
+                  />
+                </div>
+
+                <!-- Secret Key -->
+                <div>
+                  <label class="block text-sm font-bold mb-2">
+                    Cashfree Secret Key
+                  </label>
+
+                  <input
+                    id="earningsCashfreeSecret"
+                    type="password"
+                    autocomplete="new-password"
+                    placeholder="Enter Secret Key"
+                    class="manga-input w-full font-bold"
+                  />
+                </div>
+
+                <!-- Environment -->
+                <div>
+                  <label class="block text-sm font-bold mb-2">
+                    Environment
+                  </label>
+
+                  <select
+                    id="earningsCashfreeEnv"
+                    class="manga-input w-full font-bold"
+                  >
+                    <option value="SANDBOX">SANDBOX</option>
+                    <option value="PRODUCTION">PRODUCTION</option>
+                  </select>
+                </div>
+
+                <!-- Save -->
+                <div class="flex items-end">
+                  <button
+                    id="saveEarningsCashfreeBtn"
+                    onclick="saveEarningsCashfreeSettings()"
+                    class="manga-btn w-full py-3 flex items-center justify-center gap-2"
+                  >
+                    <i data-lucide="save" class="w-5 h-5"></i>
+                    Save Cashfree Details
+                  </button>
+                </div>
+              </div>
+
+              <!-- Cashfree Message -->
+              <div
+                id="earningsCashfreeMessage"
+                class="hidden mt-5 rounded-xl px-4 py-3 text-sm font-bold"
+              ></div>
+            </div>
+
+            <!-- =========================
+       EARNINGS SUMMARY
+  ========================== -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <!-- Completed Earnings -->
+              <div class="manga-card p-6 bg-[#FFF7D6]">
+                <p class="text-sm font-bold text-[#17135F]/60">
+                  Completed Earnings
                 </p>
-                <p class="text-sm font-bold mt-2">
-                  Pichle mahine se ₹2,000 zyada! 🚀
+
+                <p
+                  id="earningsTotalCompleted"
+                  class="font-heading font-extrabold text-4xl mt-2"
+                >
+                  ₹0
                 </p>
               </div>
-              <div class="manga-card p-6 flex flex-col justify-center">
-                <button
-                  class="manga-btn w-full py-4 text-lg sm:text-xl flex items-center justify-center gap-2 mb-3"
+
+              <!-- This Month -->
+              <div class="manga-card p-6">
+                <p class="text-sm font-bold text-[#17135F]/60">This Month</p>
+
+                <p
+                  id="earningsThisMonth"
+                  class="font-heading font-extrabold text-4xl mt-2"
                 >
-                  <i data-lucide="landmark" class="w-6 h-6"></i> Bank Me Bhejein
-                  (Withdraw)
-                </button>
-                <p class="text-xs text-center font-bold text-[#17135F]/50">
-                  Minimum withdrawal ₹500
+                  ₹0
+                </p>
+              </div>
+
+              <!-- Completed Orders -->
+              <div class="manga-card p-6">
+                <p class="text-sm font-bold text-[#17135F]/60">
+                  Completed Orders
+                </p>
+
+                <p
+                  id="earningsCompletedOrders"
+                  class="font-heading font-extrabold text-4xl mt-2"
+                >
+                  0
                 </p>
               </div>
             </div>
 
-            <h3 class="font-heading font-bold text-xl sm:text-2xl mb-4">
-              Pichle Transactions (History)
-            </h3>
-            <div class="manga-card divide-y-2 divide-ink/10">
+            <!-- =========================
+       YEAR / MONTH FILTER
+  ========================== -->
+            <div class="manga-card p-5">
               <div
-                class="p-4 flex justify-between items-center gap-3 hover:bg-[#F7F8FC] transition-colors rounded-t-2xl"
+                class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
               >
-                <div class="flex items-center gap-3 min-w-0">
-                  <div
-                    class="p-2 bg-green-100 rounded-lg text-green-700 shrink-0"
-                  >
-                    <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
-                  </div>
-                  <div class="min-w-0">
-                    <p class="font-bold truncate">Customer Print (ORD-002)</p>
-                    <p class="text-xs font-bold text-[#17135F]/50">
-                      1 Sep, 10:15 AM
-                    </p>
-                  </div>
+                <!-- Filter Heading -->
+                <div>
+                  <h3 class="font-heading font-bold text-lg">Filter Orders</h3>
+
+                  <p class="text-sm font-bold text-[#17135F]/50 mt-1">
+                    Year aur month ke according completed orders dekhein.
+                  </p>
                 </div>
-                <p
-                  class="font-heading font-bold text-lg text-green-700 shrink-0"
-                >
-                  +₹30
-                </p>
+
+                <!-- Filters -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                  <!-- Year -->
+                  <select
+                    id="earningsYear"
+                    class="manga-input font-bold min-w-[150px]"
+                    onchange="filterEarningsOrders()"
+                  >
+                    <option value="">All Years</option>
+                  </select>
+
+                  <!-- Month -->
+                  <select
+                    id="earningsMonth"
+                    class="manga-input font-bold min-w-[160px]"
+                    onchange="filterEarningsOrders()"
+                  >
+                    <option value="">All Months</option>
+
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                  </select>
+
+                  <!-- Reset -->
+                  <button
+                    type="button"
+                    onclick="resetEarningsFilters()"
+                    class="manga-btn-secondary px-4 py-2 flex items-center justify-center gap-2"
+                    title="Reset Filters"
+                  >
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    Reset
+                  </button>
+                </div>
               </div>
-              <div
-                class="p-4 flex justify-between items-center gap-3 hover:bg-[#F7F8FC] transition-colors"
-              >
-                <div class="flex items-center gap-3 min-w-0">
-                  <div
-                    class="p-2 bg-red-100 rounded-lg text-[#E59F00] shrink-0"
-                  >
-                    <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
-                  </div>
-                  <div class="min-w-0">
-                    <p class="font-bold truncate">Bank Withdrawal</p>
-                    <p class="text-xs font-bold text-[#17135F]/50">
-                      30 Aug, 05:00 PM
-                    </p>
-                  </div>
+            </div>
+
+            <!-- =========================
+       COMPLETED PRINT ORDERS
+  ========================== -->
+            <div>
+              <!-- Heading -->
+              <div class="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 class="font-heading font-bold text-xl sm:text-2xl">
+                    Completed Print Orders
+                  </h3>
+
+                  <p class="text-sm font-bold text-[#17135F]/50">
+                    Supabase se real completed orders
+                  </p>
                 </div>
-                <p
-                  class="font-heading font-bold text-lg text-[#E59F00] shrink-0"
+
+                <!-- Refresh -->
+                <button
+                  onclick="loadShopEarnings()"
+                  class="manga-btn-secondary p-3"
+                  title="Refresh"
                 >
-                  -₹5,000
-                </p>
+                  <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                </button>
               </div>
-              <div
-                class="p-4 flex justify-between items-center gap-3 hover:bg-[#F7F8FC] transition-colors rounded-b-2xl"
-              >
-                <div class="flex items-center gap-3 min-w-0">
-                  <div
-                    class="p-2 bg-green-100 rounded-lg text-green-700 shrink-0"
-                  >
-                    <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
-                  </div>
-                  <div class="min-w-0">
-                    <p class="font-bold truncate">Customer Print (ORD-899)</p>
-                    <p class="text-xs font-bold text-[#17135F]/50">
-                      30 Aug, 02:20 PM
-                    </p>
-                  </div>
+
+              <!-- =========================
+         TABLE
+    ========================== -->
+              <div class="manga-card overflow-hidden">
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left">
+                    <!-- Table Header -->
+                    <thead class="bg-[#F7F8FC]">
+                      <tr>
+                        <th class="p-4 font-heading font-bold">Order ID</th>
+
+                        <th class="p-4 font-heading font-bold">Files</th>
+
+                        <th class="p-4 font-heading font-bold">Pages</th>
+
+                        <th class="p-4 font-heading font-bold">Amount</th>
+
+                        <th class="p-4 font-heading font-bold">Payment</th>
+
+                        <th class="p-4 font-heading font-bold">Completed</th>
+
+                        <th class="p-4 font-heading font-bold">Status</th>
+                      </tr>
+                    </thead>
+
+                    <!-- Table Body -->
+                    <tbody
+                      id="earningsOrdersTable"
+                      class="divide-y-2 divide-gray-100"
+                    >
+                      <tr>
+                        <td
+                          colspan="7"
+                          class="p-8 text-center font-bold text-gray-400"
+                        >
+                          Open Earnings to load orders...
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
-                <p
-                  class="font-heading font-bold text-lg text-green-700 shrink-0"
-                >
-                  +₹110
-                </p>
+
+                <!-- =========================
+           EMPTY STATE
+      ========================== -->
+                <div id="earningsEmptyState" class="hidden p-10 text-center">
+                  <div
+                    class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#F7F8FC] flex items-center justify-center"
+                  >
+                    <i data-lucide="receipt" class="w-8 h-8 text-gray-400"></i>
+                  </div>
+
+                  <h4 class="font-heading font-bold text-lg">
+                    No Orders Found
+                  </h4>
+
+                  <p class="text-sm font-bold text-[#17135F]/50 mt-1">
+                    Selected year/month ke liye koi completed order nahi mila.
+                  </p>
+                </div>
+
+                <!-- =========================
+           PAGINATION
+      ========================== -->
+                <div
+                  id="earningsPagination"
+                  class="border-t-2 border-gray-100 p-4 flex flex-wrap items-center justify-center gap-2"
+                ></div>
               </div>
             </div>
           </section>
@@ -1327,6 +1520,11 @@
           onOrdersTabShown();
         } else {
           onOrdersTabHidden();
+        }
+
+        if (tabId === "earnings") {
+          loadEarningsCashfreeSettings();
+          loadShopEarnings();
         }
 
         if (element) {
@@ -1797,6 +1995,891 @@
         if (ordersPollTimer) {
           clearInterval(ordersPollTimer);
           ordersPollTimer = null;
+        }
+      }
+
+      /* ============================================================
+   EARNINGS + CASHFREE SETTINGS
+   ============================================================ */
+
+      function getEarningsShopId() {
+        return currentShop?.shop_id || null;
+      }
+
+      function escapeEarnings(value) {
+        const div = document.createElement("div");
+        div.textContent = String(value ?? "");
+        return div.innerHTML;
+      }
+
+      function formatEarningsINR(value) {
+        return new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 2,
+        }).format(Number(value || 0));
+      }
+
+      function formatEarningsDate(value) {
+        if (!value) return "—";
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) return "—";
+
+        return date.toLocaleString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      /* ============================================================
+   EARNINGS STATE
+   ============================================================ */
+
+      let earningsOrders = [];
+      let earningsFilteredOrders = [];
+
+      let earningsCurrentPage = 1;
+
+      const earningsPerPage = 10;
+
+      let earningsSelectedYear = "";
+      let earningsSelectedMonth = "";
+
+      /* ============================================================
+   EARNINGS MESSAGE
+   ============================================================ */
+
+      function showEarningsMessage(type, message) {
+        const box = document.getElementById("earningsCashfreeMessage");
+
+        if (!box) return;
+
+        box.className = "mt-5 rounded-xl px-4 py-3 text-sm font-bold";
+
+        if (type === "success") {
+          box.classList.add("bg-green-100", "text-green-700");
+
+          box.innerHTML = `
+      <i
+        data-lucide="check-circle"
+        class="w-5 h-5 inline-block mr-2"
+      ></i>
+      ${escapeEarnings(message)}
+    `;
+        } else {
+          box.classList.add("bg-red-100", "text-red-700");
+
+          box.innerHTML = `
+      <i
+        data-lucide="alert-circle"
+        class="w-5 h-5 inline-block mr-2"
+      ></i>
+      ${escapeEarnings(message)}
+    `;
+        }
+
+        lucide.createIcons();
+      }
+
+      /* ============================================================
+   LOAD CASHFREE SETTINGS
+   ============================================================ */
+
+      async function loadEarningsCashfreeSettings() {
+        const shopId = getEarningsShopId();
+
+        if (!shopId) {
+          showEarningsMessage(
+            "error",
+            "Shop session nahi mili. Dobara login karein.",
+          );
+
+          return;
+        }
+
+        try {
+          const { data, error } = await supabaseClient
+            .from("shops")
+            .select("cashfree_app_id, cashfree_secret_key, cashfree_env")
+            .eq("shop_id", shopId)
+            .maybeSingle();
+
+          if (error) throw error;
+
+          const appInput = document.getElementById("earningsCashfreeAppId");
+
+          const envInput = document.getElementById("earningsCashfreeEnv");
+
+          const secretInput = document.getElementById("earningsCashfreeSecret");
+
+          if (appInput) {
+            appInput.value = data?.cashfree_app_id || "";
+          }
+
+          if (envInput) {
+            envInput.value = data?.cashfree_env || "SANDBOX";
+          }
+
+          if (secretInput) {
+            secretInput.value = "";
+
+            secretInput.placeholder = data?.cashfree_secret_key
+              ? "Secret Key already saved — enter new key only to change it"
+              : "Enter Cashfree Secret Key";
+          }
+
+          const badge = document.getElementById("cashfreeEnvironmentBadge");
+
+          if (badge) {
+            const environment = data?.cashfree_env || "SANDBOX";
+
+            badge.textContent = environment;
+
+            badge.className =
+              "px-3 py-1 rounded-full text-xs font-bold " +
+              (environment === "PRODUCTION"
+                ? "bg-green-100 text-green-700"
+                : "bg-yellow-100 text-yellow-800");
+          }
+        } catch (error) {
+          console.error("Cashfree settings load failed:", error);
+
+          showEarningsMessage(
+            "error",
+            error.message || "Cashfree details load nahi ho paayi.",
+          );
+        }
+      }
+
+      /* ============================================================
+   SAVE CASHFREE SETTINGS
+   ============================================================ */
+
+      async function saveEarningsCashfreeSettings() {
+        const shopId = getEarningsShopId();
+
+        const btn = document.getElementById("saveEarningsCashfreeBtn");
+
+        const appId = document
+          .getElementById("earningsCashfreeAppId")
+          .value.trim();
+
+        const secret = document
+          .getElementById("earningsCashfreeSecret")
+          .value.trim();
+
+        const environment = document.getElementById(
+          "earningsCashfreeEnv",
+        ).value;
+
+        if (!shopId) {
+          return showEarningsMessage("error", "Shop session nahi mili.");
+        }
+
+        if (!appId) {
+          return showEarningsMessage("error", "Cashfree App ID required hai.");
+        }
+
+        try {
+          btn.disabled = true;
+
+          btn.innerHTML = `
+      <i
+        data-lucide="loader-2"
+        class="w-5 h-5 animate-spin"
+      ></i>
+      Saving...
+    `;
+
+          lucide.createIcons();
+
+          const update = {
+            cashfree_app_id: appId,
+            cashfree_env: environment,
+          };
+
+          /*
+           * Secret key only update when user enters
+           * a new value.
+           */
+          if (secret) {
+            update.cashfree_secret_key = secret;
+          }
+
+          const { error } = await supabaseClient
+            .from("shops")
+            .update(update)
+            .eq("shop_id", shopId);
+
+          if (error) throw error;
+
+          document.getElementById("earningsCashfreeSecret").value = "";
+
+          document.getElementById("earningsCashfreeSecret").placeholder =
+            "Secret Key already saved — enter new key only to change it";
+
+          /*
+           * Update environment badge immediately.
+           */
+          const badge = document.getElementById("cashfreeEnvironmentBadge");
+
+          if (badge) {
+            badge.textContent = environment;
+
+            badge.className =
+              "px-3 py-1 rounded-full text-xs font-bold " +
+              (environment === "PRODUCTION"
+                ? "bg-green-100 text-green-700"
+                : "bg-yellow-100 text-yellow-800");
+          }
+
+          showEarningsMessage(
+            "success",
+            "Cashfree details successfully save ho gayi hain.",
+          );
+        } catch (error) {
+          console.error("Cashfree save failed:", error);
+
+          showEarningsMessage(
+            "error",
+            error.message || "Cashfree details save nahi ho paayi.",
+          );
+        } finally {
+          btn.disabled = false;
+
+          btn.innerHTML = `
+      <i
+        data-lucide="save"
+        class="w-5 h-5"
+      ></i>
+      Save Cashfree Details
+    `;
+
+          lucide.createIcons();
+        }
+      }
+
+      /* ============================================================
+   POPULATE YEAR DROPDOWN
+   ============================================================ */
+
+      function populateEarningsYears() {
+        const yearSelect = document.getElementById("earningsYear");
+
+        if (!yearSelect) return;
+
+        const currentValue = yearSelect.value || earningsSelectedYear;
+
+        /*
+         * Get unique years from completed orders.
+         */
+        const years = [
+          ...new Set(
+            earningsOrders
+              .map((order) => {
+                const date = new Date(order.completed_at || order.created_at);
+
+                if (Number.isNaN(date.getTime())) {
+                  return null;
+                }
+
+                return date.getFullYear();
+              })
+              .filter(Boolean),
+          ),
+        ].sort((a, b) => b - a);
+
+        /*
+         * Keep All Years option.
+         */
+        yearSelect.innerHTML = `
+    <option value="">
+      All Years
+    </option>
+  `;
+
+        years.forEach((year) => {
+          const option = document.createElement("option");
+
+          option.value = String(year);
+          option.textContent = String(year);
+
+          yearSelect.appendChild(option);
+        });
+
+        /*
+         * Restore selected year.
+         */
+        if (currentValue && years.includes(Number(currentValue))) {
+          yearSelect.value = String(currentValue);
+        } else {
+          yearSelect.value = "";
+        }
+      }
+
+      /* ============================================================
+   FILTER EARNINGS ORDERS
+   ============================================================ */
+
+      function filterEarningsOrders() {
+        const yearSelect = document.getElementById("earningsYear");
+
+        const monthSelect = document.getElementById("earningsMonth");
+
+        earningsSelectedYear = yearSelect?.value || "";
+
+        earningsSelectedMonth = monthSelect?.value || "";
+
+        /*
+         * Always return to page 1 after changing filters.
+         */
+        earningsCurrentPage = 1;
+
+        earningsFilteredOrders = earningsOrders.filter((order) => {
+          const date = new Date(order.completed_at || order.created_at);
+
+          if (Number.isNaN(date.getTime())) {
+            return false;
+          }
+
+          const year = String(date.getFullYear());
+
+          const month = String(date.getMonth() + 1);
+
+          /*
+           * Year filter
+           */
+          if (earningsSelectedYear && year !== earningsSelectedYear) {
+            return false;
+          }
+
+          /*
+           * Month filter
+           */
+          if (earningsSelectedMonth && month !== earningsSelectedMonth) {
+            return false;
+          }
+
+          return true;
+        });
+
+        /*
+         * Update summary cards based on
+         * currently filtered orders.
+         */
+        updateFilteredEarningsSummary();
+
+        /*
+         * Render table.
+         */
+        renderEarningsOrders();
+
+        /*
+         * Render pagination.
+         */
+        renderEarningsPagination();
+      }
+
+      /* ============================================================
+   UPDATE FILTERED SUMMARY
+   ============================================================ */
+
+      function updateFilteredEarningsSummary() {
+        const filteredOrders = earningsFilteredOrders || [];
+
+        const total = filteredOrders.reduce(
+          (sum, order) => sum + Number(order.amount_charged || 0),
+          0,
+        );
+
+        /*
+         * This Month card.
+         *
+         * When no year/month filter is selected,
+         * it shows current month's completed earnings.
+         *
+         * When a filter is selected, it shows the
+         * earnings inside the selected filter.
+         */
+        let monthTotal = 0;
+
+        if (earningsSelectedYear || earningsSelectedMonth) {
+          monthTotal = total;
+        } else {
+          const now = new Date();
+
+          const currentYear = now.getFullYear();
+
+          const currentMonth = now.getMonth();
+
+          monthTotal = filteredOrders
+            .filter((order) => {
+              const date = new Date(order.completed_at || order.created_at);
+
+              return (
+                !Number.isNaN(date.getTime()) &&
+                date.getFullYear() === currentYear &&
+                date.getMonth() === currentMonth
+              );
+            })
+            .reduce((sum, order) => sum + Number(order.amount_charged || 0), 0);
+        }
+
+        const totalElement = document.getElementById("earningsTotalCompleted");
+
+        const monthElement = document.getElementById("earningsThisMonth");
+
+        const countElement = document.getElementById("earningsCompletedOrders");
+
+        if (totalElement) {
+          totalElement.textContent = formatEarningsINR(total);
+        }
+
+        if (monthElement) {
+          monthElement.textContent = formatEarningsINR(monthTotal);
+        }
+
+        if (countElement) {
+          countElement.textContent = filteredOrders.length;
+        }
+      }
+
+      /* ============================================================
+   RENDER EARNINGS ORDERS
+   ============================================================ */
+
+      function renderEarningsOrders() {
+        const table = document.getElementById("earningsOrdersTable");
+
+        const emptyState = document.getElementById("earningsEmptyState");
+
+        if (!table) return;
+
+        const orders = earningsFilteredOrders || [];
+
+        /*
+         * Empty state
+         */
+        if (!orders.length) {
+          table.innerHTML = "";
+
+          if (emptyState) {
+            emptyState.classList.remove("hidden");
+          }
+
+          return;
+        }
+
+        /*
+         * Hide empty state.
+         */
+        if (emptyState) {
+          emptyState.classList.add("hidden");
+        }
+
+        /*
+         * Calculate pagination.
+         */
+        const start = (earningsCurrentPage - 1) * earningsPerPage;
+
+        const end = start + earningsPerPage;
+
+        const pageOrders = orders.slice(start, end);
+
+        /*
+         * Render only 10 orders.
+         */
+        table.innerHTML = pageOrders
+          .map(
+            (order) => `
+          <tr class="hover:bg-[#F7F8FC]">
+
+            <td class="p-4 font-mono font-bold">
+              ${escapeEarnings(
+                String(order.order_id).slice(0, 12).toUpperCase(),
+              )}
+            </td>
+
+            <td class="p-4 font-bold">
+              ${Number(order.total_files || 0)}
+            </td>
+
+            <td class="p-4 font-bold">
+              ${Number(order.total_pages || 0)}
+            </td>
+
+            <td
+              class="p-4 font-heading font-bold text-lg"
+            >
+              ${formatEarningsINR(order.amount_charged)}
+            </td>
+
+            <td class="p-4">
+
+              <span
+                class="px-3 py-1 rounded-full bg-[#FFF7D6] text-[#17135F] text-xs font-bold"
+              >
+                ${escapeEarnings(order.payment_mode || "N/A")}
+              </span>
+
+            </td>
+
+            <td class="p-4 text-sm font-bold">
+              ${formatEarningsDate(order.completed_at || order.created_at)}
+            </td>
+
+            <td class="p-4">
+
+              <span
+                class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold"
+              >
+                COMPLETED
+              </span>
+
+            </td>
+
+          </tr>
+        `,
+          )
+          .join("");
+
+        lucide.createIcons();
+      }
+
+      /* ============================================================
+   PAGINATION
+   ============================================================ */
+
+      function renderEarningsPagination() {
+        const container = document.getElementById("earningsPagination");
+
+        if (!container) return;
+
+        const totalOrders = earningsFilteredOrders.length;
+
+        const totalPages = Math.ceil(totalOrders / earningsPerPage);
+
+        /*
+         * No pagination if 10 or fewer orders.
+         */
+        if (totalPages <= 1 || totalOrders === 0) {
+          container.innerHTML = "";
+          return;
+        }
+
+        let html = "";
+
+        /*
+         * Previous button
+         */
+        html += `
+    <button
+      type="button"
+      onclick="changeEarningsPage(${earningsCurrentPage - 1})"
+      class="px-3 py-2 rounded-lg font-bold border-2 border-[#17135F] ${
+        earningsCurrentPage === 1
+          ? "opacity-40 cursor-not-allowed"
+          : "hover:bg-[#17135F] hover:text-white"
+      }"
+      ${earningsCurrentPage === 1 ? "disabled" : ""}
+    >
+      <i
+        data-lucide="chevron-left"
+        class="w-4 h-4"
+      ></i>
+    </button>
+  `;
+
+        /*
+         * Page numbers
+         */
+        for (let page = 1; page <= totalPages; page++) {
+          /*
+           * For many pages, show a compact
+           * pagination instead of 1...100.
+           */
+          if (totalPages > 7) {
+            if (
+              page !== 1 &&
+              page !== totalPages &&
+              Math.abs(page - earningsCurrentPage) > 2
+            ) {
+              if (page === 2 || page === totalPages - 1) {
+                html += `
+            <span
+              class="px-2 py-2 font-bold text-gray-400"
+            >
+              ...
+            </span>
+          `;
+              }
+
+              continue;
+            }
+          }
+
+          const active = page === earningsCurrentPage;
+
+          html += `
+      <button
+        type="button"
+        onclick="changeEarningsPage(${page})"
+        class="min-w-[40px] px-3 py-2 rounded-lg font-bold border-2 ${
+          active
+            ? "bg-[#17135F] text-white border-[#17135F]"
+            : "border-[#17135F] hover:bg-[#17135F] hover:text-white"
+        }"
+      >
+        ${page}
+      </button>
+    `;
+        }
+
+        /*
+         * Next button
+         */
+        html += `
+    <button
+      type="button"
+      onclick="changeEarningsPage(${earningsCurrentPage + 1})"
+      class="px-3 py-2 rounded-lg font-bold border-2 border-[#17135F] ${
+        earningsCurrentPage === totalPages
+          ? "opacity-40 cursor-not-allowed"
+          : "hover:bg-[#17135F] hover:text-white"
+      }"
+      ${earningsCurrentPage === totalPages ? "disabled" : ""}
+    >
+      <i
+        data-lucide="chevron-right"
+        class="w-4 h-4"
+      ></i>
+    </button>
+  `;
+
+        container.innerHTML = html;
+
+        lucide.createIcons();
+      }
+
+      /* ============================================================
+   CHANGE PAGE
+   ============================================================ */
+
+      function changeEarningsPage(page) {
+        const totalPages = Math.ceil(
+          earningsFilteredOrders.length / earningsPerPage,
+        );
+
+        if (page < 1 || page > totalPages) {
+          return;
+        }
+
+        earningsCurrentPage = page;
+
+        renderEarningsOrders();
+
+        renderEarningsPagination();
+
+        /*
+         * Scroll back to orders section.
+         */
+        const table = document.getElementById("earningsOrdersTable");
+
+        if (table) {
+          table.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }
+
+      /* ============================================================
+   RESET FILTERS
+   ============================================================ */
+
+      function resetEarningsFilters() {
+        earningsSelectedYear = "";
+        earningsSelectedMonth = "";
+
+        earningsCurrentPage = 1;
+
+        const yearSelect = document.getElementById("earningsYear");
+
+        const monthSelect = document.getElementById("earningsMonth");
+
+        if (yearSelect) {
+          yearSelect.value = "";
+        }
+
+        if (monthSelect) {
+          monthSelect.value = "";
+        }
+
+        filterEarningsOrders();
+      }
+
+      /* ============================================================
+   LOAD SHOP EARNINGS
+   ============================================================ */
+
+      async function loadShopEarnings() {
+        const table = document.getElementById("earningsOrdersTable");
+
+        if (!table) return;
+
+        const shopId = getEarningsShopId();
+
+        if (!shopId) {
+          table.innerHTML = `
+      <tr>
+        <td
+          colspan="7"
+          class="p-8 text-center font-bold text-red-500"
+        >
+          Shop session nahi mili.
+        </td>
+      </tr>
+    `;
+
+          return;
+        }
+
+        /*
+         * Loading state
+         */
+        table.innerHTML = `
+    <tr>
+      <td
+        colspan="7"
+        class="p-8 text-center font-bold text-gray-400"
+      >
+        <i
+          data-lucide="loader-2"
+          class="w-5 h-5 animate-spin inline-block mr-2"
+        ></i>
+        Loading completed orders...
+      </td>
+    </tr>
+  `;
+
+        const emptyState = document.getElementById("earningsEmptyState");
+
+        if (emptyState) {
+          emptyState.classList.add("hidden");
+        }
+
+        const pagination = document.getElementById("earningsPagination");
+
+        if (pagination) {
+          pagination.innerHTML = "";
+        }
+
+        lucide.createIcons();
+
+        try {
+          const { data: orders, error } = await supabaseClient
+            .from("print_orders")
+            .select(
+              "order_id, total_files, total_pages, amount_charged, payment_mode, status, created_at, completed_at",
+            )
+            .eq("shop_id", shopId)
+            .eq("status", "completed")
+            .order("completed_at", {
+              ascending: false,
+            });
+
+          if (error) throw error;
+
+          /*
+           * Save all completed orders.
+           */
+          earningsOrders = orders || [];
+
+          /*
+           * Populate years from database orders.
+           */
+          populateEarningsYears();
+
+          /*
+           * Apply current filter.
+           */
+          filterEarningsOrders();
+        } catch (error) {
+          console.error("Earnings orders load failed:", error);
+
+          earningsOrders = [];
+          earningsFilteredOrders = [];
+
+          const emptyState = document.getElementById("earningsEmptyState");
+
+          if (emptyState) {
+            emptyState.classList.add("hidden");
+          }
+
+          const pagination = document.getElementById("earningsPagination");
+
+          if (pagination) {
+            pagination.innerHTML = "";
+          }
+
+          table.innerHTML = `
+      <tr>
+        <td
+          colspan="7"
+          class="p-8 text-center"
+        >
+
+          <i
+            data-lucide="alert-circle"
+            class="w-10 h-10 text-red-400 mx-auto mb-2"
+          ></i>
+
+          <p class="font-bold text-red-600">
+            Orders load nahi ho paaye.
+          </p>
+
+          <button
+            onclick="loadShopEarnings()"
+            class="manga-btn px-4 py-2 mt-3"
+          >
+            Retry
+          </button>
+
+        </td>
+      </tr>
+    `;
+
+          /*
+           * Reset summary cards on error.
+           */
+          const totalElement = document.getElementById(
+            "earningsTotalCompleted",
+          );
+
+          const monthElement = document.getElementById("earningsThisMonth");
+
+          const countElement = document.getElementById(
+            "earningsCompletedOrders",
+          );
+
+          if (totalElement) {
+            totalElement.textContent = formatEarningsINR(0);
+          }
+
+          if (monthElement) {
+            monthElement.textContent = formatEarningsINR(0);
+          }
+
+          if (countElement) {
+            countElement.textContent = "0";
+          }
+
+          lucide.createIcons();
         }
       }
     </script>
