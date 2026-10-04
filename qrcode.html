@@ -1075,12 +1075,12 @@
             "mb-4 flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900";
 
           notice.innerHTML = `
-                  <span class="text-base leading-5">⚠️</span>
-                  <div>
-                    <p class="text-sm font-bold">${escapeHtml(msg.title)}</p>
-                    <p class="mt-0.5 text-xs font-medium">${escapeHtml(msg.text)}</p>
-                  </div>
-                `;
+            <span class="text-base leading-5">⚠️</span>
+            <div>
+              <p class="text-sm font-bold">${escapeHtml(msg.title)}</p>
+              <p class="mt-0.5 text-xs font-medium">${escapeHtml(msg.text)}</p>
+            </div>
+          `;
 
           target.insertBefore(notice, target.firstChild);
         });
@@ -1326,32 +1326,21 @@
 
           filesList.push({
             file,
+
             pages,
+
             copies: 1,
+
             uploaded: false,
-            uploading: false,
-            uploadError: "",
+
             storagePath: null,
+
             jobId: null,
           });
         }
 
         if (filesList.length > 0) {
           showConfigStep();
-
-          try {
-            await uploadAllSelectedFiles();
-            renderFiles();
-          } catch (error) {
-            console.error("[Quick2Print] Immediate upload failed:", error);
-
-            showUploadError(
-              error?.message ||
-                "File upload failed. Please check your connection and try again.",
-            );
-
-            renderFiles();
-          }
         }
       }
 
@@ -1387,123 +1376,123 @@
           container.insertAdjacentHTML(
             "beforeend",
             `
-                  <div class="manga-shadow p-2 mb-2 bg-white rounded-xl">
+            <div class="manga-shadow p-2 mb-2 bg-white rounded-xl">
 
-                    <div class="flex items-start justify-between mb-1.5">
+              <div class="flex items-start justify-between mb-1.5">
 
-                      <div class="flex items-center gap-2 overflow-hidden flex-1">
+                <div class="flex items-center gap-2 overflow-hidden flex-1">
 
-                        <div
-                          class="bg-[#EEF2FF] text-[#211B8F] p-1.5 rounded-lg shrink-0 flex items-center justify-center"
-                        >
-                          <svg
-                            class="w-3.5 h-3.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2.5"
-                              d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                            />
-                          </svg>
-                        </div>
-
-                        <div class="flex flex-col overflow-hidden">
-
-                          <span
-                            class="font-heading font-bold text-xs text-ink truncate"
-                          >
-                            ${escapeHtml(fileName)}
-                          </span>
-
-                          <span
-                            class="text-[9px] font-semibold bg-gray-100 text-gray-500 px-1 py-0.5 rounded w-max mt-0.5"
-                          >
-                            ${pageText}
-                          </span>
-
-                        </div>
-
-                      </div>
-
-
-                      <button
-                        type="button"
-                        onclick="removeFile(${index})"
-                        class="p-1 text-gray-400 hover:text-red-600 bg-gray-50 hover:bg-red-50 rounded-lg transition-colors shrink-0 ml-1.5"
-                        title="Remove file"
-                      >
-                        <svg
-                          class="w-3 h-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="3"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-
-                    </div>
-
-
-                    <div
-                      class="border-b-2 border-dashed border-gray-100 mb-1.5"
-                    ></div>
-
-
-                    <div
-                      class="flex items-center justify-between"
+                  <div
+                    class="bg-[#EEF2FF] text-[#211B8F] p-1.5 rounded-lg shrink-0 flex items-center justify-center"
+                  >
+                    <svg
+                      class="w-3.5 h-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.5"
+                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
 
-                      <label
-                        class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block"
-                      >
-                        Kitni Copy?
-                      </label>
+                  <div class="flex flex-col overflow-hidden">
 
+                    <span
+                      class="font-heading font-bold text-xs text-ink truncate"
+                    >
+                      ${escapeHtml(fileName)}
+                    </span>
 
-                      <div
-                        class="flex items-center bg-white rounded-lg p-0.5 border border-gray-200"
-                      >
-
-                        <button
-                          type="button"
-                          onclick="updateFileCopies(${index}, -1)"
-                          class="w-5 h-5 flex items-center justify-center hover:bg-gray-50 rounded text-sm font-bold text-gray-500"
-                        >
-                          -
-                        </button>
-
-
-                        <span
-                          class="w-5 text-center text-xs font-bold text-ink"
-                        >
-                          ${item.copies}
-                        </span>
-
-
-                        <button
-                          type="button"
-                          onclick="updateFileCopies(${index}, 1)"
-                          class="w-5 h-5 flex items-center justify-center hover:bg-gray-50 rounded text-sm font-bold text-gray-500"
-                        >
-                          +
-                        </button>
-
-                      </div>
-
-                    </div>
+                    <span
+                      class="text-[9px] font-semibold bg-gray-100 text-gray-500 px-1 py-0.5 rounded w-max mt-0.5"
+                    >
+                      ${pageText}
+                    </span>
 
                   </div>
-                  `,
+
+                </div>
+
+
+                <button
+                  type="button"
+                  onclick="removeFile(${index})"
+                  class="p-1 text-gray-400 hover:text-red-600 bg-gray-50 hover:bg-red-50 rounded-lg transition-colors shrink-0 ml-1.5"
+                  title="Remove file"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+
+              </div>
+
+
+              <div
+                class="border-b-2 border-dashed border-gray-100 mb-1.5"
+              ></div>
+
+
+              <div
+                class="flex items-center justify-between"
+              >
+
+                <label
+                  class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block"
+                >
+                  Kitni Copy?
+                </label>
+
+
+                <div
+                  class="flex items-center bg-white rounded-lg p-0.5 border border-gray-200"
+                >
+
+                  <button
+                    type="button"
+                    onclick="updateFileCopies(${index}, -1)"
+                    class="w-5 h-5 flex items-center justify-center hover:bg-gray-50 rounded text-sm font-bold text-gray-500"
+                  >
+                    -
+                  </button>
+
+
+                  <span
+                    class="w-5 text-center text-xs font-bold text-ink"
+                  >
+                    ${item.copies}
+                  </span>
+
+
+                  <button
+                    type="button"
+                    onclick="updateFileCopies(${index}, 1)"
+                    class="w-5 h-5 flex items-center justify-center hover:bg-gray-50 rounded text-sm font-bold text-gray-500"
+                  >
+                    +
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+            `,
           );
         });
       }
@@ -1637,86 +1626,43 @@
       // UPLOAD
       // ============================================================
 
-      async function uploadSelectedFile(item, index) {
-        if (!item?.file) {
-          throw new Error(`File ${index + 1} missing.`);
-        }
+      async function uploadAllFiles(jobIdPrefix) {
+        for (let i = 0; i < filesList.length; i++) {
+          const item = filesList[i];
 
-        item.uploading = true;
-        item.uploaded = false;
-        item.uploadError = "";
-        renderFiles();
+          if (item.uploaded) {
+            continue;
+          }
 
-        try {
-          const file = item.file;
+          const jobId = `${jobIdPrefix}-${i}`;
 
-          const safeName = file.name
-            .replace(/[^a-zA-Z0-9._() -]/g, "_")
-            .replace(/\s+/g, "_");
+          const safeName = item.file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
 
-          const jobId = `draft-${Date.now()}-${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
-
-          const storagePath = `shop/${currentShopId}/job/${jobId}/${safeName}`;
-
-          document.getElementById("processingText").textContent =
-            `UPLOADING ${index + 1}/${filesList.length}...`;
+          const path = `shop/${currentShopId}/job/${jobId}/${safeName}`;
 
           const { error } = await supabaseClient.storage
             .from(STORAGE_BUCKET)
-            .upload(storagePath, file, {
-              cacheControl: "3600",
-              contentType: file.type || "application/octet-stream",
+            .upload(path, item.file, {
+              contentType: item.file.type || "application/octet-stream",
+
               upsert: false,
             });
 
           if (error) {
             throw new Error(
-              `"${file.name}" upload nahi ho payi: ${error.message}`,
+              `"${item.file.name}" upload nahi ho payi: ${error.message}`,
             );
           }
 
           item.uploaded = true;
-          item.uploading = false;
-          item.uploadError = "";
-          item.storagePath = storagePath;
+
+          // IMPORTANT:
+          // Supabase storage APIs expect the path relative to the
+          // bucket name. Do not store "print-files/..." here.
+          item.storagePath = path;
+
           item.jobId = jobId;
-
-          renderFiles();
-
-          return storagePath;
-        } catch (error) {
-          item.uploading = false;
-          item.uploaded = false;
-          item.uploadError = error?.message || "File upload failed.";
-
-          renderFiles();
-
-          throw error;
         }
-      }
-
-      async function uploadAllSelectedFiles() {
-        hideUploadError();
-
-        for (let i = 0; i < filesList.length; i++) {
-          if (filesList[i]?.uploaded === true && filesList[i]?.storagePath) {
-            continue;
-          }
-
-          await uploadSelectedFile(filesList[i], i);
-        }
-
-        document.getElementById("processingText").textContent =
-          "FILES UPLOADED ✓";
-      }
-
-      function allSelectedFilesUploaded() {
-        return (
-          filesList.length > 0 &&
-          filesList.every(
-            (item) => item?.uploaded === true && !!item?.storagePath,
-          )
-        );
       }
 
       // ============================================================
@@ -1729,12 +1675,6 @@
           return;
         }
 
-        if (!allSelectedFilesUploaded()) {
-          showStep2Error(
-            "Please wait until all files show Uploaded ✓ before continuing.",
-          );
-          return;
-        }
         hideStep2Error();
         paymentMode = mode;
         setPayButtonsDisabled(true);
@@ -1776,8 +1716,12 @@
            * Cash orders can directly become pending print orders.
            * Your Print Agent will ask the shopkeeper for confirmation.
            */
-
           if (mode === "CASH") {
+            const jobIdPrefix = crypto.randomUUID().slice(0, 8);
+
+            // Upload files
+            await uploadAllFiles(jobIdPrefix);
+
             // Create CASH order
             const { data: order, error: orderError } = await supabaseClient
               .from("print_orders")
@@ -1842,14 +1786,11 @@
            */
 
           if (mode === "UPI") {
-            // Make sure selected files are uploaded before payment
-            const notUploaded = filesList.filter(
-              (item) => !item?.storagePath || item.uploaded !== true,
-            );
+            const upiButton = document.getElementById("upiPayBtn");
 
-            if (notUploaded.length > 0) {
+            if (upiButton?.dataset.unavailable === "true") {
               throw new Error(
-                "Please wait until all files are uploaded successfully.",
+                "UPI payment is currently unavailable for this shop. Please pay at the shop counter.",
               );
             }
 
@@ -1867,7 +1808,6 @@
              * 5. Create print_orders row
              * 6. Create Cashfree payment session
              */
-
             const createResponse = await fetch(
               `${PAYMENT_API.replace(/\/+$/, "")}/api/payment/create`,
               {
@@ -1910,7 +1850,6 @@
              * SANDBOX
              * PRODUCTION
              */
-
             const cashfreeEnvironment = String(
               createData.environment || "SANDBOX",
             ).toUpperCase();
@@ -1927,7 +1866,6 @@
             /*
              * Initialize Cashfree
              */
-
             const cashfree = Cashfree({
               mode: cashfreeMode,
             });
@@ -1936,7 +1874,6 @@
              * Stop our fake processing animation before
              * opening the actual Cashfree checkout.
              */
-
             cancelProcessingAnimation();
 
             setPayButtonsDisabled(true);
@@ -1944,7 +1881,6 @@
             /*
              * Open Cashfree Checkout
              */
-
             await cashfree.checkout({
               paymentSessionId: paymentSessionId,
               redirectTarget: "_self",
@@ -1971,130 +1907,100 @@
 
           showStep2Error(mapOrderError(err));
         }
-        // ============================================================
-        // ORDER ERROR
-        // ============================================================
+      }
+      // ============================================================
+      // ORDER ERROR
+      // ============================================================
 
-        function mapOrderError(err) {
-          const msg = String(err?.message || "");
+      function mapOrderError(err) {
+        const msg = String(err?.message || "");
 
-          if (/demo limit reached/i.test(msg)) {
-            return "This shop's free demo limit has been reached.";
-          }
-
-          if (/print limit reached/i.test(msg)) {
-            return "This shop's print limit has been reached.";
-          }
-
-          if (/subscription.*expired/i.test(msg)) {
-            return "This shop's subscription has expired.";
-          }
-
-          if (/does not exist/i.test(msg)) {
-            return "This shop is no longer active.";
-          }
-
-          if (/upload nahi ho payi/i.test(msg)) {
-            return msg;
-          }
-
-          if (/network|fetch|failed to fetch/i.test(msg)) {
-            return "Please check your internet connection and try again.";
-          }
-
-          return msg || "Unable to place the order. Please try again.";
+        if (/demo limit reached/i.test(msg)) {
+          return "This shop's free demo limit has been reached.";
         }
 
-        // ============================================================
-        // PROCESSING ANIMATION
-        // ============================================================
-
-        function startProcessingAnimation() {
-          processingTimers.forEach(clearTimeout);
-
-          processingTimers = [];
-
-          document.getElementById("step2").classList.add("hidden");
-
-          const step3 = document.getElementById("step3");
-
-          step3.classList.remove("hidden");
-
-          step3.classList.add("flex");
-
-          document.getElementById("speedLines").style.display = "block";
-
-          const scanner = document.getElementById("scannerLine");
-
-          const documentElement = document.getElementById("processingDocument");
-
-          documentElement.classList.add("anim-file-fly");
-
-          processingTimers.push(
-            setTimeout(() => {
-              document.getElementById("processingText").textContent =
-                "SCANNING FILE...";
-
-              scanner.classList.add("anim-laser-scan");
-            }, 600),
-          );
-
-          processingTimers.push(
-            setTimeout(() => {
-              document.getElementById("processingText").textContent =
-                "UPLOADING...";
-            }, 1800),
-          );
+        if (/print limit reached/i.test(msg)) {
+          return "This shop's print limit has been reached.";
         }
 
-        function finishProcessingAnimation(onDone) {
-          processingTimers.forEach(clearTimeout);
+        if (/subscription.*expired/i.test(msg)) {
+          return "This shop's subscription has expired.";
+        }
 
-          processingTimers = [];
+        if (/does not exist/i.test(msg)) {
+          return "This shop is no longer active.";
+        }
 
-          const scanner = document.getElementById("scannerLine");
+        if (/upload nahi ho payi/i.test(msg)) {
+          return msg;
+        }
 
-          scanner.classList.remove("anim-laser-scan");
+        if (/network|fetch|failed to fetch/i.test(msg)) {
+          return "Please check your internet connection and try again.";
+        }
 
-          scanner.style.opacity = "0";
+        return msg || "Unable to place the order. Please try again.";
+      }
 
-          document.getElementById("processingText").textContent = "ORDERED";
+      // ============================================================
+      // PROCESSING ANIMATION
+      // ============================================================
 
-          document.getElementById("printedOverlay").classList.remove("hidden");
+      function startProcessingAnimation() {
+        processingTimers.forEach(clearTimeout);
 
+        processingTimers = [];
+
+        document.getElementById("step2").classList.add("hidden");
+
+        const step3 = document.getElementById("step3");
+
+        step3.classList.remove("hidden");
+
+        step3.classList.add("flex");
+
+        document.getElementById("speedLines").style.display = "block";
+
+        const scanner = document.getElementById("scannerLine");
+
+        const documentElement = document.getElementById("processingDocument");
+
+        documentElement.classList.add("anim-file-fly");
+
+        processingTimers.push(
           setTimeout(() => {
-            document.getElementById("speedLines").style.display = "none";
+            document.getElementById("processingText").textContent =
+              "SCANNING FILE...";
 
-            const step3 = document.getElementById("step3");
+            scanner.classList.add("anim-laser-scan");
+          }, 600),
+        );
 
-            step3.classList.add("hidden");
+        processingTimers.push(
+          setTimeout(() => {
+            document.getElementById("processingText").textContent =
+              "UPLOADING...";
+          }, 1800),
+        );
+      }
 
-            step3.classList.remove("flex");
+      function finishProcessingAnimation(onDone) {
+        processingTimers.forEach(clearTimeout);
 
-            if (typeof onDone === "function") {
-              onDone();
-            }
-          }, 1000);
-        }
+        processingTimers = [];
 
-        function cancelProcessingAnimation() {
-          processingTimers.forEach(clearTimeout);
+        const scanner = document.getElementById("scannerLine");
 
-          processingTimers = [];
+        scanner.classList.remove("anim-laser-scan");
 
+        scanner.style.opacity = "0";
+
+        document.getElementById("processingText").textContent = "ORDERED";
+
+        document.getElementById("printedOverlay").classList.remove("hidden");
+
+        setTimeout(() => {
           document.getElementById("speedLines").style.display = "none";
-
-          const scanner = document.getElementById("scannerLine");
-
-          scanner.classList.remove("anim-laser-scan");
-
-          scanner.style.opacity = "";
-
-          document.getElementById("printedOverlay").classList.add("hidden");
-
-          document
-            .getElementById("processingDocument")
-            .classList.remove("anim-file-fly");
 
           const step3 = document.getElementById("step3");
 
@@ -2102,153 +2008,183 @@
 
           step3.classList.remove("flex");
 
-          document.getElementById("step2").classList.remove("hidden");
+          if (typeof onDone === "function") {
+            onDone();
+          }
+        }, 1000);
+      }
+
+      function cancelProcessingAnimation() {
+        processingTimers.forEach(clearTimeout);
+
+        processingTimers = [];
+
+        document.getElementById("speedLines").style.display = "none";
+
+        const scanner = document.getElementById("scannerLine");
+
+        scanner.classList.remove("anim-laser-scan");
+
+        scanner.style.opacity = "";
+
+        document.getElementById("printedOverlay").classList.add("hidden");
+
+        document
+          .getElementById("processingDocument")
+          .classList.remove("anim-file-fly");
+
+        const step3 = document.getElementById("step3");
+
+        step3.classList.add("hidden");
+
+        step3.classList.remove("flex");
+
+        document.getElementById("step2").classList.remove("hidden");
+      }
+
+      // ============================================================
+      // RECEIPT
+      // ============================================================
+
+      function showReceipt(orderId, colorType, total) {
+        const step4 = document.getElementById("step4");
+
+        step4.classList.remove("hidden");
+
+        step4.classList.add("flex");
+
+        let totalCopies = 0;
+
+        let totalPages = 0;
+
+        filesList.forEach((file) => {
+          totalCopies += Number(file.copies || 1);
+
+          totalPages += Number(file.pages || 1) * Number(file.copies || 1);
+        });
+
+        document.getElementById("receiptOrderId").textContent = orderId
+          .slice(0, 8)
+          .toUpperCase();
+
+        document.getElementById("receiptShopId").textContent = currentShopId;
+
+        document.getElementById("receiptType").textContent =
+          colorType === "BW" ? "Black & White" : "Color";
+
+        document.getElementById("receiptCopies").textContent =
+          `${filesList.length} Files • ${totalCopies} copies • ${totalPages} pages`;
+
+        document.getElementById("receiptTotal").textContent =
+          `₹${formatMoney(total)}`;
+
+        let paymentStatus = document.getElementById("paymentStatusElement");
+
+        if (!paymentStatus) {
+          paymentStatus = document.createElement("div");
+
+          paymentStatus.id = "paymentStatusElement";
+
+          document
+            .getElementById("receiptTotal")
+            .parentElement.parentElement.appendChild(paymentStatus);
         }
 
-        // ============================================================
-        // RECEIPT
-        // ============================================================
+        paymentStatus.className = `mt-6 text-center font-bold text-sm px-4 py-2 rounded-lg manga-shadow block w-full border-2 border-ink ${
+          paymentMode === "UPI"
+            ? "bg-green-100 text-green-800"
+            : "bg-yellow-100 text-yellow-800"
+        }`;
 
-        function showReceipt(orderId, colorType, total) {
-          const step4 = document.getElementById("step4");
+        paymentStatus.textContent =
+          paymentMode === "UPI" ? "Paid via UPI" : "Pay Cash at Shop";
+      }
 
-          step4.classList.remove("hidden");
+      // ============================================================
+      // RESET
+      // ============================================================
 
-          step4.classList.add("flex");
+      function resetApp() {
+        processingTimers.forEach(clearTimeout);
 
-          let totalCopies = 0;
+        processingTimers = [];
 
-          let totalPages = 0;
+        filesList = [];
 
-          filesList.forEach((file) => {
-            totalCopies += Number(file.copies || 1);
+        paymentMode = "";
 
-            totalPages += Number(file.pages || 1) * Number(file.copies || 1);
+        setPayButtonsDisabled(false);
+
+        document.getElementById("fileInput").value = "";
+
+        document.getElementById("fileInputStep2").value = "";
+
+        const bw = document.querySelector(
+          'input[name="colorType"][value="BW"]',
+        );
+
+        if (bw) {
+          bw.checked = true;
+        }
+
+        document.getElementById("paperSizeSelect").value = "A4";
+
+        document.getElementById("printedOverlay").classList.add("hidden");
+
+        document
+          .getElementById("processingDocument")
+          .classList.remove("anim-file-fly");
+
+        document.getElementById("step2").classList.add("hidden");
+
+        document.getElementById("step3").classList.add("hidden");
+
+        document.getElementById("step3").classList.remove("flex");
+
+        document.getElementById("step4").classList.add("hidden");
+
+        document.getElementById("step4").classList.remove("flex");
+
+        document.getElementById("speedLines").style.display = "none";
+
+        const paymentStatus = document.getElementById("paymentStatusElement");
+
+        if (paymentStatus) {
+          paymentStatus.remove();
+        }
+
+        hideUploadError();
+
+        hideStep2Error();
+
+        updateTotal();
+
+        updatePayableTheme();
+
+        if (currentShopId) {
+          document.getElementById("step1").classList.remove("hidden");
+        }
+      }
+
+      // ============================================================
+      // EVENTS
+      // ============================================================
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .querySelectorAll('input[name="colorType"]')
+          .forEach((radio) => {
+            radio.addEventListener("change", () => {
+              updatePayableTheme();
+
+              updateTotal();
+            });
           });
 
-          document.getElementById("receiptOrderId").textContent = orderId
-            .slice(0, 8)
-            .toUpperCase();
+        updatePayableTheme();
 
-          document.getElementById("receiptShopId").textContent = currentShopId;
-
-          document.getElementById("receiptType").textContent =
-            colorType === "BW" ? "Black & White" : "Color";
-
-          document.getElementById("receiptCopies").textContent =
-            `${filesList.length} Files • ${totalCopies} copies • ${totalPages} pages`;
-
-          document.getElementById("receiptTotal").textContent =
-            `₹${formatMoney(total)}`;
-
-          let paymentStatus = document.getElementById("paymentStatusElement");
-
-          if (!paymentStatus) {
-            paymentStatus = document.createElement("div");
-
-            paymentStatus.id = "paymentStatusElement";
-
-            document
-              .getElementById("receiptTotal")
-              .parentElement.parentElement.appendChild(paymentStatus);
-          }
-
-          paymentStatus.className = `mt-6 text-center font-bold text-sm px-4 py-2 rounded-lg manga-shadow block w-full border-2 border-ink ${
-            paymentMode === "UPI"
-              ? "bg-green-100 text-green-800"
-              : "bg-yellow-100 text-yellow-800"
-          }`;
-
-          paymentStatus.textContent =
-            paymentMode === "UPI" ? "Paid via UPI" : "Pay Cash at Shop";
-        }
-
-        // ============================================================
-        // RESET
-        // ============================================================
-
-        function resetApp() {
-          processingTimers.forEach(clearTimeout);
-
-          processingTimers = [];
-
-          filesList = [];
-
-          paymentMode = "";
-
-          setPayButtonsDisabled(false);
-
-          document.getElementById("fileInput").value = "";
-
-          document.getElementById("fileInputStep2").value = "";
-
-          const bw = document.querySelector(
-            'input[name="colorType"][value="BW"]',
-          );
-
-          if (bw) {
-            bw.checked = true;
-          }
-
-          document.getElementById("paperSizeSelect").value = "A4";
-
-          document.getElementById("printedOverlay").classList.add("hidden");
-
-          document
-            .getElementById("processingDocument")
-            .classList.remove("anim-file-fly");
-
-          document.getElementById("step2").classList.add("hidden");
-
-          document.getElementById("step3").classList.add("hidden");
-
-          document.getElementById("step3").classList.remove("flex");
-
-          document.getElementById("step4").classList.add("hidden");
-
-          document.getElementById("step4").classList.remove("flex");
-
-          document.getElementById("speedLines").style.display = "none";
-
-          const paymentStatus = document.getElementById("paymentStatusElement");
-
-          if (paymentStatus) {
-            paymentStatus.remove();
-          }
-
-          hideUploadError();
-
-          hideStep2Error();
-
-          updateTotal();
-
-          updatePayableTheme();
-
-          if (currentShopId) {
-            document.getElementById("step1").classList.remove("hidden");
-          }
-        }
-
-        // ============================================================
-        // EVENTS
-        // ============================================================
-
-        document.addEventListener("DOMContentLoaded", () => {
-          document
-            .querySelectorAll('input[name="colorType"]')
-            .forEach((radio) => {
-              radio.addEventListener("change", () => {
-                updatePayableTheme();
-
-                updateTotal();
-              });
-            });
-
-          updatePayableTheme();
-
-          init();
-        });
-      }
+        init();
+      });
     </script>
   </body>
 </html>
