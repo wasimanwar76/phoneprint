@@ -15,6 +15,13 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <!-- Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- PDF LIB -->
+    <!-- =========================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
     <script>
       tailwind.config = {
@@ -212,9 +219,6 @@
         z-index: 20;
       }
     </style>
-
-    <!-- Supabase client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body
     class="font-body min-h-screen relative overflow-hidden flex flex-col justify-between max-w-md mx-auto"
@@ -870,15 +874,8 @@
     </main>
 
     <!-- =========================================================== -->
-    <!-- PDF LIB -->
-    <!-- =========================================================== -->
-
-    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-
-    <!-- =========================================================== -->
     <!-- APPLICATION -->
     <!-- =========================================================== -->
-
     <script>
       // ============================================================
       // Supabase
@@ -900,6 +897,9 @@
 
       const ACCEPTED_TYPES = /\.(pdf|jpg|jpeg|png)$/i;
 
+      // Shop statuses that are allowed to receive orders
+      const READY_SHOP_STATUSES = ["online", "low_ink", "out_of_paper"];
+
       // ============================================================
       // State
       // ============================================================
@@ -908,16 +908,14 @@
 
       let currentShopRow = null;
 
+      // Price per page, loaded from shops.print_price
+      let printPrice = 0;
+
       let filesList = [];
 
       let paymentMode = "";
 
       let processingTimers = [];
-
-      const PRICES = {
-        BW: 5,
-        Color: 10,
-      };
 
       // ============================================================
       // Theme
@@ -985,12 +983,105 @@
 
         document.getElementById("errorStateTitle").textContent = title;
 
-        document.getElementById("errorStateMessage").textContent = message;
+        const msgEl = document.getElementById("errorStateMessage");
+
+        msgEl.textContent = message;
+
+        // Keep line breaks (used by the configuration error message)
+        msgEl.style.whiteSpace = "pre-line";
 
         const error = document.getElementById("errorState");
 
         error.classList.remove("hidden");
         error.classList.add("flex");
+      }
+
+      // ============================================================
+      // SHOP VALIDATION HELPERS
+      // ============================================================
+
+      const isBlank = (v) => typeof v !== "string" || v.trim() === "";
+
+      // Human-readable names for the config fields
+      const CONFIG_LABELS = {
+        cashfree_app_id: "Cashfree App ID (cashfree_app_id)",
+        cashfree_secret_key: "Cashfree Secret Key (cashfree_secret_key)",
+        cashfree_env: "Cashfree Environment (cashfree_env)",
+      };
+
+      /**
+       * Checks that cashfree_secret_key is set WITHOUT downloading it:
+       * we only ask the database whether a row matches "not null and not empty".
+       * (The secret itself must never be sent to a customer's browser.)
+       */
+      async function hasCashfreeSecret(shopId) {
+        const { data, error } = await supabaseClient
+          .from("shops")
+          .select("shop_id")
+          .eq("shop_id", shopId)
+          .not("cashfree_secret_key", "is", null)
+          .neq("cashfree_secret_key", "")
+          .limit(1);
+
+        if (error) throw error;
+
+        return Array.isArray(data) && data.length > 0;
+      }
+
+      function formatShopStatus(status) {
+        return String(status || "unknown").replaceAll("_", " ");
+      }
+
+      /** Non-blocking notice for low_ink / out_of_paper */
+      function showShopWarning(status) {
+        const messages = {
+          low_ink: {
+            title: "Shop is low on ink",
+            text: "Your print may come out lighter than usual or be delayed. You can still place your order.",
+          },
+          out_of_paper: {
+            title: "Shop is out of paper",
+            text: "Your print will be delayed until the shop refills paper. You can still place your order.",
+          },
+        };
+
+        const msg = messages[status];
+
+        if (!msg) return;
+
+        // Show on BOTH screens (upload screen and order-details screen),
+        // because only one of them is visible at a time.
+        const targets = [
+          document.getElementById("step1"),
+          document.getElementById("step2ScrollArea"),
+        ];
+
+        targets.forEach((target, i) => {
+          if (!target) return;
+
+          const id = `shopWarningNotice${i}`;
+
+          if (document.getElementById(id)) return;
+
+          const notice = document.createElement("div");
+
+          notice.id = id;
+
+          notice.setAttribute("role", "status");
+
+          notice.className =
+            "mb-4 flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900";
+
+          notice.innerHTML = `
+            <span class="text-base leading-5">⚠️</span>
+            <div>
+              <p class="text-sm font-bold">${escapeHtml(msg.title)}</p>
+              <p class="mt-0.5 text-xs font-medium">${escapeHtml(msg.text)}</p>
+            </div>
+          `;
+
+          target.insertBefore(notice, target.firstChild);
+        });
       }
 
       // ============================================================
@@ -1012,10 +1103,13 @@
         }
 
         try {
+          // ------------------------------------------------------
+          // Load shop (secret key is intentionally NOT selected)
+          // ------------------------------------------------------
           const { data: shop, error } = await supabaseClient
             .from("shops")
             .select(
-              "shop_id, shop_name, status, plan_id, plan_expires_at, total_prints",
+              "shop_id, shop_name, shop_status, print_price, cashfree_app_id, cashfree_env",
             )
             .eq("shop_id", currentShopId)
             .single();
@@ -1024,30 +1118,92 @@
             console.error("Shop lookup error:", error);
 
             showErrorState(
-              "Shop Nahi Mili",
-              "Ye QR code sahi nahi lag raha. Kripya shopkeeper se dobara QR scan karwayein.",
+              "Shop Not Found",
+              "This QR code does not match any shop. Please scan the shop's QR code again.",
             );
 
             return;
           }
 
-          if (shop.status !== "active") {
+          // ------------------------------------------------------
+          // 1. SHOP STATUS VALIDATION
+          // ------------------------------------------------------
+          const status = String(shop.shop_status || "")
+            .trim()
+            .toLowerCase();
+
+          if (!READY_SHOP_STATUSES.includes(status)) {
             showErrorState(
-              "Dukaan Abhi Band Hai",
-              `Is dukaan ka account "${shop.status}" hai, isliye print abhi possible nahi hai.`,
+              "Shop Not Ready",
+              `${shop.shop_name || "This shop"} is not ready to accept print orders right now (status: ${formatShopStatus(shop.shop_status)}).\n\nPlease try again later or contact the shop.`,
             );
 
             return;
           }
+
+          // ------------------------------------------------------
+          // 2. CASHFREE CONFIGURATION VALIDATION
+          // ------------------------------------------------------
+          const missing = [];
+
+          if (isBlank(shop.cashfree_app_id)) {
+            missing.push("cashfree_app_id");
+          }
+
+          if (!(await hasCashfreeSecret(currentShopId))) {
+            missing.push("cashfree_secret_key");
+          }
+
+          if (isBlank(shop.cashfree_env)) {
+            missing.push("cashfree_env");
+          }
+
+          if (missing.length > 0) {
+            // Technical details are for the shop owner / developer only:
+            // visible in the browser console (F12), NOT shown to customers.
+            console.warn(
+              `[Quick2Print] Shop "${currentShopId}" payment setup incomplete. Missing:`,
+              missing.map((key) => CONFIG_LABELS[key]),
+            );
+
+            // Customer-facing message (no field names)
+            showErrorState(
+              "Payments Unavailable",
+              `${shop.shop_name || "This shop"} is not able to accept online payments right now.\n\nPlease contact the shop or try again later.`,
+            );
+
+            return;
+          }
+
+          // ------------------------------------------------------
+          // 3. PRICE (shops.print_price)
+          // ------------------------------------------------------
+          const price = Number(shop.print_price);
+
+          if (!Number.isFinite(price) || price <= 0) {
+            showErrorState(
+              "Price Not Set",
+              `${shop.shop_name || "This shop"} has not set a print price yet (print_price).\n\nPlease contact the shop.`,
+            );
+
+            return;
+          }
+
+          printPrice = price;
 
           currentShopRow = shop;
 
+          // ------------------------------------------------------
+          // All checks passed: show the upload screen
+          // ------------------------------------------------------
           document.getElementById("shopIdValue").textContent = shop.shop_id;
 
           document.getElementById("shopNameDisplay").textContent =
             shop.shop_name;
 
           document.getElementById("shopIdDisplay").classList.remove("hidden");
+
+          showShopWarning(status);
 
           document.getElementById("loadingState").classList.add("hidden");
 
@@ -1056,12 +1212,14 @@
           wireFileInput("fileInput");
 
           wireFileInput("fileInputStep2");
+
+          updateTotal();
         } catch (err) {
           console.error("Shop verification failed:", err);
 
           showErrorState(
             "Connection Error",
-            "Internet connection check karein aur page dobara load karein.",
+            "Unable to verify the shop. Please check your internet connection and reload the page.",
           );
         }
       }
@@ -1088,7 +1246,7 @@
         }
 
         if (typeof PDFLib === "undefined") {
-          throw new Error("PDF reader load nahi hua.");
+          throw new Error("PDF reader could not be loaded.");
         }
 
         const buffer = await file.arrayBuffer();
@@ -1100,7 +1258,7 @@
         const pageCount = pdfDoc.getPageCount();
 
         if (!Number.isInteger(pageCount) || pageCount < 1) {
-          throw new Error("PDF me koi valid page nahi mila.");
+          throw new Error("No valid page found in the PDF.");
         }
 
         return pageCount;
@@ -1124,14 +1282,14 @@
         for (const file of incoming) {
           if (!ACCEPTED_TYPES.test(file.name)) {
             showUploadError(
-              `"${file.name}" supported format nahi hai. Sirf PDF, JPG aur PNG allowed hain.`,
+              `"${file.name}" is not a supported format. Only PDF, JPG and PNG are allowed.`,
             );
 
             continue;
           }
 
           if (file.size > MAX_FILE_SIZE_BYTES) {
-            showUploadError(`"${file.name}" 10MB se badi hai.`);
+            showUploadError(`"${file.name}" is larger than 10MB.`);
 
             continue;
           }
@@ -1162,7 +1320,7 @@
               console.error("PDF page count error:", error);
 
               showUploadError(
-                `"${file.name}" PDF read nahi ho payi. PDF valid hai ya nahi check karein.`,
+                `"${file.name}" could not be read. Please check that the PDF is valid and not password-protected.`,
               );
 
               continue;
@@ -1417,34 +1575,33 @@
       }
 
       // ============================================================
-      // TOTAL
+      // TOTAL  (pages x copies x shops.print_price)
       // ============================================================
 
-      function updateTotal() {
-        const selected = document.querySelector(
-          'input[name="colorType"]:checked',
-        );
-
-        if (!selected) {
-          return;
-        }
-
-        const colorType = selected.value;
-
-        const pricePerPage = PRICES[colorType];
-
+      function calculateTotals() {
         let totalPages = 0;
 
         filesList.forEach((item) => {
           totalPages += Number(item.pages || 1) * Number(item.copies || 1);
         });
 
-        const total = pricePerPage * totalPages;
+        // Round to 2 decimals to avoid floating point noise (e.g. 0.1 * 3)
+        const total = Math.round(totalPages * printPrice * 100) / 100;
 
-        document.getElementById("totalDisplay").textContent = total;
+        return { totalPages, total };
+      }
+
+      const formatMoney = (n) =>
+        Number.isInteger(n) ? String(n) : n.toFixed(2);
+
+      function updateTotal() {
+        const { total } = calculateTotals();
+
+        document.getElementById("totalDisplay").textContent =
+          formatMoney(total);
 
         document.getElementById("rateDisplay").textContent =
-          `₹${pricePerPage} (${colorType === "BW" ? "B&W" : "Color"})`;
+          `₹${formatMoney(printPrice)} / page`;
 
         updatePayableTheme();
       }
@@ -1505,7 +1662,7 @@
 
       async function processPayment(mode) {
         if (filesList.length === 0) {
-          showStep2Error("Kam se kam ek file upload karein.");
+          showStep2Error("Please upload at least one file.");
 
           return;
         }
@@ -1523,7 +1680,7 @@
         if (!selected) {
           setPayButtonsDisabled(false);
 
-          showStep2Error("Print type select karein.");
+          showStep2Error("Please select a print type.");
 
           return;
         }
@@ -1532,15 +1689,7 @@
 
         const paperSize = document.getElementById("paperSizeSelect").value;
 
-        const pricePerPage = PRICES[colorType];
-
-        let totalPages = 0;
-
-        filesList.forEach((item) => {
-          totalPages += Number(item.pages || 1) * Number(item.copies || 1);
-        });
-
-        const total = pricePerPage * totalPages;
+        const { totalPages, total } = calculateTotals();
 
         if (mode === "UPI") {
           document.getElementById("processingText").textContent =
@@ -1641,19 +1790,19 @@
         const msg = String(err?.message || "");
 
         if (/demo limit reached/i.test(msg)) {
-          return "Is dukaan ka free demo limit khatam ho chuka hai.";
+          return "This shop's free demo limit has been reached.";
         }
 
         if (/print limit reached/i.test(msg)) {
-          return "Is dukaan ka print limit khatam ho chuka hai.";
+          return "This shop's print limit has been reached.";
         }
 
         if (/subscription.*expired/i.test(msg)) {
-          return "Is dukaan ka subscription expire ho chuka hai.";
+          return "This shop's subscription has expired.";
         }
 
         if (/does not exist/i.test(msg)) {
-          return "Ye dukaan ab active nahi hai.";
+          return "This shop is no longer active.";
         }
 
         if (/upload nahi ho payi/i.test(msg)) {
@@ -1661,10 +1810,10 @@
         }
 
         if (/network|fetch|failed to fetch/i.test(msg)) {
-          return "Internet connection check karein aur dobara try karein.";
+          return "Please check your internet connection and try again.";
         }
 
-        return msg || "Order place nahi ho paya. Kripya dobara try karein.";
+        return msg || "Unable to place the order. Please try again.";
       }
 
       // ============================================================
@@ -1800,7 +1949,8 @@
         document.getElementById("receiptCopies").textContent =
           `${filesList.length} Files • ${totalCopies} copies • ${totalPages} pages`;
 
-        document.getElementById("receiptTotal").textContent = `₹${total}`;
+        document.getElementById("receiptTotal").textContent =
+          `₹${formatMoney(total)}`;
 
         let paymentStatus = document.getElementById("paymentStatusElement");
 

@@ -73,8 +73,7 @@
           ),
           radial-gradient(
             circle at 85% 15%,
-            rgba(232, 62, 140, 0.08),
-            transparent 20%
+            rgba(232, 62, 140, 0.08) transparent 20%
           ),
           linear-gradient(
             135deg,
@@ -626,70 +625,209 @@
               </div>
             </div>
 
-            <!-- Shop Status -->
-            <section class="manga-card p-6">
-              <div class="flex items-center gap-2 mb-6">
-                <span class="text-xl">🏪</span>
-                <h2 class="text-xl font-heading font-bold">Shop Status</h2>
-              </div>
-
-              <!-- Shop Availability -->
-              <div
-                class="flex flex-col gap-4 border-b-2 border-dashed border-[#211B8F]/15 pb-5 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="h-3.5 w-3.5 rounded-full bg-green-500"></span>
-                    <span class="text-lg font-bold">Shop is Open</span>
+            <!-- ============================================================ -->
+            <!-- SHOP STATUS SECTION                                          -->
+            <!-- ============================================================ -->
+            <section class="manga-card p-6 sm:p-7" id="shopStatusSection">
+              <!-- Header -->
+              <div class="flex items-start justify-between gap-4 mb-6">
+                <div class="flex items-start gap-3">
+                  <div
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#211B8F]/10"
+                  >
+                    <span class="text-lg">🏪</span>
                   </div>
-                  <p class="text-sm text-[#17135F]/60 mt-1">
-                    Your shop is currently accepting new print orders.
-                  </p>
-                </div>
 
-                <button
-                  type="button"
-                  class="manga-btn-secondary inline-flex items-center justify-center gap-2 px-6 py-3 text-[#E59F00]"
-                >
-                  <span>⏸️</span>
-                  Close Shop
-                </button>
+                  <div>
+                    <h2 class="text-xl font-heading font-bold text-[#15181C]">
+                      Shop Status
+                    </h2>
+
+                    <p class="mt-1 text-sm text-[#17135F]/55">
+                      Manage your shop availability and printer condition.
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <!-- Printer / Paper Status -->
-              <div class="pt-5">
-                <div class="mb-3 flex flex-wrap items-center gap-2">
-                  <span class="text-lg">🖨️</span>
-                  <h3 class="font-bold">Ink &amp; Paper Status</h3>
-                  <span class="text-xs font-normal text-[#17135F]/50">
-                    (Visible to customers)
-                  </span>
+              <!-- Status Message -->
+              <div
+                id="shopStatusMsg"
+                role="alert"
+                class="hidden mb-5 rounded-xl border px-4 py-3 text-sm font-semibold"
+              ></div>
+
+              <!-- ======================================================== -->
+              <!-- SHOP AVAILABILITY                                         -->
+              <!-- ======================================================== -->
+              <div
+                class="rounded-2xl border border-gray-200 bg-[#FAFAFC] p-4 sm:p-5"
+              >
+                <div
+                  class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <!-- Current Status -->
+                  <div class="flex items-start gap-3">
+                    <!-- Status Dot -->
+                    <div
+                      class="mt-1.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center"
+                    >
+                      <span
+                        id="shopDot"
+                        class="h-3.5 w-3.5 rounded-full bg-gray-300"
+                      ></span>
+                    </div>
+
+                    <div>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span
+                          id="shopTitle"
+                          class="text-lg font-heading font-bold text-[#15181C]"
+                        >
+                          Loading…
+                        </span>
+
+                        <!-- Status Badge -->
+                        <span
+                          id="shopStatusBadge"
+                          class="hidden rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+                        ></span>
+                      </div>
+
+                      <p
+                        id="shopDesc"
+                        class="mt-1 text-sm leading-5 text-[#17135F]/55"
+                      >
+                        Checking your shop status.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Toggle Button -->
+                  <button
+                    id="toggleShopBtn"
+                    type="button"
+                    disabled
+                    class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-bold text-[#15181C] shadow-sm transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <span id="toggleShopIcon" class="text-base"> ⏸️ </span>
+
+                    <span id="toggleShopLabel"> Close Shop </span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- ======================================================== -->
+              <!-- PRINTER STATUS                                            -->
+              <!-- ======================================================== -->
+              <div class="mt-6">
+                <!-- Section Header -->
+                <div
+                  class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4"
+                >
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#211B8F]/10"
+                    >
+                      <span class="text-base">🖨️</span>
+                    </div>
+
+                    <div>
+                      <h3 class="font-heading font-bold text-[#15181C]">
+                        Ink &amp; Paper Status
+                      </h3>
+
+                      <p class="text-xs text-[#17135F]/50">
+                        Visible to customers
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="flex flex-wrap gap-3">
+                <!-- Status Options -->
+                <div
+                  id="inkButtons"
+                  class="grid grid-cols-1 sm:grid-cols-3 gap-3"
+                >
+                  <!-- ALL GOOD -->
                   <button
                     type="button"
-                    class="inline-flex items-center gap-2 rounded-xl border-2 border-[#211B8F] bg-[#FFF7D6] px-5 py-2.5 font-semibold shadow-sm"
+                    data-status="online"
+                    disabled
+                    class="status-option group relative flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-[#211B8F] bg-[#211B8F]/5 px-4 py-3 text-left transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/10 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <span class="text-green-600">✅</span>
-                    All Good
+                    <span
+                      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-700"
+                    >
+                      ✓
+                    </span>
+
+                    <span class="flex-1">
+                      <span class="block text-sm font-bold text-[#15181C]">
+                        All Good
+                      </span>
+
+                      <span class="mt-0.5 block text-xs text-[#17135F]/50">
+                        Ready to print
+                      </span>
+                    </span>
                   </button>
 
+                  <!-- LOW INK -->
                   <button
                     type="button"
-                    class="inline-flex items-center gap-2 rounded-xl border-2 border-[#211B8F]/15 bg-white px-5 py-2.5 font-semibold transition hover:border-yellow-400 hover:bg-yellow-50"
+                    data-status="low_ink"
+                    disabled
+                    class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-yellow-400 hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <span class="h-3 w-3 rounded-full bg-yellow-400"></span>
-                    Low on Ink
+                    <span
+                      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-yellow-100"
+                    >
+                      <span class="h-3 w-3 rounded-full bg-yellow-400"></span>
+                    </span>
+
+                    <span class="flex-1">
+                      <span class="block text-sm font-bold text-[#15181C]">
+                        Low on Ink
+                      </span>
+
+                      <span class="mt-0.5 block text-xs text-[#17135F]/50">
+                        Ink needs attention
+                      </span>
+                    </span>
                   </button>
 
+                  <!-- OUT OF PAPER -->
                   <button
                     type="button"
-                    class="inline-flex items-center gap-2 rounded-xl border-2 border-[#211B8F]/15 bg-white px-5 py-2.5 font-semibold transition hover:border-red-400 hover:bg-red-50"
+                    data-status="out_of_paper"
+                    disabled
+                    class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-[#FFB800] hover:bg-[#FFB800]/10 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <span class="h-3 w-3 rounded-full bg-[#FFB800]"></span>
-                    Out of Paper
+                    <span
+                      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FFB800]/15"
+                    >
+                      <span class="h-3 w-3 rounded-full bg-[#FFB800]"></span>
+                    </span>
+
+                    <span class="flex-1">
+                      <span class="block text-sm font-bold text-[#15181C]">
+                        Out of Paper
+                      </span>
+
+                      <span class="mt-0.5 block text-xs text-[#17135F]/50">
+                        Paper needs refill
+                      </span>
+                    </span>
                   </button>
+                </div>
+
+                <!-- Hint -->
+                <div
+                  id="inkHint"
+                  class="hidden mt-4 rounded-xl border border-[#211B8F]/10 bg-[#211B8F]/5 px-4 py-3 text-xs font-medium text-[#17135F]/60"
+                >
+                  Open the shop to change ink &amp; paper status.
                 </div>
               </div>
             </section>
@@ -1347,74 +1485,283 @@
             id="tab-settings"
             class="tab-content hidden max-w-3xl mx-auto space-y-6"
           >
+            <!-- Shop Profile -->
             <div class="manga-card p-6">
-              <h3
-                class="font-heading font-bold text-xl sm:text-2xl mb-6 flex items-center gap-2"
-              >
-                <i data-lucide="store" class="w-6 h-6"></i> Shop Profile
-              </h3>
-
-              <div class="space-y-4">
+              <div class="flex items-start justify-between gap-4 mb-6">
                 <div>
-                  <label class="block font-bold mb-1 text-sm">
-                    Dukaan Ka Naam (Shop Name)
-                  </label>
-                  <input
-                    id="settings-shop-name"
-                    type="text"
-                    class="manga-input w-full font-bold"
-                    value="Mera Print Shop (Demo)"
-                  />
-                </div>
-                <div>
-                  <label class="block font-bold mb-1 text-sm"
-                    >Mobile Number</label
+                  <h3
+                    class="font-heading font-bold text-xl sm:text-2xl flex items-center gap-2"
                   >
-                  <input
-                    id="settings-mobile"
-                    type="text"
-                    class="manga-input w-full font-bold bg-[#F7F8FC]"
-                    value="+91 9876543210"
-                    disabled
-                  />
-                  <p class="text-xs text-[#17135F]/50 mt-1 font-bold">
-                    Number change karne ke liye support se baat karein.
+                    <i data-lucide="store" class="w-6 h-6"></i>
+                    Shop Profile
+                  </h3>
+
+                  <p class="text-sm text-gray-500 font-semibold mt-1">
+                    Apni dukaan ki basic details manage karein.
                   </p>
                 </div>
-                <button class="manga-btn px-6 py-2.5 mt-2">Save Profile</button>
-              </div>
-            </div>
 
-            <div class="manga-card p-6 border-t-8 border-t-stamp">
-              <h3
-                class="font-heading font-bold text-xl sm:text-2xl mb-6 flex items-center gap-2"
-              >
-                <i data-lucide="printer" class="w-6 h-6"></i> Printer Settings
-              </h3>
-
-              <div class="bg-[#F7F8FC] p-4 rounded-xl mb-4">
-                <label class="block font-bold mb-2">
-                  Default Printer Chunein (Select Printer)
-                </label>
-                <select
-                  class="manga-input w-full font-bold cursor-pointer bg-white"
+                <div
+                  id="settings-shop-status"
+                  class="flex items-center gap-2 px-3 py-1 bg-green-100 rounded-full"
                 >
-                  <option>Epson L3150 Series (Online)</option>
-                  <option>HP LaserJet 1020 (Offline)</option>
-                  <option>Canon Pixma G2010</option>
-                  <option>Save as PDF</option>
-                </select>
+                  <div
+                    id="settings-status-dot"
+                    class="w-2.5 h-2.5 rounded-full bg-green-500"
+                  ></div>
+
+                  <span
+                    id="settings-status-text"
+                    class="font-bold text-sm text-green-700"
+                  >
+                    Online
+                  </span>
+                </div>
               </div>
 
-              <div class="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="auto-print"
-                  class="w-5 h-5 accent-stamp cursor-pointer rounded"
-                />
-                <label for="auto-print" class="font-bold cursor-pointer">
-                  Auto-Print On Rakhein (Direct print nikalne ke liye)
-                </label>
+              <div class="space-y-5">
+                <!-- Shop Name -->
+                <div>
+                  <label
+                    for="settings-shop-name"
+                    class="block font-bold mb-1.5 text-sm"
+                  >
+                    Dukaan Ka Naam
+                    <span class="text-gray-400 font-semibold">(Shop Name)</span>
+                  </label>
+
+                  <div class="relative">
+                    <i
+                      data-lucide="store"
+                      class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                    ></i>
+
+                    <input
+                      id="settings-shop-name"
+                      type="text"
+                      class="manga-input w-full font-bold pl-11"
+                      placeholder="Enter shop name"
+                      value=""
+                    />
+                  </div>
+                </div>
+
+                <!-- Owner Name -->
+                <div>
+                  <label
+                    for="settings-owner-name"
+                    class="block font-bold mb-1.5 text-sm"
+                  >
+                    Owner Ka Naam
+                    <span class="text-gray-400 font-semibold"
+                      >(Owner Name)</span
+                    >
+                  </label>
+
+                  <div class="relative">
+                    <i
+                      data-lucide="user"
+                      class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                    ></i>
+
+                    <input
+                      id="settings-owner-name"
+                      type="text"
+                      class="manga-input w-full font-bold pl-11"
+                      placeholder="Enter owner name"
+                      value=""
+                    />
+                  </div>
+                </div>
+
+                <!-- Mobile -->
+                <div>
+                  <label
+                    for="settings-mobile"
+                    class="block font-bold mb-1.5 text-sm"
+                  >
+                    Mobile Number
+                  </label>
+
+                  <div class="relative">
+                    <i
+                      data-lucide="phone"
+                      class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                    ></i>
+
+                    <input
+                      id="settings-mobile"
+                      type="text"
+                      class="manga-input w-full font-bold pl-11 bg-[#F7F8FC]"
+                      value=""
+                      disabled
+                    />
+                  </div>
+
+                  <p class="text-xs text-[#17135F]/50 mt-1.5 font-bold">
+                    Mobile number change karne ke liye support se baat karein.
+                  </p>
+                </div>
+
+                <!-- Email -->
+                <div>
+                  <label
+                    for="settings-email"
+                    class="block font-bold mb-1.5 text-sm"
+                  >
+                    Email Address
+                  </label>
+
+                  <div class="relative">
+                    <i
+                      data-lucide="mail"
+                      class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                    ></i>
+
+                    <input
+                      id="settings-email"
+                      type="email"
+                      class="manga-input w-full font-bold pl-11"
+                      placeholder="shop@example.com"
+                      value=""
+                    />
+                  </div>
+                </div>
+
+                <!-- Shop Address -->
+                <div>
+                  <label
+                    for="settings-address"
+                    class="block font-bold mb-1.5 text-sm"
+                  >
+                    Dukaan Ka Address
+                    <span class="text-gray-400 font-semibold"
+                      >(Shop Address)</span
+                    >
+                  </label>
+
+                  <div class="relative">
+                    <i
+                      data-lucide="map-pin"
+                      class="absolute left-3 top-3 w-5 h-5 text-gray-400"
+                    ></i>
+
+                    <textarea
+                      id="settings-address"
+                      rows="3"
+                      class="manga-input w-full font-bold pl-11 resize-none"
+                      placeholder="Enter complete shop address"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <!-- Print Price -->
+                <div>
+                  <label
+                    for="settings-print-price"
+                    class="block font-bold mb-1.5 text-sm"
+                  >
+                    Print Price
+                    <span class="text-gray-400 font-semibold">(Per Page)</span>
+                  </label>
+
+                  <div class="relative">
+                    <span
+                      class="absolute left-3 top-1/2 -translate-y-1/2 font-black text-[#17135F]"
+                    >
+                      ₹
+                    </span>
+
+                    <input
+                      id="settings-print-price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      class="manga-input w-full font-bold pl-9"
+                      placeholder="5.00"
+                      value="5"
+                    />
+                  </div>
+
+                  <p class="text-xs text-gray-500 mt-1.5 font-semibold">
+                    Customer se per page kitna charge lena hai.
+                  </p>
+                </div>
+
+                <!-- Shop ID -->
+                <div>
+                  <label
+                    for="settings-shop-id"
+                    class="block font-bold mb-1.5 text-sm"
+                  >
+                    Shop ID
+                  </label>
+
+                  <div class="relative">
+                    <i
+                      data-lucide="hash"
+                      class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                    ></i>
+
+                    <input
+                      id="settings-shop-id"
+                      type="text"
+                      class="manga-input w-full font-bold pl-11 bg-[#F7F8FC]"
+                      value=""
+                      disabled
+                    />
+                  </div>
+
+                  <p class="text-xs text-[#17135F]/50 mt-1.5 font-bold">
+                    Shop ID automatically assigned hai.
+                  </p>
+                </div>
+
+                <!-- QR Token -->
+                <div>
+                  <label
+                    for="settings-qr-token"
+                    class="block font-bold mb-1.5 text-sm"
+                  >
+                    QR Token
+                  </label>
+
+                  <div class="relative">
+                    <i
+                      data-lucide="qr-code"
+                      class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                    ></i>
+
+                    <input
+                      id="settings-qr-token"
+                      type="text"
+                      class="manga-input w-full font-bold pl-11 bg-[#F7F8FC]"
+                      value=""
+                      disabled
+                    />
+                  </div>
+
+                  <p class="text-xs text-[#17135F]/50 mt-1.5 font-bold">
+                    QR Token ko manually change nahi kiya ja sakta.
+                  </p>
+                </div>
+
+                <!-- Save -->
+                <div class="pt-2 border-t border-gray-100">
+                  <button
+                    id="save-shop-profile-btn"
+                    type="button"
+                    class="manga-btn px-6 py-2.5 mt-2 inline-flex items-center gap-2"
+                  >
+                    <i data-lucide="save" class="w-5 h-5"></i>
+                    Save Profile
+                  </button>
+
+                  <span
+                    id="settings-save-message"
+                    class="ml-3 text-sm font-bold hidden"
+                  ></span>
+                </div>
               </div>
             </div>
           </section>
@@ -2882,6 +3229,1243 @@
           lucide.createIcons();
         }
       }
+
+      // ============================================================
+      // QUICK2PRINT - SHOP STATUS CONTROLLER
+      // ------------------------------------------------------------
+      // shop_status values:
+      //
+      //   online         = Shop OPEN + All Good
+      //   low_ink       = Shop OPEN + Low Ink
+      //   out_of_paper  = Shop OPEN + Out of Paper
+      //   offline       = Shop CLOSED
+      //
+      // Requires:
+      //   1. supabaseClient
+      //   2. window.currentShopId OR ?shop_id=...
+      //
+      // Database:
+      //   public.shops.shop_status
+      // ============================================================
+
+      (() => {
+        "use strict";
+
+        // ==========================================================
+        // CONFIG
+        // ==========================================================
+
+        const CLOSED_STATUS = "offline";
+
+        const OPEN_STATUSES = ["online", "low_ink", "out_of_paper"];
+
+        // ==========================================================
+        // SHOP ID
+        // ==========================================================
+
+        let loggedInShop = null;
+
+        try {
+          loggedInShop = JSON.parse(
+            localStorage.getItem("loggedInShop") || "null",
+          );
+        } catch (error) {
+          console.error("Invalid loggedInShop:", error);
+        }
+
+        const shopId = loggedInShop?.shop_id;
+
+        // ==========================================================
+        // ELEMENT HELPER
+        // ==========================================================
+
+        const $ = (id) => document.getElementById(id);
+
+        // ==========================================================
+        // DOM ELEMENTS
+        // ==========================================================
+
+        const el = {
+          section: $("shopStatusSection"),
+
+          dot: $("shopDot"),
+
+          title: $("shopTitle"),
+
+          desc: $("shopDesc"),
+
+          badge: $("shopStatusBadge"),
+
+          toggle: $("toggleShopBtn"),
+
+          toggleIcon: $("toggleShopIcon"),
+
+          toggleLabel: $("toggleShopLabel"),
+
+          message: $("shopStatusMsg"),
+
+          hint: $("inkHint"),
+
+          inkButtons: Array.from(
+            document.querySelectorAll("#inkButtons [data-status]"),
+          ),
+        };
+
+        // ==========================================================
+        // STATE
+        // ==========================================================
+
+        let currentStatus = null;
+
+        let saving = false;
+
+        let messageTimer = null;
+
+        // ==========================================================
+        // STATUS DESCRIPTIONS
+        // ==========================================================
+
+        const STATUS_INFO = {
+          online: {
+            title: "Shop is Open",
+            description: "Your shop is currently accepting new print orders.",
+            badge: "ONLINE",
+          },
+
+          low_ink: {
+            title: "Shop is Open",
+            description:
+              "Your shop is accepting orders. Customers will see a low ink notice.",
+            badge: "LOW INK",
+          },
+
+          out_of_paper: {
+            title: "Shop is Open",
+            description:
+              "Your shop is accepting orders. Customers will see an out of paper notice.",
+            badge: "OUT OF PAPER",
+          },
+
+          offline: {
+            title: "Shop is Closed",
+            description:
+              "Your shop is currently closed. Customers cannot place new orders.",
+            badge: "OFFLINE",
+          },
+        };
+
+        // ==========================================================
+        // LAST OPEN STATUS
+        // ----------------------------------------------------------
+        // If the owner closes the shop while it is "low_ink",
+        // reopening restores "low_ink" instead of "online".
+        // ==========================================================
+
+        const lastOpenKey = `q2p_last_open_status_${shopId}`;
+
+        function getLastOpenStatus() {
+          try {
+            const saved = localStorage.getItem(lastOpenKey);
+
+            if (OPEN_STATUSES.includes(saved)) {
+              return saved;
+            }
+          } catch (error) {
+            console.warn("Could not read saved shop status:", error);
+          }
+
+          return "online";
+        }
+
+        function setLastOpenStatus(status) {
+          if (!OPEN_STATUSES.includes(status)) {
+            return;
+          }
+
+          try {
+            localStorage.setItem(lastOpenKey, status);
+          } catch (error) {
+            console.warn("Could not save shop status:", error);
+          }
+        }
+
+        // ==========================================================
+        // MESSAGE
+        // ==========================================================
+
+        function hideMessage() {
+          if (!el.message) return;
+
+          el.message.classList.add("hidden");
+
+          clearTimeout(messageTimer);
+        }
+
+        function showMessage(type, text) {
+          if (!el.message) return;
+
+          clearTimeout(messageTimer);
+
+          const styles = {
+            error: "border-red-200 bg-red-50 text-red-700",
+
+            success: "border-green-200 bg-green-50 text-green-700",
+          };
+
+          el.message.className = `mb-5 rounded-xl border px-4 py-3 text-sm font-semibold ${
+            styles[type] || styles.error
+          }`;
+
+          el.message.textContent = text;
+
+          el.message.classList.remove("hidden");
+
+          if (type === "success") {
+            messageTimer = setTimeout(() => {
+              el.message.classList.add("hidden");
+            }, 3000);
+          }
+        }
+
+        // ==========================================================
+        // CHECK OPEN STATUS
+        // ==========================================================
+
+        function isShopOpen() {
+          return OPEN_STATUSES.includes(currentStatus);
+        }
+
+        // ==========================================================
+        // RENDER SHOP AVAILABILITY
+        // ==========================================================
+
+        function renderShopStatus() {
+          if (!el.title || !el.dot) {
+            return;
+          }
+
+          const isOpen = OPEN_STATUSES.includes(currentStatus);
+
+          const isClosed = currentStatus === CLOSED_STATUS;
+
+          const info = STATUS_INFO[currentStatus];
+
+          // --------------------------------------------------------
+          // UNKNOWN STATUS
+          // --------------------------------------------------------
+
+          if (!info) {
+            el.dot.className = "h-3.5 w-3.5 rounded-full bg-gray-300";
+
+            el.title.textContent = "Status unavailable";
+
+            el.desc.textContent = "Unable to read your shop status.";
+
+            if (el.badge) {
+              el.badge.className = "hidden";
+
+              el.badge.textContent = "";
+            }
+
+            el.toggle.disabled = true;
+
+            return;
+          }
+
+          // --------------------------------------------------------
+          // DOT
+          // --------------------------------------------------------
+
+          el.dot.className = `h-3.5 w-3.5 rounded-full ${
+            isOpen ? "bg-green-500" : "bg-red-500"
+          }`;
+
+          // --------------------------------------------------------
+          // TITLE
+          // --------------------------------------------------------
+
+          el.title.textContent = info.title;
+
+          // --------------------------------------------------------
+          // DESCRIPTION
+          // --------------------------------------------------------
+
+          el.desc.textContent = info.description;
+
+          // --------------------------------------------------------
+          // STATUS BADGE
+          // --------------------------------------------------------
+
+          if (el.badge) {
+            el.badge.textContent = info.badge;
+
+            if (isOpen) {
+              el.badge.className =
+                "rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-green-100 text-green-700";
+            } else {
+              el.badge.className =
+                "rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-700";
+            }
+          }
+
+          // --------------------------------------------------------
+          // OPEN / CLOSE BUTTON
+          // --------------------------------------------------------
+
+          if (isOpen) {
+            el.toggleIcon.textContent = "⏸️";
+
+            el.toggleLabel.textContent = "Close Shop";
+
+            el.toggle.classList.remove(
+              "border-green-200",
+              "bg-green-50",
+              "text-green-700",
+            );
+
+            el.toggle.classList.add(
+              "border-gray-300",
+              "bg-white",
+              "text-[#15181C]",
+            );
+          } else {
+            el.toggleIcon.textContent = "▶️";
+
+            el.toggleLabel.textContent = "Open Shop";
+
+            el.toggle.classList.remove(
+              "border-gray-300",
+              "bg-white",
+              "text-[#15181C]",
+            );
+
+            el.toggle.classList.add(
+              "border-green-200",
+              "bg-green-50",
+              "text-green-700",
+            );
+          }
+
+          el.toggle.disabled = saving;
+
+          // --------------------------------------------------------
+          // INK / PAPER BUTTONS
+          // --------------------------------------------------------
+
+          renderInkButtons();
+
+          // --------------------------------------------------------
+          // HINT
+          // --------------------------------------------------------
+
+          if (el.hint) {
+            el.hint.classList.toggle("hidden", isOpen);
+          }
+        }
+
+        // ==========================================================
+        // RENDER INK / PAPER BUTTONS
+        // ==========================================================
+
+        function renderInkButtons() {
+          const isOpen = OPEN_STATUSES.includes(currentStatus);
+
+          el.inkButtons.forEach((button) => {
+            const status = button.dataset.status;
+
+            const active = status === currentStatus;
+
+            // ------------------------------------------------------
+            // RESET COMMON CLASSES
+            // ------------------------------------------------------
+
+            button.classList.remove(
+              "border-[#211B8F]",
+              "bg-[#211B8F]/5",
+              "border-gray-200",
+              "bg-white",
+              "border-green-400",
+              "bg-green-50",
+              "border-yellow-400",
+              "bg-yellow-50",
+              "border-[#FFB800]",
+              "bg-[#FFB800]/10",
+            );
+
+            // ------------------------------------------------------
+            // ACTIVE STATE
+            // ------------------------------------------------------
+
+            if (active) {
+              button.classList.add("border-[#211B8F]", "bg-[#211B8F]/5");
+            }
+
+            // ------------------------------------------------------
+            // INACTIVE STATE
+            // ------------------------------------------------------
+            else {
+              button.classList.add("border-gray-200", "bg-white");
+            }
+
+            // ------------------------------------------------------
+            // DISABLED WHILE SHOP CLOSED / SAVING
+            // ------------------------------------------------------
+
+            button.disabled = saving || !isOpen;
+
+            // ------------------------------------------------------
+            // ACCESSIBILITY
+            // ------------------------------------------------------
+
+            button.setAttribute("aria-pressed", String(active));
+          });
+        }
+
+        // ==========================================================
+        // SAVE SHOP STATUS
+        // ==========================================================
+
+        async function saveStatus(nextStatus, successMessage) {
+          // Prevent duplicate requests
+          if (saving) {
+            return;
+          }
+
+          // Nothing changed
+          if (nextStatus === currentStatus) {
+            return;
+          }
+
+          const previousStatus = currentStatus;
+
+          // --------------------------------------------------------
+          // OPTIMISTIC UPDATE
+          // --------------------------------------------------------
+
+          saving = true;
+
+          currentStatus = nextStatus;
+
+          hideMessage();
+
+          renderShopStatus();
+
+          try {
+            // ------------------------------------------------------
+            // SUPABASE UPDATE
+            // ------------------------------------------------------
+
+            const { data, error } = await supabaseClient
+
+              .from("shops")
+
+              .update({
+                shop_status: nextStatus,
+              })
+
+              .eq("shop_id", shopId)
+
+              .select("shop_status")
+
+              .maybeSingle();
+
+            // ------------------------------------------------------
+            // UPDATE FAILED
+            // ------------------------------------------------------
+
+            if (error) {
+              throw error;
+            }
+
+            // RLS can result in zero updated rows.
+            if (!data) {
+              throw new Error("No shop row was updated. Check RLS policy.");
+            }
+
+            // ------------------------------------------------------
+            // SUCCESS
+            // ------------------------------------------------------
+
+            currentStatus = data.shop_status;
+
+            if (OPEN_STATUSES.includes(currentStatus)) {
+              setLastOpenStatus(currentStatus);
+            }
+
+            saving = false;
+
+            renderShopStatus();
+
+            showMessage("success", successMessage);
+          } catch (error) {
+            console.error("Shop status update failed:", error);
+
+            // ------------------------------------------------------
+            // ROLLBACK
+            // ------------------------------------------------------
+
+            currentStatus = previousStatus;
+
+            saving = false;
+
+            renderShopStatus();
+
+            showMessage(
+              "error",
+              "Could not update shop status. Please check your connection and try again.",
+            );
+          }
+        }
+
+        // ==========================================================
+        // TOGGLE SHOP OPEN / CLOSED
+        // ==========================================================
+
+        async function toggleShop() {
+          if (saving) {
+            return;
+          }
+
+          // --------------------------------------------------------
+          // CURRENTLY OPEN → CLOSE SHOP
+          // --------------------------------------------------------
+
+          if (isShopOpen()) {
+            // Remember current open condition.
+            setLastOpenStatus(currentStatus);
+
+            await saveStatus(
+              CLOSED_STATUS,
+              "Shop closed. Customers can no longer place new orders.",
+            );
+
+            return;
+          }
+
+          // --------------------------------------------------------
+          // CURRENTLY CLOSED → OPEN SHOP
+          // --------------------------------------------------------
+
+          const statusToRestore = getLastOpenStatus();
+
+          const messages = {
+            online: "Shop is open and accepting new orders.",
+
+            low_ink: "Shop is open. Customers will see the low ink notice.",
+
+            out_of_paper:
+              "Shop is open. Customers will see the out of paper notice.",
+          };
+
+          await saveStatus(statusToRestore, messages[statusToRestore]);
+        }
+
+        // ==========================================================
+        // INK / PAPER STATUS
+        // ==========================================================
+
+        async function changeInkStatus(status) {
+          // Shop must be open
+          if (!isShopOpen()) {
+            showMessage(
+              "error",
+              "Open the shop before changing ink or paper status.",
+            );
+
+            return;
+          }
+
+          if (!OPEN_STATUSES.includes(status)) {
+            return;
+          }
+
+          const messages = {
+            online: "Printer status set to All Good.",
+
+            low_ink: "Customers will now see a Low on Ink notice.",
+
+            out_of_paper: "Customers will now see an Out of Paper notice.",
+          };
+
+          setLastOpenStatus(status);
+
+          await saveStatus(status, messages[status]);
+        }
+
+        // ==========================================================
+        // EVENTS
+        // ==========================================================
+
+        function attachEvents() {
+          // --------------------------------------------------------
+          // OPEN / CLOSE
+          // --------------------------------------------------------
+
+          if (el.toggle) {
+            el.toggle.addEventListener("click", toggleShop);
+          }
+
+          // --------------------------------------------------------
+          // INK / PAPER BUTTONS
+          // --------------------------------------------------------
+
+          el.inkButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+              const status = button.dataset.status;
+
+              changeInkStatus(status);
+            });
+          });
+        }
+
+        // ==========================================================
+        // INITIAL LOAD
+        // ==========================================================
+
+        async function init() {
+          // --------------------------------------------------------
+          // CHECK SHOP ID
+          // --------------------------------------------------------
+
+          if (!shopId) {
+            currentStatus = CLOSED_STATUS;
+
+            renderShopStatus();
+
+            if (el.title) {
+              el.title.textContent = "Shop Not Found";
+            }
+
+            if (el.desc) {
+              el.desc.textContent =
+                "No shop ID was found. Please log in again.";
+            }
+
+            if (el.toggle) {
+              el.toggle.disabled = true;
+            }
+
+            showMessage("error", "Missing shop ID. Please log in again.");
+
+            return;
+          }
+
+          // --------------------------------------------------------
+          // CHECK SUPABASE CLIENT
+          // --------------------------------------------------------
+
+          if (typeof supabaseClient === "undefined") {
+            console.error("supabaseClient is not available.");
+
+            showMessage("error", "Supabase connection is not available.");
+
+            return;
+          }
+
+          // --------------------------------------------------------
+          // INITIAL LOADING UI
+          // --------------------------------------------------------
+
+          if (el.title) {
+            el.title.textContent = "Loading…";
+          }
+
+          if (el.desc) {
+            el.desc.textContent = "Checking your shop status.";
+          }
+
+          if (el.toggle) {
+            el.toggle.disabled = true;
+          }
+
+          // --------------------------------------------------------
+          // FETCH SHOP STATUS
+          // --------------------------------------------------------
+
+          try {
+            const { data, error } = await supabaseClient
+
+              .from("shops")
+
+              .select("shop_status")
+
+              .eq("shop_id", shopId)
+
+              .maybeSingle();
+
+            if (error) {
+              throw error;
+            }
+
+            if (!data) {
+              throw new Error("Shop not found.");
+            }
+
+            // ------------------------------------------------------
+            // VALIDATE DATABASE VALUE
+            // ------------------------------------------------------
+
+            const databaseStatus = String(data.shop_status || "").toLowerCase();
+
+            if (![...OPEN_STATUSES, CLOSED_STATUS].includes(databaseStatus)) {
+              console.warn("Unknown shop_status:", databaseStatus);
+
+              currentStatus = "online";
+            } else {
+              currentStatus = databaseStatus;
+            }
+
+            // ------------------------------------------------------
+            // REMEMBER OPEN STATUS
+            // ------------------------------------------------------
+
+            if (OPEN_STATUSES.includes(currentStatus)) {
+              setLastOpenStatus(currentStatus);
+            }
+
+            // ------------------------------------------------------
+            // RENDER
+            // ------------------------------------------------------
+
+            renderShopStatus();
+
+            // ------------------------------------------------------
+            // REALTIME
+            // ------------------------------------------------------
+
+            subscribeToRealtime();
+          } catch (error) {
+            console.error("Shop status load failed:", error);
+
+            currentStatus = null;
+
+            renderShopStatus();
+
+            showMessage(
+              "error",
+              "Could not load shop status. Please refresh the page.",
+            );
+          }
+        }
+
+        // ==========================================================
+        // REALTIME SUBSCRIPTION
+        // ==========================================================
+
+        let realtimeChannel = null;
+
+        function subscribeToRealtime() {
+          if (typeof supabaseClient === "undefined") {
+            return;
+          }
+
+          try {
+            // Remove previous channel if one exists.
+            if (realtimeChannel) {
+              supabaseClient.removeChannel(realtimeChannel);
+            }
+
+            realtimeChannel = supabaseClient
+
+              .channel(`q2p-shop-status-${shopId}`)
+
+              .on(
+                "postgres_changes",
+                {
+                  event: "UPDATE",
+                  schema: "public",
+                  table: "shops",
+                  filter: `shop_id=eq.${shopId}`,
+                },
+                (payload) => {
+                  // Don't overwrite the optimistic
+                  // UI while our own request is saving.
+                  if (saving) {
+                    return;
+                  }
+
+                  const newStatus = String(
+                    payload?.new?.shop_status || "",
+                  ).toLowerCase();
+
+                  if (![...OPEN_STATUSES, CLOSED_STATUS].includes(newStatus)) {
+                    return;
+                  }
+
+                  currentStatus = newStatus;
+
+                  if (OPEN_STATUSES.includes(newStatus)) {
+                    setLastOpenStatus(newStatus);
+                  }
+
+                  renderShopStatus();
+                },
+              )
+
+              .subscribe((status) => {
+                console.log("Shop status realtime:", status);
+              });
+          } catch (error) {
+            console.warn("Realtime subscription failed:", error);
+          }
+        }
+
+        // ==========================================================
+        // CLEANUP
+        // ==========================================================
+
+        window.addEventListener("beforeunload", () => {
+          if (realtimeChannel && typeof supabaseClient !== "undefined") {
+            supabaseClient.removeChannel(realtimeChannel);
+          }
+        });
+
+        // ==========================================================
+        // START
+        // ==========================================================
+
+        function startController() {
+          attachEvents();
+
+          init();
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", startController, {
+            once: true,
+          });
+        } else {
+          startController();
+        }
+      })();
     </script>
+
+
+
+<script>
+/* =========================================
+   QUICK2PRINT - SHOP PROFILE SETTINGS
+   Source: localStorage.loggedInShop ONLY
+========================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const saveBtn = document.getElementById("save-shop-profile-btn");
+  const saveMessage = document.getElementById("settings-save-message");
+
+  if (!saveBtn) return;
+
+  /* -----------------------------------------
+     GET LOGGED-IN SHOP FROM LOCAL STORAGE
+  ----------------------------------------- */
+  let loggedInShop = null;
+
+  try {
+    loggedInShop = JSON.parse(
+      localStorage.getItem("loggedInShop") || "null"
+    );
+  } catch (error) {
+    console.error("Invalid loggedInShop:", error);
+  }
+
+  if (!loggedInShop?.shop_id) {
+    console.error("No logged-in shop found.");
+
+    showMessage(
+      "Shop login information nahi mila.",
+      "error"
+    );
+
+    saveBtn.disabled = true;
+    return;
+  }
+
+  const shopId = loggedInShop.shop_id;
+
+  console.log("Logged-in Shop:", loggedInShop);
+  console.log("Shop ID:", shopId);
+
+
+  /* -----------------------------------------
+     LOAD SHOP DATA
+  ----------------------------------------- */
+  async function loadShopProfile() {
+    try {
+      const { data, error } = await supabaseClient
+        .from("shops")
+        .select(`
+          shop_id,
+          shop_name,
+          owner_name,
+          whatsapp_number,
+          email,
+          shop_address,
+          print_price,
+          shop_status,
+          qr_token
+        `)
+        .eq("shop_id", shopId)
+        .single();
+
+      if (error) {
+        console.error("Load shop profile error:", error);
+
+        showMessage(
+          "Shop profile load nahi ho paya.",
+          "error"
+        );
+
+        return;
+      }
+
+      if (!data) {
+        showMessage(
+          "Shop profile nahi mila.",
+          "error"
+        );
+
+        return;
+      }
+
+      /* Fill form */
+
+      document.getElementById("settings-shop-name").value =
+        data.shop_name || "";
+
+      document.getElementById("settings-owner-name").value =
+        data.owner_name || "";
+
+      document.getElementById("settings-mobile").value =
+        data.whatsapp_number || "";
+
+      document.getElementById("settings-email").value =
+        data.email || "";
+
+      document.getElementById("settings-address").value =
+        data.shop_address || "";
+
+      document.getElementById("settings-print-price").value =
+        data.print_price ?? 5;
+
+      document.getElementById("settings-shop-id").value =
+        data.shop_id || "";
+
+      document.getElementById("settings-qr-token").value =
+        data.qr_token || "";
+
+      updateStatus(data.shop_status);
+
+      console.log("Shop profile loaded:", data);
+
+    } catch (error) {
+      console.error("Unexpected load error:", error);
+
+      showMessage(
+        "Something went wrong.",
+        "error"
+      );
+    }
+  }
+
+
+  /* -----------------------------------------
+     SAVE SHOP PROFILE
+  ----------------------------------------- */
+  saveBtn.addEventListener("click", async () => {
+
+    const shopName =
+      document.getElementById("settings-shop-name")
+        .value.trim();
+
+    const ownerName =
+      document.getElementById("settings-owner-name")
+        .value.trim();
+
+    const email =
+      document.getElementById("settings-email")
+        .value.trim();
+
+    const address =
+      document.getElementById("settings-address")
+        .value.trim();
+
+    const printPrice =
+      Number(
+        document.getElementById("settings-print-price")
+          .value
+      );
+
+
+    /* -----------------------------------------
+       VALIDATION
+    ----------------------------------------- */
+
+    if (!shopName) {
+      showMessage(
+        "Shop name enter karein.",
+        "error"
+      );
+      return;
+    }
+
+    if (!ownerName) {
+      showMessage(
+        "Owner name enter karein.",
+        "error"
+      );
+      return;
+    }
+
+    if (!address) {
+      showMessage(
+        "Shop address enter karein.",
+        "error"
+      );
+      return;
+    }
+
+    if (
+      !Number.isFinite(printPrice) ||
+      printPrice < 0
+    ) {
+      showMessage(
+        "Valid print price enter karein.",
+        "error"
+      );
+      return;
+    }
+
+
+    /* -----------------------------------------
+       BUTTON LOADING
+    ----------------------------------------- */
+
+    const originalHTML = saveBtn.innerHTML;
+
+    saveBtn.disabled = true;
+
+    saveBtn.innerHTML = `
+      <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
+      Saving...
+    `;
+
+    if (typeof lucide !== "undefined") {
+      lucide.createIcons();
+    }
+
+
+    try {
+
+      /* ---------------------------------------
+         UPDATE SUPABASE
+      --------------------------------------- */
+
+      const { data, error } = await supabaseClient
+        .from("shops")
+        .update({
+          shop_name: shopName,
+          owner_name: ownerName,
+          email: email || null,
+          shop_address: address,
+          print_price: printPrice,
+          updated_at: new Date().toISOString()
+        })
+        .eq("shop_id", shopId)
+        .select(`
+          shop_id,
+          shop_name,
+          owner_name,
+          whatsapp_number,
+          email,
+          shop_address,
+          print_price,
+          shop_status,
+          qr_token
+        `)
+        .single();
+
+
+      if (error) {
+        console.error(
+          "Update shop profile error:",
+          error
+        );
+
+        showMessage(
+          error.message || "Profile update failed.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      /* ---------------------------------------
+         UPDATE LOCAL STORAGE
+      --------------------------------------- */
+
+      const updatedShop = {
+        ...loggedInShop,
+        ...data
+      };
+
+      localStorage.setItem(
+        "loggedInShop",
+        JSON.stringify(updatedShop)
+      );
+
+      /* Keep local variable updated */
+      loggedInShop = updatedShop;
+
+
+      /* ---------------------------------------
+         SUCCESS
+      --------------------------------------- */
+
+      showMessage(
+        "Profile successfully update ho gaya.",
+        "success"
+      );
+
+      console.log(
+        "Updated loggedInShop:",
+        updatedShop
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Unexpected profile update error:",
+        error
+      );
+
+      showMessage(
+        "Profile update nahi ho paya.",
+        "error"
+      );
+
+    } finally {
+
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = originalHTML;
+
+      if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+      }
+    }
+  });
+
+
+  /* -----------------------------------------
+     STATUS DISPLAY
+  ----------------------------------------- */
+  function updateStatus(status) {
+
+    const statusBox =
+      document.getElementById("settings-shop-status");
+
+    const statusDot =
+      document.getElementById("settings-status-dot");
+
+    const statusText =
+      document.getElementById("settings-status-text");
+
+    if (!statusBox || !statusDot || !statusText) {
+      return;
+    }
+
+
+    if (status === "online") {
+
+      statusBox.className =
+        "flex items-center gap-2 px-3 py-1 bg-green-100 rounded-full";
+
+      statusDot.className =
+        "w-2.5 h-2.5 rounded-full bg-green-500";
+
+      statusText.className =
+        "font-bold text-sm text-green-700";
+
+      statusText.textContent = "Online";
+
+    } else if (status === "low_ink") {
+
+      statusBox.className =
+        "flex items-center gap-2 px-3 py-1 bg-yellow-100 rounded-full";
+
+      statusDot.className =
+        "w-2.5 h-2.5 rounded-full bg-yellow-500";
+
+      statusText.className =
+        "font-bold text-sm text-yellow-700";
+
+      statusText.textContent = "Low Ink";
+
+    } else if (status === "out_of_paper") {
+
+      statusBox.className =
+        "flex items-center gap-2 px-3 py-1 bg-orange-100 rounded-full";
+
+      statusDot.className =
+        "w-2.5 h-2.5 rounded-full bg-orange-500";
+
+      statusText.className =
+        "font-bold text-sm text-orange-700";
+
+      statusText.textContent = "Out of Paper";
+
+    } else {
+
+      statusBox.className =
+        "flex items-center gap-2 px-3 py-1 bg-red-100 rounded-full";
+
+      statusDot.className =
+        "w-2.5 h-2.5 rounded-full bg-red-500";
+
+      statusText.className =
+        "font-bold text-sm text-red-700";
+
+      statusText.textContent = "Offline";
+    }
+  }
+
+
+  /* -----------------------------------------
+     MESSAGE
+  ----------------------------------------- */
+  function showMessage(message, type) {
+
+    if (!saveMessage) return;
+
+    saveMessage.classList.remove(
+      "hidden",
+      "text-green-600",
+      "text-red-600"
+    );
+
+    if (type === "success") {
+      saveMessage.classList.add("text-green-600");
+    } else {
+      saveMessage.classList.add("text-red-600");
+    }
+
+    saveMessage.textContent = message;
+
+    clearTimeout(
+      showMessage.timeout
+    );
+
+    showMessage.timeout = setTimeout(() => {
+      saveMessage.classList.add("hidden");
+    }, 4000);
+  }
+
+
+  /* -----------------------------------------
+     INITIAL LOAD
+  ----------------------------------------- */
+
+  loadShopProfile();
+});
+</script>
   </body>
 </html>
