@@ -18,10 +18,10 @@
     <!-- Supabase client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+
     <!-- PDF LIB -->
     <!-- =========================================================== -->
-
-    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
     <script>
       tailwind.config = {
@@ -893,6 +893,8 @@
 
       const STORAGE_BUCKET = "print-files";
 
+      const PAYMENT_API = "https://quick2print-payment-shops-4tz8.vercel.app";
+
       const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
       const ACCEPTED_TYPES = /\.(pdf|jpg|jpeg|png)$/i;
@@ -1142,37 +1144,32 @@
           }
 
           // ------------------------------------------------------
-          // 2. CASHFREE CONFIGURATION VALIDATION
+          // 2. CASHFREE / UPI AVAILABILITY
           // ------------------------------------------------------
-          const missing = [];
+          // CASH orders must remain available even when Cashfree
+          // has not been configured for this shop.
+          //
+          // We intentionally do NOT read cashfree_secret_key in the
+          // customer browser. The server validates the secret key.
+          const cashfreeConfigured =
+            !isBlank(shop.cashfree_app_id) && !isBlank(shop.cashfree_env);
 
-          if (isBlank(shop.cashfree_app_id)) {
-            missing.push("cashfree_app_id");
-          }
-
-          if (!(await hasCashfreeSecret(currentShopId))) {
-            missing.push("cashfree_secret_key");
-          }
-
-          if (isBlank(shop.cashfree_env)) {
-            missing.push("cashfree_env");
-          }
-
-          if (missing.length > 0) {
-            // Technical details are for the shop owner / developer only:
-            // visible in the browser console (F12), NOT shown to customers.
+          if (!cashfreeConfigured) {
             console.warn(
-              `[Quick2Print] Shop "${currentShopId}" payment setup incomplete. Missing:`,
-              missing.map((key) => CONFIG_LABELS[key]),
+              `[Quick2Print] UPI is unavailable for shop "${currentShopId}". Cashfree App ID or Environment is not configured.`,
             );
+          }
 
-            // Customer-facing message (no field names)
-            showErrorState(
-              "Payments Unavailable",
-              `${shop.shop_name || "This shop"} is not able to accept online payments right now.\n\nPlease contact the shop or try again later.`,
-            );
-
-            return;
+          // UPI is optional; CASH remains available.
+          const upiButton = document.getElementById("upiPayBtn");
+          if (upiButton) {
+            upiButton.dataset.unavailable = cashfreeConfigured
+              ? "false"
+              : "true";
+            upiButton.disabled = !cashfreeConfigured;
+            upiButton.title = cashfreeConfigured
+              ? "Pay using UPI"
+              : "UPI is currently unavailable for this shop";
           }
 
           // ------------------------------------------------------
@@ -1611,9 +1608,18 @@
       // ============================================================
 
       function setPayButtonsDisabled(disabled) {
-        document.getElementById("cashPayBtn").disabled = disabled;
+        const cashBtn = document.getElementById("cashPayBtn");
+        const upiBtn = document.getElementById("upiPayBtn");
 
-        document.getElementById("upiPayBtn").disabled = disabled;
+        if (cashBtn) {
+          cashBtn.disabled = disabled;
+        }
+
+        if (upiBtn) {
+          // Keep UPI disabled if this shop is not configured for Cashfree.
+          const upiUnavailable = upiBtn.dataset.unavailable === "true";
+          upiBtn.disabled = disabled || upiUnavailable;
+        }
       }
 
       // ============================================================
@@ -1650,7 +1656,10 @@
 
           item.uploaded = true;
 
-          item.storagePath = `${STORAGE_BUCKET}/${path}`;
+          // IMPORTANT:
+          // Supabase storage APIs expect the path relative to the
+          // bucket name. Do not store "print-files/..." here.
+          item.storagePath = path;
 
           item.jobId = jobId;
         }
@@ -1662,117 +1671,235 @@
 
       async function processPayment(mode) {
         if (filesList.length === 0) {
-          showStep2Error("Please upload at least one file.");
-
+          showStep2Error("Kam se kam ek file upload karein.");
           return;
         }
 
         hideStep2Error();
-
         paymentMode = mode;
-
         setPayButtonsDisabled(true);
 
-        const selected = document.querySelector(
+        const colorType = document.querySelector(
           'input[name="colorType"]:checked',
-        );
-
-        if (!selected) {
-          setPayButtonsDisabled(false);
-
-          showStep2Error("Please select a print type.");
-
-          return;
-        }
-
-        const colorType = selected.value;
+        ).value;
 
         const paperSize = document.getElementById("paperSizeSelect").value;
 
-        const { totalPages, total } = calculateTotals();
+        // The shop price comes from shops.print_price.
+        // Color/B&W currently use the same per-page price because
+        // the database has one print_price field.
+        const pricePerPage = Number(printPrice);
 
-        if (mode === "UPI") {
-          document.getElementById("processingText").textContent =
-            "VERIFYING UPI...";
-        } else {
-          document.getElementById("processingText").textContent =
-            "INITIALIZING...";
+        if (!Number.isFinite(pricePerPage) || pricePerPage <= 0) {
+          throw new Error("Print price is not configured for this shop.");
         }
 
-        startProcessingAnimation();
+        let totalPages = 0;
+
+        filesList.forEach((item) => {
+          totalPages += Number(item.pages || 1) * Number(item.copies || 1);
+        });
+
+        const total = Math.round(pricePerPage * totalPages * 100) / 100;
 
         try {
-          // 1. Upload files
+          document.getElementById("processingText").textContent =
+            mode === "UPI" ? "PREPARING PAYMENT..." : "INITIALIZING...";
 
-          const jobIdPrefix = crypto.randomUUID().slice(0, 8);
+          startProcessingAnimation();
 
-          await uploadAllFiles(jobIdPrefix);
+          /*
+           * ============================================================
+           * CASH PAYMENT
+           * ============================================================
+           *
+           * Cash orders can directly become pending print orders.
+           * Your Print Agent will ask the shopkeeper for confirmation.
+           */
+          if (mode === "CASH") {
+            const jobIdPrefix = crypto.randomUUID().slice(0, 8);
 
-          // 2. Create order
+            // Upload files
+            await uploadAllFiles(jobIdPrefix);
 
-          const { data: order, error: orderError } = await supabaseClient
-            .from("print_orders")
-            .insert({
+            // Create CASH order
+            const { data: order, error: orderError } = await supabaseClient
+              .from("print_orders")
+              .insert({
+                shop_id: currentShopId,
+                total_files: filesList.length,
+                total_pages: totalPages,
+                amount_charged: total,
+                payment_mode: "CASH",
+                status: "pending",
+                payment_status: "PENDING",
+                payment_amount: total,
+                payment_currency: "INR",
+              })
+              .select()
+              .single();
+
+            if (orderError) {
+              throw orderError;
+            }
+
+            // Create print jobs
+            const jobsPayload = filesList.map((item) => ({
+              order_id: order.order_id,
               shop_id: currentShopId,
-
-              total_files: filesList.length,
-
-              total_pages: totalPages,
-
-              amount_charged: total,
-
-              payment_mode: mode,
-
+              original_filename: item.file.name,
+              storage_path: item.storagePath,
+              mime_type: item.file.type || "application/octet-stream",
+              file_size: item.file.size,
+              page_count: item.pages,
+              copies: item.copies,
+              color_type: colorType,
+              paper_size: paperSize,
               status: "pending",
-            })
-            .select()
-            .single();
+            }));
 
-          if (orderError) {
-            throw orderError;
+            const { error: jobsError } = await supabaseClient
+              .from("print_jobs")
+              .insert(jobsPayload);
+
+            if (jobsError) {
+              throw jobsError;
+            }
+
+            finishProcessingAnimation(() => {
+              showReceipt(order.order_id, colorType, total);
+            });
+
+            return;
           }
 
-          // 3. Create jobs
+          /*
+           * ============================================================
+           * UPI / CASHFREE PAYMENT
+           * ============================================================
+           *
+           * IMPORTANT:
+           * We DO NOT create print_jobs here.
+           *
+           * First Cashfree payment is created.
+           * After successful verification, print jobs are created.
+           */
 
-          const jobsPayload = filesList.map((item) => ({
-            order_id: order.order_id,
+          if (mode === "UPI") {
+            const upiButton = document.getElementById("upiPayBtn");
 
-            shop_id: currentShopId,
+            if (upiButton?.dataset.unavailable === "true") {
+              throw new Error(
+                "UPI payment is currently unavailable for this shop. Please pay at the shop counter.",
+              );
+            }
 
-            original_filename: item.file.name,
+            document.getElementById("processingText").textContent =
+              "CREATING PAYMENT...";
 
-            storage_path: item.storagePath,
+            /*
+             * Create Cashfree order through your Vercel API.
+             *
+             * Server will:
+             * 1. Verify shop
+             * 2. Read cashfree_app_id
+             * 3. Read cashfree_secret_key
+             * 4. Read shops.cashfree_env
+             * 5. Create print_orders row
+             * 6. Create Cashfree payment session
+             */
+            const createResponse = await fetch(
+              `${PAYMENT_API.replace(/\/+$/, "")}/api/payment/create`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  shopId: currentShopId,
+                  totalFiles: filesList.length,
+                  totalPages: totalPages,
+                  amountCharged: total,
+                  customerName: "Quick2Print Customer",
+                  customerPhone: "",
+                }),
+              },
+            );
 
-            mime_type: item.file.type || "application/octet-stream",
+            const createData = await createResponse.json();
 
-            file_size: item.file.size,
+            if (!createResponse.ok || !createData.success) {
+              throw new Error(
+                createData.message || "Payment create nahi ho paya.",
+              );
+            }
 
-            page_count: Number(item.pages || 1),
+            console.log("Cashfree order created:", createData);
 
-            copies: Number(item.copies || 1),
+            const orderId = createData.order_id;
+            const paymentSessionId = createData.payment_session_id;
 
-            color_type: colorType,
+            if (!orderId || !paymentSessionId) {
+              throw new Error("Payment session nahi mila.");
+            }
 
-            paper_size: paperSize,
+            /*
+             * Determine Cashfree environment from server response.
+             *
+             * Expected:
+             * SANDBOX
+             * PRODUCTION
+             */
+            const cashfreeEnvironment = String(
+              createData.environment || "SANDBOX",
+            ).toUpperCase();
 
-            status: "pending",
-          }));
+            const cashfreeMode =
+              cashfreeEnvironment === "PRODUCTION" ? "production" : "sandbox";
 
-          const { error: jobsError } = await supabaseClient
-            .from("print_jobs")
-            .insert(jobsPayload);
+            if (typeof Cashfree !== "function") {
+              throw new Error(
+                "Cashfree SDK load nahi hua. Page refresh karke dobara try karein.",
+              );
+            }
 
-          if (jobsError) {
-            throw jobsError;
+            /*
+             * Initialize Cashfree
+             */
+            const cashfree = Cashfree({
+              mode: cashfreeMode,
+            });
+
+            /*
+             * Stop our fake processing animation before
+             * opening the actual Cashfree checkout.
+             */
+            cancelProcessingAnimation();
+
+            setPayButtonsDisabled(true);
+
+            /*
+             * Open Cashfree Checkout
+             */
+            await cashfree.checkout({
+              paymentSessionId: paymentSessionId,
+              redirectTarget: "_self",
+            });
+
+            /*
+             * Normally Cashfree redirects the customer to your
+             * return URL after payment.
+             *
+             * The payment verification should therefore happen
+             * from your payment-status page.
+             */
+
+            return;
           }
 
-          // Done
-
-          finishProcessingAnimation(() =>
-            showReceipt(order.order_id, colorType, total),
-          );
+          throw new Error("Invalid payment mode.");
         } catch (err) {
-          console.error("Order failed:", err);
+          console.error("Payment/Order failed:", err);
 
           cancelProcessingAnimation();
 
@@ -1781,7 +1908,6 @@
           showStep2Error(mapOrderError(err));
         }
       }
-
       // ============================================================
       // ORDER ERROR
       // ============================================================
