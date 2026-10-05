@@ -1679,30 +1679,38 @@
         paymentMode = mode;
         setPayButtonsDisabled(true);
 
-        const colorType = document.querySelector(
-          'input[name="colorType"]:checked',
-        ).value;
-
-        const paperSize = document.getElementById("paperSizeSelect").value;
-
-        // The shop price comes from shops.print_price.
-        // Color/B&W currently use the same per-page price because
-        // the database has one print_price field.
-        const pricePerPage = Number(printPrice);
-
-        if (!Number.isFinite(pricePerPage) || pricePerPage <= 0) {
-          throw new Error("Print price is not configured for this shop.");
-        }
-
-        let totalPages = 0;
-
-        filesList.forEach((item) => {
-          totalPages += Number(item.pages || 1) * Number(item.copies || 1);
-        });
-
-        const total = Math.round(pricePerPage * totalPages * 100) / 100;
-
+        // Everything that can throw lives INSIDE the try block, so any
+        // error is caught and the payment buttons are re-enabled.
         try {
+          const colorInput = document.querySelector(
+            'input[name="colorType"]:checked',
+          );
+
+          if (!colorInput) {
+            throw new Error("Please select a print type.");
+          }
+
+          const colorType = colorInput.value;
+
+          const paperSize = document.getElementById("paperSizeSelect").value;
+
+          // The shop price comes from shops.print_price.
+          // Color/B&W currently use the same per-page price because
+          // the database has one print_price field.
+          const pricePerPage = Number(printPrice);
+
+          if (!Number.isFinite(pricePerPage) || pricePerPage <= 0) {
+            throw new Error("Print price is not configured for this shop.");
+          }
+
+          let totalPages = 0;
+
+          filesList.forEach((item) => {
+            totalPages += Number(item.pages || 1) * Number(item.copies || 1);
+          });
+
+          const total = Math.round(pricePerPage * totalPages * 100) / 100;
+
           document.getElementById("processingText").textContent =
             mode === "UPI" ? "PREPARING PAYMENT..." : "INITIALIZING...";
 
@@ -1778,13 +1786,14 @@
            * UPI / CASHFREE PAYMENT
            * ============================================================
            *
-           * IMPORTANT:
-           * We DO NOT create print_jobs here.
+           * The SERVER creates the print_orders row, the print_jobs rows
+           * (status: awaiting_payment) and the Cashfree order. The server
+           * calculates the price from shops.print_price, so no amounts
+           * are sent from the browser.
            *
-           * First Cashfree payment is created.
-           * After successful verification, print jobs are created.
+           * Jobs are released to the print agent (status: pending) only
+           * after the server verifies the payment.
            */
-
           if (mode === "UPI") {
             const upiButton = document.getElementById("upiPayBtn");
 
@@ -1794,34 +1803,37 @@
               );
             }
 
+            // 1. Upload files FIRST. After checkout the page unloads and the
+            //    File objects are gone, so this cannot be done later.
+            document.getElementById("processingText").textContent =
+              "UPLOADING FILES...";
+
+            const jobIdPrefix = crypto.randomUUID().slice(0, 8);
+            await uploadAllFiles(jobIdPrefix);
+
+            // 2. Server creates order + print_jobs (awaiting_payment) + Cashfree order.
             document.getElementById("processingText").textContent =
               "CREATING PAYMENT...";
 
-            /*
-             * Create Cashfree order through your Vercel API.
-             *
-             * Server will:
-             * 1. Verify shop
-             * 2. Read cashfree_app_id
-             * 3. Read cashfree_secret_key
-             * 4. Read shops.cashfree_env
-             * 5. Create print_orders row
-             * 6. Create Cashfree payment session
-             */
             const createResponse = await fetch(
               `${PAYMENT_API.replace(/\/+$/, "")}/api/payment/create`,
               {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   shopId: currentShopId,
-                  totalFiles: filesList.length,
-                  totalPages: totalPages,
-                  amountCharged: total,
+                  colorType: colorType,
+                  paperSize: paperSize,
                   customerName: "Quick2Print Customer",
                   customerPhone: "",
+                  files: filesList.map((item) => ({
+                    original_filename: item.file.name,
+                    storage_path: item.storagePath,
+                    mime_type: item.file.type || "application/octet-stream",
+                    file_size: item.file.size,
+                    page_count: item.pages,
+                    copies: item.copies,
+                  })),
                 }),
               },
             );
@@ -1834,28 +1846,17 @@
               );
             }
 
-            console.log("Cashfree order created:", createData);
-
-            const orderId = createData.order_id;
             const paymentSessionId = createData.payment_session_id;
 
-            if (!orderId || !paymentSessionId) {
+            if (!createData.order_id || !paymentSessionId) {
               throw new Error("Payment session nahi mila.");
             }
 
-            /*
-             * Determine Cashfree environment from server response.
-             *
-             * Expected:
-             * SANDBOX
-             * PRODUCTION
-             */
-            const cashfreeEnvironment = String(
-              createData.environment || "SANDBOX",
-            ).toUpperCase();
-
             const cashfreeMode =
-              cashfreeEnvironment === "PRODUCTION" ? "production" : "sandbox";
+              String(createData.environment || "SANDBOX").toUpperCase() ===
+              "PRODUCTION"
+                ? "production"
+                : "sandbox";
 
             if (typeof Cashfree !== "function") {
               throw new Error(
@@ -1863,36 +1864,17 @@
               );
             }
 
-            /*
-             * Initialize Cashfree
-             */
-            const cashfree = Cashfree({
-              mode: cashfreeMode,
-            });
+            const cashfree = Cashfree({ mode: cashfreeMode });
 
-            /*
-             * Stop our fake processing animation before
-             * opening the actual Cashfree checkout.
-             */
+            // Stop our processing animation before opening real checkout.
             cancelProcessingAnimation();
 
-            setPayButtonsDisabled(true);
-
-            /*
-             * Open Cashfree Checkout
-             */
+            // Cashfree redirects to payment-status.html, which verifies
+            // the payment on the server.
             await cashfree.checkout({
               paymentSessionId: paymentSessionId,
               redirectTarget: "_self",
             });
-
-            /*
-             * Normally Cashfree redirects the customer to your
-             * return URL after payment.
-             *
-             * The payment verification should therefore happen
-             * from your payment-status page.
-             */
 
             return;
           }
@@ -1908,6 +1890,7 @@
           showStep2Error(mapOrderError(err));
         }
       }
+
       // ============================================================
       // ORDER ERROR
       // ============================================================

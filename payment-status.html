@@ -9,8 +9,6 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com" />
 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -550,27 +548,13 @@
        * ============================================================
        * CONFIGURATION
        * ============================================================
+       *
+       * This page no longer talks to Supabase directly. The server
+       * verifies the payment with Cashfree and is the ONLY place that
+       * marks an order PAID and releases print jobs to the shop.
        */
 
       const PAYMENT_API = "https://quick2print-payment-shops-ejbl.vercel.app";
-
-      const SUPABASE_URL = "https://gepkipszweqhftwaejbu.supabase.co";
-
-      const SUPABASE_ANON_KEY =
-        "sb_publishable_forPZqB40NrPCFGQsdqeZw_4QTxOgBH";
-
-      const STORAGE_BUCKET = "print-files";
-
-      /*
-       * ============================================================
-       * SUPABASE
-       * ============================================================
-       */
-
-      const supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY,
-      );
 
       /*
        * ============================================================
@@ -688,38 +672,12 @@
 
           /*
            * --------------------------------------------------------
-           * Get temporary order information.
-           * --------------------------------------------------------
-           */
-
-          const storageKey = `q2p_pending_payment_${orderId}`;
-          const saved = localStorage.getItem(storageKey);
-
-          let paymentData = null;
-          let storageMissing = false;
-
-          if (saved) {
-            try {
-              paymentData = JSON.parse(saved);
-            } catch (error) {
-              console.warn("Saved payment data is invalid:", error);
-              paymentData = null;
-            }
-          } else {
-            storageMissing = true;
-            console.warn(
-              "Temporary payment data is missing. Continuing with server verification.",
-            );
-          }
-
-          /*
-           * --------------------------------------------------------
-           * Call backend verification API
+           * Call backend verification API.
            *
-           * IMPORTANT:
-           * Do not treat missing localStorage as payment failure.
-           * Cashfree may return the customer to a different origin
-           * (for example www vs non-www), which has separate storage.
+           * Everything (payment status, amount, files, pages, jobs)
+           * comes from the SERVER. Nothing is read from this browser,
+           * so it works even if Cashfree returns the customer on a
+           * different origin (www vs non-www) or a different device.
            * --------------------------------------------------------
            */
 
@@ -765,15 +723,10 @@
 
           console.log("Payment status:", paymentStatus);
 
-          /*
-           * --------------------------------------------------------
-           * PAID
-           * --------------------------------------------------------
-           */
-
           // Server response can contain order information.
           // Keep several possible field names for compatibility.
           const serverOrder = verifyData.order || verifyData.data?.order || {};
+
           const serverAmount =
             verifyData.payment_amount ??
             verifyData.amount ??
@@ -793,48 +746,38 @@
             serverOrder.total_pages ??
             serverOrder.totalPages;
 
+          /*
+           * --------------------------------------------------------
+           * PAID
+           * --------------------------------------------------------
+           */
+
           if (paymentStatus === "PAID") {
-            /*
-             * If localStorage is available, create the print jobs exactly
-             * as before. If it is missing, do NOT show "Payment Failed".
-             * The payment was successful; the customer should show the
-             * Order ID to the shopkeeper because file metadata is not
-             * available in this browser anymore.
-             */
-            if (
-              paymentData &&
-              Array.isArray(paymentData.files) &&
-              paymentData.files.length > 0
-            ) {
-              await createPrintJobs(paymentData);
+            const jobsTotal = Number(verifyData.jobs_total ?? 0);
 
-              showSuccess({
-                orderId: orderId,
-                shopId: shopId,
-                total: paymentData.total ?? serverAmount,
-                totalFiles: paymentData.totalFiles ?? serverFiles,
-                totalPages: paymentData.totalPages ?? serverPages,
-              });
-
-              localStorage.removeItem(storageKey);
-            } else {
-              showSuccess({
-                orderId: orderId,
-                shopId: shopId,
-                total: serverAmount,
-                totalFiles: serverFiles,
-                totalPages: serverPages,
-              });
-
-              /*
-               * Do not remove anything here because there was no
-               * browser data to remove. The customer can show this
-               * receipt to the shopkeeper using the Order ID.
-               */
-              console.warn(
-                "Payment is PAID but browser order metadata is unavailable.",
+            if (jobsTotal === 0) {
+              // Paid, but the server has no files for this order. Do NOT say
+              // "printing started".
+              showFailed(
+                "Payment received, but no files were found for this order. Please show this Order ID to the shopkeeper.",
+                {
+                  orderId,
+                  shopId,
+                  paymentStatus: "PAID - FILES MISSING",
+                  amount: serverAmount,
+                },
               );
+
+              return;
             }
+
+            showSuccess({
+              orderId: orderId,
+              shopId: shopId,
+              total: serverAmount,
+              totalFiles: serverFiles,
+              totalPages: serverPages,
+            });
 
             return;
           }
@@ -852,7 +795,7 @@
                 orderId,
                 shopId,
                 paymentStatus,
-                amount: serverAmount ?? paymentData?.total,
+                amount: serverAmount,
               },
             );
 
@@ -872,7 +815,7 @@
                 orderId,
                 shopId,
                 paymentStatus,
-                amount: serverAmount ?? paymentData?.total,
+                amount: serverAmount,
               },
             );
 
@@ -902,113 +845,6 @@
 
       /*
        * ============================================================
-       * CREATE PRINT JOBS
-       * ============================================================
-       */
-
-      async function createPrintJobs(paymentData) {
-        if (
-          !paymentData ||
-          !Array.isArray(paymentData.files) ||
-          paymentData.files.length === 0
-        ) {
-          throw new Error(
-            "Payment was successful, but the uploaded file details are not available in this browser. Please show the Order ID to the shopkeeper.",
-          );
-        }
-
-        /*
-         * Check whether jobs already exist.
-         *
-         * This makes refresh safe.
-         */
-
-        const { data: existingJobs, error: existingJobsError } =
-          await supabaseClient
-            .from("print_jobs")
-            .select("job_id")
-            .eq("order_id", orderId);
-
-        if (existingJobsError) {
-          throw new Error(existingJobsError.message);
-        }
-
-        /*
-         * Jobs already created.
-         * Do not create duplicates.
-         */
-
-        if (existingJobs && existingJobs.length > 0) {
-          return;
-        }
-
-        /*
-         * Build print_jobs.
-         */
-
-        const jobsPayload = paymentData.files.map((file) => ({
-          order_id: orderId,
-
-          shop_id: shopId,
-
-          original_filename: file.original_filename,
-
-          storage_path: file.storage_path,
-
-          mime_type: file.mime_type || "application/octet-stream",
-
-          file_size: Number(file.file_size || 0),
-
-          page_count: Math.max(1, Number(file.page_count || 1)),
-
-          copies: Math.max(1, Number(file.copies || 1)),
-
-          color_type: paymentData.colorType,
-
-          paper_size: paymentData.paperSize,
-
-          status: "pending",
-        }));
-
-        /*
-         * Insert jobs.
-         */
-
-        const { error: jobsError } = await supabaseClient
-          .from("print_jobs")
-          .insert(jobsPayload);
-
-        if (jobsError) {
-          throw new Error(`Print jobs create failed: ${jobsError.message}`);
-        }
-
-        /*
-         * Update order.
-         *
-         * The backend already verifies payment.
-         */
-
-        const { error: orderError } = await supabaseClient
-          .from("print_orders")
-          .update({
-            status: "processing",
-
-            payment_status: "PAID",
-
-            payment_verified_at: new Date().toISOString(),
-
-            payment_completed_at: new Date().toISOString(),
-          })
-          .eq("order_id", orderId)
-          .eq("shop_id", shopId);
-
-        if (orderError) {
-          throw new Error(orderError.message);
-        }
-      }
-
-      /*
-       * ============================================================
        * RETRY
        * ============================================================
        */
@@ -1030,7 +866,6 @@
       function goBackToShop() {
         /*
          * Always use the canonical www domain.
-         * This prevents www/non-www localStorage separation.
          * Keep shop_id so the same shop opens again.
          */
 
