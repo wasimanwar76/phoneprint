@@ -522,12 +522,14 @@
                   </button>
                 </div>
 
-                <button
+                <a
+                  href="./download/Quick2Print Agent Setup 1.2.0.exe"
+                  download
                   class="manga-btn w-full py-4 sm:py-5 text-base sm:text-lg flex items-center justify-center gap-3"
                 >
                   <span class="text-xl">⬇️</span>
                   Download &amp; Install
-                </button>
+                </a>
 
                 <p
                   class="text-center text-[#17135F]/60 font-medium text-xs sm:text-sm"
@@ -624,213 +626,6 @@
                 </button>
               </div>
             </div>
-
-            <!-- ============================================================ -->
-            <!-- SHOP STATUS SECTION                                          -->
-            <!-- ============================================================ -->
-            <section class="manga-card p-6 sm:p-7" id="shopStatusSection">
-              <!-- Header -->
-              <div class="flex items-start justify-between gap-4 mb-6">
-                <div class="flex items-start gap-3">
-                  <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#211B8F]/10"
-                  >
-                    <span class="text-lg">🏪</span>
-                  </div>
-
-                  <div>
-                    <h2 class="text-xl font-heading font-bold text-[#15181C]">
-                      Shop Status
-                    </h2>
-
-                    <p class="mt-1 text-sm text-[#17135F]/55">
-                      Manage your shop availability and printer condition.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Status Message -->
-              <div
-                id="shopStatusMsg"
-                role="alert"
-                class="hidden mb-5 rounded-xl border px-4 py-3 text-sm font-semibold"
-              ></div>
-
-              <!-- ======================================================== -->
-              <!-- SHOP AVAILABILITY                                         -->
-              <!-- ======================================================== -->
-              <div
-                class="rounded-2xl border border-gray-200 bg-[#FAFAFC] p-4 sm:p-5"
-              >
-                <div
-                  class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <!-- Current Status -->
-                  <div class="flex items-start gap-3">
-                    <!-- Status Dot -->
-                    <div
-                      class="mt-1.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center"
-                    >
-                      <span
-                        id="shopDot"
-                        class="h-3.5 w-3.5 rounded-full bg-gray-300"
-                      ></span>
-                    </div>
-
-                    <div>
-                      <div class="flex flex-wrap items-center gap-2">
-                        <span
-                          id="shopTitle"
-                          class="text-lg font-heading font-bold text-[#15181C]"
-                        >
-                          Loading…
-                        </span>
-
-                        <!-- Status Badge -->
-                        <span
-                          id="shopStatusBadge"
-                          class="hidden rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
-                        ></span>
-                      </div>
-
-                      <p
-                        id="shopDesc"
-                        class="mt-1 text-sm leading-5 text-[#17135F]/55"
-                      >
-                        Checking your shop status.
-                      </p>
-                    </div>
-                  </div>
-
-                  <!-- Toggle Button -->
-                  <button
-                    id="toggleShopBtn"
-                    type="button"
-                    disabled
-                    class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-bold text-[#15181C] shadow-sm transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <span id="toggleShopIcon" class="text-base"> ⏸️ </span>
-
-                    <span id="toggleShopLabel"> Close Shop </span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- ======================================================== -->
-              <!-- PRINTER STATUS                                            -->
-              <!-- ======================================================== -->
-              <div class="mt-6">
-                <!-- Section Header -->
-                <div
-                  class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4"
-                >
-                  <div class="flex items-center gap-2">
-                    <div
-                      class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#211B8F]/10"
-                    >
-                      <span class="text-base">🖨️</span>
-                    </div>
-
-                    <div>
-                      <h3 class="font-heading font-bold text-[#15181C]">
-                        Ink &amp; Paper Status
-                      </h3>
-
-                      <p class="text-xs text-[#17135F]/50">
-                        Visible to customers
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Status Options -->
-                <div
-                  id="inkButtons"
-                  class="grid grid-cols-1 sm:grid-cols-3 gap-3"
-                >
-                  <!-- ALL GOOD -->
-                  <button
-                    type="button"
-                    data-status="online"
-                    disabled
-                    class="status-option group relative flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-[#211B8F] bg-[#211B8F]/5 px-4 py-3 text-left transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/10 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <span
-                      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-700"
-                    >
-                      ✓
-                    </span>
-
-                    <span class="flex-1">
-                      <span class="block text-sm font-bold text-[#15181C]">
-                        All Good
-                      </span>
-
-                      <span class="mt-0.5 block text-xs text-[#17135F]/50">
-                        Ready to print
-                      </span>
-                    </span>
-                  </button>
-
-                  <!-- LOW INK -->
-                  <button
-                    type="button"
-                    data-status="low_ink"
-                    disabled
-                    class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-yellow-400 hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <span
-                      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-yellow-100"
-                    >
-                      <span class="h-3 w-3 rounded-full bg-yellow-400"></span>
-                    </span>
-
-                    <span class="flex-1">
-                      <span class="block text-sm font-bold text-[#15181C]">
-                        Low on Ink
-                      </span>
-
-                      <span class="mt-0.5 block text-xs text-[#17135F]/50">
-                        Ink needs attention
-                      </span>
-                    </span>
-                  </button>
-
-                  <!-- OUT OF PAPER -->
-                  <button
-                    type="button"
-                    data-status="out_of_paper"
-                    disabled
-                    class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-[#FFB800] hover:bg-[#FFB800]/10 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <span
-                      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FFB800]/15"
-                    >
-                      <span class="h-3 w-3 rounded-full bg-[#FFB800]"></span>
-                    </span>
-
-                    <span class="flex-1">
-                      <span class="block text-sm font-bold text-[#15181C]">
-                        Out of Paper
-                      </span>
-
-                      <span class="mt-0.5 block text-xs text-[#17135F]/50">
-                        Paper needs refill
-                      </span>
-                    </span>
-                  </button>
-                </div>
-
-                <!-- Hint -->
-                <div
-                  id="inkHint"
-                  class="hidden mt-4 rounded-xl border border-[#211B8F]/10 bg-[#211B8F]/5 px-4 py-3 text-xs font-medium text-[#17135F]/60"
-                >
-                  Open the shop to change ink &amp; paper status.
-                </div>
-              </div>
-            </section>
 
             <!-- Pricing -->
             <section id="pricing-cards" class="pt-2">
@@ -1035,6 +830,213 @@
                 * Payment gateway charges as per actuals.
               </p>
             </section>
+          </section>
+
+          <!-- ============================================================ -->
+          <!-- SHOP STATUS SECTION                                          -->
+          <!-- ============================================================ -->
+          <section class="manga-card p-6 sm:p-7" id="shopStatusSection">
+            <!-- Header -->
+            <div class="flex items-start justify-between gap-4 mb-6">
+              <div class="flex items-start gap-3">
+                <div
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#211B8F]/10"
+                >
+                  <span class="text-lg">🏪</span>
+                </div>
+
+                <div>
+                  <h2 class="text-xl font-heading font-bold text-[#15181C]">
+                    Shop Status
+                  </h2>
+
+                  <p class="mt-1 text-sm text-[#17135F]/55">
+                    Manage your shop availability and printer condition.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status Message -->
+            <div
+              id="shopStatusMsg"
+              role="alert"
+              class="hidden mb-5 rounded-xl border px-4 py-3 text-sm font-semibold"
+            ></div>
+
+            <!-- ======================================================== -->
+            <!-- SHOP AVAILABILITY                                         -->
+            <!-- ======================================================== -->
+            <div
+              class="rounded-2xl border border-gray-200 bg-[#FAFAFC] p-4 sm:p-5"
+            >
+              <div
+                class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <!-- Current Status -->
+                <div class="flex items-start gap-3">
+                  <!-- Status Dot -->
+                  <div
+                    class="mt-1.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center"
+                  >
+                    <span
+                      id="shopDot"
+                      class="h-3.5 w-3.5 rounded-full bg-gray-300"
+                    ></span>
+                  </div>
+
+                  <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span
+                        id="shopTitle"
+                        class="text-lg font-heading font-bold text-[#15181C]"
+                      >
+                        Loading…
+                      </span>
+
+                      <!-- Status Badge -->
+                      <span
+                        id="shopStatusBadge"
+                        class="hidden rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+                      ></span>
+                    </div>
+
+                    <p
+                      id="shopDesc"
+                      class="mt-1 text-sm leading-5 text-[#17135F]/55"
+                    >
+                      Checking your shop status.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Toggle Button -->
+                <button
+                  id="toggleShopBtn"
+                  type="button"
+                  disabled
+                  class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-bold text-[#15181C] shadow-sm transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <span id="toggleShopIcon" class="text-base"> ⏸️ </span>
+
+                  <span id="toggleShopLabel"> Close Shop </span>
+                </button>
+              </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- PRINTER STATUS                                            -->
+            <!-- ======================================================== -->
+            <div class="mt-6">
+              <!-- Section Header -->
+              <div
+                class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4"
+              >
+                <div class="flex items-center gap-2">
+                  <div
+                    class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#211B8F]/10"
+                  >
+                    <span class="text-base">🖨️</span>
+                  </div>
+
+                  <div>
+                    <h3 class="font-heading font-bold text-[#15181C]">
+                      Ink &amp; Paper Status
+                    </h3>
+
+                    <p class="text-xs text-[#17135F]/50">
+                      Visible to customers
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status Options -->
+              <div
+                id="inkButtons"
+                class="grid grid-cols-1 sm:grid-cols-3 gap-3"
+              >
+                <!-- ALL GOOD -->
+                <button
+                  type="button"
+                  data-status="online"
+                  disabled
+                  class="status-option group relative flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-[#211B8F] bg-[#211B8F]/5 px-4 py-3 text-left transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/10 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-700"
+                  >
+                    ✓
+                  </span>
+
+                  <span class="flex-1">
+                    <span class="block text-sm font-bold text-[#15181C]">
+                      All Good
+                    </span>
+
+                    <span class="mt-0.5 block text-xs text-[#17135F]/50">
+                      Ready to print
+                    </span>
+                  </span>
+                </button>
+
+                <!-- LOW INK -->
+                <button
+                  type="button"
+                  data-status="low_ink"
+                  disabled
+                  class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-yellow-400 hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-yellow-100"
+                  >
+                    <span class="h-3 w-3 rounded-full bg-yellow-400"></span>
+                  </span>
+
+                  <span class="flex-1">
+                    <span class="block text-sm font-bold text-[#15181C]">
+                      Low on Ink
+                    </span>
+
+                    <span class="mt-0.5 block text-xs text-[#17135F]/50">
+                      Ink needs attention
+                    </span>
+                  </span>
+                </button>
+
+                <!-- OUT OF PAPER -->
+                <button
+                  type="button"
+                  data-status="out_of_paper"
+                  disabled
+                  class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-[#FFB800] hover:bg-[#FFB800]/10 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FFB800]/15"
+                  >
+                    <span class="h-3 w-3 rounded-full bg-[#FFB800]"></span>
+                  </span>
+
+                  <span class="flex-1">
+                    <span class="block text-sm font-bold text-[#15181C]">
+                      Out of Paper
+                    </span>
+
+                    <span class="mt-0.5 block text-xs text-[#17135F]/50">
+                      Paper needs refill
+                    </span>
+                  </span>
+                </button>
+              </div>
+
+              <!-- Hint -->
+              <div
+                id="inkHint"
+                class="hidden mt-4 rounded-xl border border-[#211B8F]/10 bg-[#211B8F]/5 px-4 py-3 text-xs font-medium text-[#17135F]/60"
+              >
+                Open the shop to change ink &amp; paper status.
+              </div>
+            </div>
           </section>
 
           <!-- ============ TAB: ORDERS ============ -->
