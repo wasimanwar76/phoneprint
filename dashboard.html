@@ -1042,20 +1042,23 @@
             id="tab-orders"
             class="tab-content hidden max-w-4xl mx-auto space-y-6"
           >
+            <!-- Orders Header -->
             <div class="flex justify-between items-end mb-2">
               <p class="font-bold text-[#17135F]/60">
                 Naye print jobs yahan aayenge.
               </p>
+
               <button
                 id="refreshOrdersBtn"
                 class="manga-btn-secondary px-3 py-1.5 text-sm flex items-center gap-2"
                 onclick="refreshOrders()"
               >
-                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                Refresh
               </button>
             </div>
 
-            <!-- Loading state -->
+            <!-- Loading State -->
             <div
               id="ordersLoading"
               class="flex flex-col items-center justify-center py-16 text-center"
@@ -1063,27 +1066,30 @@
               <div
                 class="w-8 h-8 border-4 border-[#211B8F]/15 border-t-stamp rounded-full animate-spin mb-3"
               ></div>
+
               <p class="text-sm font-semibold text-[#17135F]/50">
                 Orders load ho rahe hain...
               </p>
             </div>
 
-            <!-- Empty state -->
+            <!-- Empty State -->
             <div id="ordersEmpty" class="hidden manga-card p-10 text-center">
               <i
                 data-lucide="inbox"
                 class="w-10 h-10 mx-auto mb-3 text-[#17135F]/30"
               ></i>
+
               <p class="font-bold text-[#17135F]/60">
                 Abhi tak koi order nahi aaya.
               </p>
+
               <p class="text-sm text-[#17135F]/40 mt-1">
                 Jaise hi koi customer QR scan karke print bhejega, yahan
                 dikhega.
               </p>
             </div>
 
-            <!-- Error state -->
+            <!-- Error State -->
             <div
               id="ordersError"
               class="hidden manga-card p-5 bg-red-50 border-red-200 text-red-700 flex items-start gap-2"
@@ -1092,12 +1098,13 @@
                 data-lucide="alert-triangle"
                 class="w-5 h-5 shrink-0 mt-0.5"
               ></i>
+
               <p id="ordersErrorText" class="text-sm font-semibold">
                 Orders load nahi ho paaye.
               </p>
             </div>
 
-            <!-- Real order cards get injected here -->
+            <!-- Orders Container -->
             <div id="ordersContainer" class="space-y-6"></div>
           </section>
 
@@ -2018,208 +2025,716 @@
       lucide.createIcons();
 
       // ============================================================
-      // Fetch real orders (+ their files) for the logged-in shop
+      // LOAD ORDERS
+      //
+      // UPI:
+      //   payment_status MUST be PAID
+      //
+      // CASH:
+      //   Show normally
       // ============================================================
+
       async function loadOrders() {
         const loadingEl = document.getElementById("ordersLoading");
         const emptyEl = document.getElementById("ordersEmpty");
         const errorEl = document.getElementById("ordersError");
         const container = document.getElementById("ordersContainer");
 
+        // Reset UI
         loadingEl.classList.remove("hidden");
         emptyEl.classList.add("hidden");
         errorEl.classList.add("hidden");
         container.innerHTML = "";
 
+        // ----------------------------------------------------------
+        // Check shop session
+        // ----------------------------------------------------------
+
         if (!currentShop || !currentShop.shop_id) {
           loadingEl.classList.add("hidden");
+
           showOrdersError("Shop session nahi mili. Dobara login karein.");
+
           return;
         }
 
         try {
-          // Orders newest-first, only ones not yet completed/failed by default
-          const { data: orders, error: ordersErr } = await supabaseClient
+          // --------------------------------------------------------
+          // Get orders for current shop
+          // --------------------------------------------------------
+
+          const { data: allOrders, error: ordersErr } = await supabaseClient
             .from("print_orders")
             .select("*")
             .eq("shop_id", currentShop.shop_id)
-            .order("created_at", { ascending: false })
-            .limit(30);
+            .order("created_at", {
+              ascending: false,
+            })
+            .limit(50);
 
-          if (ordersErr) throw ordersErr;
+          if (ordersErr) {
+            throw ordersErr;
+          }
 
-          if (!orders || orders.length === 0) {
+          // --------------------------------------------------------
+          // Filter orders
+          //
+          // UPI:
+          //   ONLY PAID
+          //
+          // CASH:
+          //   Show normally
+          // --------------------------------------------------------
+
+          const orders = (allOrders || []).filter((order) => {
+            const paymentMode = String(order.payment_mode || "").toUpperCase();
+
+            const paymentStatus = String(
+              order.payment_status || "",
+            ).toUpperCase();
+
+            // UPI order
+            if (paymentMode === "UPI") {
+              return paymentStatus === "PAID";
+            }
+
+            // CASH order
+            if (paymentMode === "CASH") {
+              return true;
+            }
+
+            // Unknown payment mode
+            return false;
+          });
+
+          // --------------------------------------------------------
+          // No visible orders
+          // --------------------------------------------------------
+
+          if (orders.length === 0) {
             loadingEl.classList.add("hidden");
             emptyEl.classList.remove("hidden");
+
+            lucide.createIcons();
+
             return;
           }
 
-          const orderIds = orders.map((o) => o.order_id);
+          // --------------------------------------------------------
+          // Get order IDs
+          // --------------------------------------------------------
+
+          const orderIds = orders.map((order) => order.order_id);
+
+          // --------------------------------------------------------
+          // Fetch jobs for visible orders
+          // --------------------------------------------------------
+
           const { data: jobs, error: jobsErr } = await supabaseClient
             .from("print_jobs")
             .select("*")
-            .in("order_id", orderIds);
+            .in("order_id", orderIds)
+            .order("created_at", {
+              ascending: true,
+            });
 
-          if (jobsErr) throw jobsErr;
+          if (jobsErr) {
+            throw jobsErr;
+          }
+
+          // --------------------------------------------------------
+          // Group jobs by order_id
+          // --------------------------------------------------------
 
           const jobsByOrder = {};
+
           (jobs || []).forEach((job) => {
-            if (!jobsByOrder[job.order_id]) jobsByOrder[job.order_id] = [];
+            if (!jobsByOrder[job.order_id]) {
+              jobsByOrder[job.order_id] = [];
+            }
+
             jobsByOrder[job.order_id].push(job);
           });
 
+          // --------------------------------------------------------
+          // Hide loading
+          // --------------------------------------------------------
+
           loadingEl.classList.add("hidden");
+
+          // --------------------------------------------------------
+          // Render orders
+          // --------------------------------------------------------
+
           container.innerHTML = orders
-            .map((order) =>
-              renderOrderCard(order, jobsByOrder[order.order_id] || []),
-            )
+            .map((order) => {
+              return renderOrderCard(order, jobsByOrder[order.order_id] || []);
+            })
             .join("");
+
+          // --------------------------------------------------------
+          // Initialize Lucide icons
+          // --------------------------------------------------------
 
           lucide.createIcons();
         } catch (err) {
           console.error("Failed to load orders:", err);
+
           loadingEl.classList.add("hidden");
-          showOrdersError(
-            err.message?.includes("fetch") || err.message?.includes("network")
-              ? "Internet connection check karein aur dobara try karein."
-              : "Orders load nahi ho paaye. Kripya dobara try karein.",
-          );
+
+          let message = "Orders load nahi ho paaye. Kripya dobara try karein.";
+
+          const errorMessage = String(err?.message || "").toLowerCase();
+
+          if (
+            errorMessage.includes("fetch") ||
+            errorMessage.includes("network")
+          ) {
+            message = "Internet connection check karein aur dobara try karein.";
+          }
+
+          showOrdersError(message);
         }
       }
 
+      // ============================================================
+      // SHOW ORDERS ERROR
+      // ============================================================
+
       function showOrdersError(message) {
-        document.getElementById("ordersErrorText").textContent = message;
-        document.getElementById("ordersError").classList.remove("hidden");
+        const errorEl = document.getElementById("ordersError");
+
+        const errorTextEl = document.getElementById("ordersErrorText");
+
+        if (errorTextEl) {
+          errorTextEl.textContent = message;
+        }
+
+        if (errorEl) {
+          errorEl.classList.remove("hidden");
+        }
+
+        lucide.createIcons();
       }
 
       // ============================================================
-      // Render one order as a card (mirrors the original static design)
+      // RENDER ORDER CARD
       // ============================================================
+
       function renderOrderCard(order, jobs) {
         const cardId = `order-card-${order.order_id}`;
-        const isFailed = order.status === "failed";
-        const isCompleted = order.status === "completed";
 
-        const dateStr = new Date(order.created_at).toLocaleDateString("en-IN", {
+        // ----------------------------------------------------------
+        // Order status
+        // ----------------------------------------------------------
+
+        const orderStatus = String(order.status || "").toLowerCase();
+
+        const paymentMode = String(order.payment_mode || "").toUpperCase();
+
+        const paymentStatus = String(order.payment_status || "").toUpperCase();
+
+        const isFailed = orderStatus === "failed";
+
+        const isCompleted = orderStatus === "completed";
+
+        const isActive =
+          orderStatus === "pending" || orderStatus === "processing";
+
+        // ----------------------------------------------------------
+        // Date / Time
+        // ----------------------------------------------------------
+
+        const createdAt = order.created_at
+          ? new Date(order.created_at)
+          : new Date();
+
+        const dateStr = createdAt.toLocaleDateString("en-IN", {
           day: "2-digit",
           month: "short",
           year: "numeric",
         });
-        const timeStr = new Date(order.created_at).toLocaleTimeString("en-IN", {
+
+        const timeStr = createdAt.toLocaleTimeString("en-IN", {
           hour: "2-digit",
           minute: "2-digit",
         });
 
+        // ----------------------------------------------------------
+        // Files
+        // ----------------------------------------------------------
+
         const fileNames =
-          jobs.map((j) => j.original_filename).join(", ") || "No files";
+          jobs.length > 0
+            ? jobs
+                .map((job) => job.original_filename || "Unnamed file")
+                .join(", ")
+            : "No files";
+
         const primaryJob = jobs[0] || {};
+
+        // ----------------------------------------------------------
+        // Color
+        // ----------------------------------------------------------
+
+        const colorType = String(primaryJob.color_type || "").toLowerCase();
+
         const colorLabel =
-          primaryJob.color_type === "Color" ? "Colour" : "B&W (Kala-Safed)";
-        const paymentLabel =
-          order.payment_mode === "UPI" ? "Paid via UPI" : "Counter Cash";
-        const paymentClass =
-          order.payment_mode === "UPI"
-            ? "bg-green-100 text-green-800"
-            : "bg-yellow-100 text-yellow-800";
+          colorType === "color" || colorType === "colour"
+            ? "Colour"
+            : "B&W (Kala-Safed)";
 
-        const statusBadge = isFailed
-          ? `<span class="inline-block mt-1 bg-red-100 text-red-700 px-2 py-0.5 text-xs font-bold rounded">Fail</span>`
-          : isCompleted
-            ? `<span class="inline-block mt-1 bg-green-100 text-green-700 px-2 py-0.5 text-xs font-bold rounded">Printed</span>`
-            : `<span class="inline-block mt-1 bg-yellow-200 px-2 py-0.5 text-xs font-bold rounded">Naya Order</span>`;
+        // ----------------------------------------------------------
+        // Payment
+        // ----------------------------------------------------------
 
-        const fileButtonsHtml = jobs
-          .map(
-            (job) => `
-        <button
-          onclick="downloadJobFile('${job.storage_path}')"
-          class="text-xs font-bold text-[#E59F00] hover:underline flex items-center gap-1"
+        const isUpiPaid = paymentMode === "UPI" && paymentStatus === "PAID";
+
+        const paymentLabel = isUpiPaid ? "Paid via UPI" : "Counter Cash";
+
+        const paymentClass = isUpiPaid
+          ? "bg-green-100 text-green-800"
+          : "bg-yellow-100 text-yellow-800";
+
+        // ----------------------------------------------------------
+        // Amount
+        // ----------------------------------------------------------
+
+        const amount = Number(order.amount_charged || 0);
+
+        const formattedAmount = amount.toFixed(2);
+
+        // ----------------------------------------------------------
+        // Status Badge
+        // ----------------------------------------------------------
+
+        let statusBadge = "";
+
+        if (isFailed) {
+          statusBadge = `
+        <span
+          class="inline-block mt-1 bg-red-100 text-red-700
+                 px-2 py-0.5 text-xs font-bold rounded"
         >
-          <i data-lucide="download" class="w-3.5 h-3.5"></i> ${escapeHtml(job.original_filename)}
-        </button>`,
-          )
-          .join("");
+          Fail
+        </span>
+      `;
+        } else if (isCompleted) {
+          statusBadge = `
+        <span
+          class="inline-block mt-1 bg-green-100 text-green-700
+                 px-2 py-0.5 text-xs font-bold rounded"
+        >
+          Printed
+        </span>
+      `;
+        } else if (isActive) {
+          statusBadge = `
+        <span
+          class="inline-block mt-1 bg-yellow-200
+                 text-[#17135F]
+                 px-2 py-0.5 text-xs font-bold rounded"
+        >
+          Naya Order
+        </span>
+      `;
+        }
 
-        const actionButtons =
-          isFailed || isCompleted
-            ? `
-        <div class="p-3 ${isFailed ? "bg-red-100" : "bg-green-50"} rounded-lg mt-2 flex items-start gap-2">
-          <i data-lucide="${isFailed ? "alert-triangle" : "check-check"}" class="w-5 h-5 ${isFailed ? "text-[#E59F00]" : "text-green-600"} shrink-0 mt-0.5"></i>
-          <p class="text-xs font-medium ${isFailed ? "text-red-800" : "text-green-800"}">
-            ${isFailed ? "Print fail ho gaya." : "Print ho chuka hai."}
-          </p>
-        </div>`
-            : `
-        <div class="flex gap-3 pt-2">
-          <button
-            class="manga-btn flex-1 py-3 text-base sm:text-lg flex items-center justify-center gap-2"
-            onclick="startPrint(this, '${order.order_id}', '${cardId}')"
+        // ----------------------------------------------------------
+        // Payment Status Badge
+        // ----------------------------------------------------------
+
+        let paymentStatusBadge = "";
+
+        if (paymentMode === "UPI") {
+          if (paymentStatus === "PAID") {
+            paymentStatusBadge = `
+          <span
+            class="bg-green-100 text-green-800
+                   px-2 py-1 rounded"
           >
-            <i data-lucide="printer" class="w-5 h-5"></i> Print Nikalein
-          </button>
+            Payment Paid
+          </span>
+        `;
+          }
+        } else {
+          paymentStatusBadge = `
+        <span
+          class="bg-yellow-100 text-yellow-800
+                 px-2 py-1 rounded"
+        >
+          Cash
+        </span>
+      `;
+        }
+
+        // ----------------------------------------------------------
+        // File Download Buttons
+        // ----------------------------------------------------------
+
+        const fileButtonsHtml =
+          jobs.length > 0
+            ? jobs
+                .map((job) => {
+                  const storagePath = String(job.storage_path || "").replace(
+                    /'/g,
+                    "\\'",
+                  );
+
+                  const filename = escapeHtml(
+                    job.original_filename || "Download",
+                  );
+
+                  if (!storagePath) {
+                    return `
+                  <span
+                    class="text-xs font-bold
+                           text-gray-400"
+                  >
+                    ${filename}
+                  </span>
+                `;
+                  }
+
+                  return `
+                <button
+                  type="button"
+                  onclick="downloadJobFile('${storagePath}')"
+                  class="text-xs font-bold
+                         text-[#E59F00]
+                         hover:underline
+                         flex items-center gap-1"
+                >
+                  <i
+                    data-lucide="download"
+                    class="w-3.5 h-3.5"
+                  ></i>
+
+                  ${filename}
+                </button>
+              `;
+                })
+                .join("")
+            : `
+          <span
+            class="text-xs font-bold
+                   text-red-500"
+          >
+            No files found
+          </span>
+        `;
+
+        // ----------------------------------------------------------
+        // Action Buttons
+        // ----------------------------------------------------------
+
+        let actionButtons = "";
+
+        if (isFailed) {
+          actionButtons = `
+        <div
+          class="p-3 bg-red-100 rounded-lg mt-2
+                 flex items-start gap-2"
+        >
+          <i
+            data-lucide="alert-triangle"
+            class="w-5 h-5 text-red-600
+                   shrink-0 mt-0.5"
+          ></i>
+
+          <p
+            class="text-xs font-medium text-red-800"
+          >
+            Print fail ho gaya.
+          </p>
+        </div>
+      `;
+        } else if (isCompleted) {
+          actionButtons = `
+        <div
+          class="p-3 bg-green-50 rounded-lg mt-2
+                 flex items-start gap-2"
+        >
+          <i
+            data-lucide="check-check"
+            class="w-5 h-5 text-green-600
+                   shrink-0 mt-0.5"
+          ></i>
+
+          <p
+            class="text-xs font-medium text-green-800"
+          >
+            Print ho chuka hai.
+          </p>
+        </div>
+      `;
+        } else {
+          actionButtons = `
+        <div class="flex gap-3 pt-2">
+
           <button
-            class="manga-btn-secondary px-4 py-3 flex items-center justify-center"
+            type="button"
+            class="manga-btn flex-1 py-3
+                   text-base sm:text-lg
+                   flex items-center
+                   justify-center gap-2"
+            onclick="startPrint(
+              this,
+              '${order.order_id}',
+              '${cardId}'
+            )"
+          >
+            <i
+              data-lucide="printer"
+              class="w-5 h-5"
+            ></i>
+
+            Print Nikalein
+          </button>
+
+          <button
+            type="button"
+            class="manga-btn-secondary
+                   px-4 py-3
+                   flex items-center
+                   justify-center"
             title="Reject Order"
             aria-label="Reject Order"
-            onclick="rejectOrder('${order.order_id}', '${cardId}')"
+            onclick="rejectOrder(
+              '${order.order_id}',
+              '${cardId}'
+            )"
           >
-            <i data-lucide="x" class="w-5 h-5"></i>
+            <i
+              data-lucide="x"
+              class="w-5 h-5"
+            ></i>
           </button>
-        </div>`;
+
+        </div>
+      `;
+        }
+
+        // ----------------------------------------------------------
+        // Card Background
+        // ----------------------------------------------------------
+
+        const cardBackground = isFailed ? "bg-red-50/50" : "";
+
+        // ----------------------------------------------------------
+        // Filename title
+        // ----------------------------------------------------------
+
+        const titleClass = isFailed ? "line-through text-[#17135F]/40" : "";
+
+        // ----------------------------------------------------------
+        // Build Card
+        // ----------------------------------------------------------
 
         return `
-    <div class="manga-card p-5 relative ${isFailed ? "bg-red-50/50" : ""}" id="${cardId}">
-      <div class="flex justify-between items-start mb-3 gap-3">
-        <div class="flex gap-3 min-w-0">
-          <div class="p-3 ${isFailed ? "bg-white" : "bg-[#F7F8FC]"} rounded-lg h-fit shrink-0">
-            <i data-lucide="file-text" class="w-8 h-8 ${isFailed ? "text-[#17135F]/40" : "text-[#E59F00]"}"></i>
-          </div>
-          <div class="min-w-0">
-            <h3 class="font-heading font-bold text-lg sm:text-xl truncate ${isFailed ? "line-through text-[#17135F]/40" : ""}">
-              ${escapeHtml(fileNames)}
-            </h3>
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm font-bold text-[#17135F]/60 mt-1">
-              <span class="flex items-center gap-1">
-                <i data-lucide="calendar" class="w-4 h-4"></i> ${dateStr}
-              </span>
-              <span class="flex items-center gap-1">
-                <i data-lucide="clock" class="w-4 h-4"></i> ${timeStr}
-              </span>
-              <span class="font-mono bg-[#F7F8FC] px-1.5 rounded">
-                ID: ${order.order_id.slice(0, 8).toUpperCase()}
-              </span>
+      <div
+        class="manga-card p-5 relative ${cardBackground}"
+        id="${cardId}"
+      >
+
+        <!-- ================================================
+             HEADER
+        ================================================= -->
+
+        <div
+          class="flex justify-between
+                 items-start mb-3 gap-3"
+        >
+
+          <!-- Left -->
+          <div
+            class="flex gap-3
+                   min-w-0"
+          >
+
+            <div
+              class="p-3
+                     ${isFailed ? "bg-white" : "bg-[#F7F8FC]"}
+                     rounded-lg
+                     h-fit
+                     shrink-0"
+            >
+              <i
+                data-lucide="file-text"
+                class="w-8 h-8
+                       ${isFailed ? "text-[#17135F]/40" : "text-[#E59F00]"}"
+              ></i>
+            </div>
+
+            <div class="min-w-0">
+
+              <h3
+                class="font-heading
+                       font-bold
+                       text-lg sm:text-xl
+                       truncate
+                       ${titleClass}"
+                title="${escapeHtml(fileNames)}"
+              >
+                ${escapeHtml(fileNames)}
+              </h3>
+
+              <div
+                class="flex flex-wrap
+                       items-center
+                       gap-x-3 gap-y-1
+                       text-xs sm:text-sm
+                       font-bold
+                       text-[#17135F]/60
+                       mt-1"
+              >
+
+                <span
+                  class="flex items-center gap-1"
+                >
+                  <i
+                    data-lucide="calendar"
+                    class="w-4 h-4"
+                  ></i>
+
+                  ${dateStr}
+                </span>
+
+                <span
+                  class="flex items-center gap-1"
+                >
+                  <i
+                    data-lucide="clock"
+                    class="w-4 h-4"
+                  ></i>
+
+                  ${timeStr}
+                </span>
+
+                <span
+                  class="font-mono
+                         bg-[#F7F8FC]
+                         px-1.5 rounded"
+                >
+                  ID:
+                  ${String(order.order_id).slice(0, 8).toUpperCase()}
+                </span>
+
+              </div>
             </div>
           </div>
+
+          <!-- Right -->
+          <div
+            class="text-right
+                   shrink-0"
+          >
+
+            <h2
+              class="font-heading
+                     font-extrabold
+                     text-xl sm:text-2xl
+                     ${isFailed ? "text-[#17135F]/40" : ""}"
+            >
+              ₹${formattedAmount}
+            </h2>
+
+            ${statusBadge}
+
+          </div>
         </div>
-        <div class="text-right shrink-0">
-          <h2 class="font-heading font-extrabold text-xl sm:text-2xl ${isFailed ? "text-[#17135F]/40" : ""}">
-            ₹${order.amount_charged}
-          </h2>
-          ${statusBadge}
-        </div>
+
+        <!-- ================================================
+             ORDER INFORMATION
+        ================================================= -->
+
+        ${
+          !isFailed
+            ? `
+              <div
+                class="flex flex-wrap
+                       gap-2 mb-3
+                       text-xs font-bold"
+              >
+
+                <!-- Color -->
+                <span
+                  class="bg-[#F7F8FC]
+                         px-2 py-1 rounded
+                         flex items-center gap-1"
+                >
+                  <span
+                    class="w-2 h-2
+                           rounded-full
+                           bg-black"
+                  ></span>
+
+                  ${colorLabel}
+                </span>
+
+                <!-- Payment -->
+                <span
+                  class="${paymentClass}
+                         px-2 py-1 rounded"
+                >
+                  ${paymentLabel}
+                </span>
+
+                <!-- Payment status -->
+                ${paymentStatusBadge}
+
+                <!-- Pages / Files -->
+                <span
+                  class="bg-[#F7F8FC]
+                         px-2 py-1 rounded"
+                >
+                  ${Number(order.total_pages || 0)}
+                  Pages ·
+                  ${Number(order.total_files || 0)}
+                  File(s)
+                </span>
+
+                <!-- Order status -->
+                <span
+                  class="bg-[#F7F8FC]
+                         px-2 py-1 rounded
+                         capitalize"
+                >
+                  ${escapeHtml(orderStatus || "pending")}
+                </span>
+
+              </div>
+
+              <!-- Files -->
+              <div
+                class="flex flex-wrap
+                       gap-3 mb-4"
+              >
+                ${fileButtonsHtml}
+              </div>
+            `
+            : ""
+        }
+
+        <!-- ================================================
+             ACTIONS
+        ================================================= -->
+
+        ${actionButtons}
+
       </div>
-
-      ${
-        !isFailed
-          ? `<div class="flex flex-wrap gap-2 mb-3 text-xs font-bold">
-              <span class="bg-[#F7F8FC] px-2 py-1 rounded flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-black"></span> ${colorLabel}
-              </span>
-              <span class="${paymentClass} px-2 py-1 rounded">${paymentLabel}</span>
-              <span class="bg-[#F7F8FC] px-2 py-1 rounded">${order.total_pages} Pages · ${order.total_files} File(s)</span>
-            </div>
-            <div class="flex flex-wrap gap-3 mb-4">${fileButtonsHtml}</div>`
-          : ""
+    `;
       }
 
-      ${actionButtons}
-    </div>
-  `;
-      }
+      // ============================================================
+      // ESCAPE HTML
+      // ============================================================
 
       function escapeHtml(str) {
         const div = document.createElement("div");
-        div.textContent = str;
+
+        div.textContent = String(str ?? "");
+
         return div.innerHTML;
       }
 
@@ -4040,59 +4555,54 @@
       })();
     </script>
 
-
-
-<script>
-/* =========================================
+    <script>
+      /* =========================================
    QUICK2PRINT - SHOP PROFILE SETTINGS
    Source: localStorage.loggedInShop ONLY
 ========================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
-  const saveBtn = document.getElementById("save-shop-profile-btn");
-  const saveMessage = document.getElementById("settings-save-message");
+      document.addEventListener("DOMContentLoaded", () => {
+        const saveBtn = document.getElementById("save-shop-profile-btn");
+        const saveMessage = document.getElementById("settings-save-message");
 
-  if (!saveBtn) return;
+        if (!saveBtn) return;
 
-  /* -----------------------------------------
+        /* -----------------------------------------
      GET LOGGED-IN SHOP FROM LOCAL STORAGE
   ----------------------------------------- */
-  let loggedInShop = null;
+        let loggedInShop = null;
 
-  try {
-    loggedInShop = JSON.parse(
-      localStorage.getItem("loggedInShop") || "null"
-    );
-  } catch (error) {
-    console.error("Invalid loggedInShop:", error);
-  }
+        try {
+          loggedInShop = JSON.parse(
+            localStorage.getItem("loggedInShop") || "null",
+          );
+        } catch (error) {
+          console.error("Invalid loggedInShop:", error);
+        }
 
-  if (!loggedInShop?.shop_id) {
-    console.error("No logged-in shop found.");
+        if (!loggedInShop?.shop_id) {
+          console.error("No logged-in shop found.");
 
-    showMessage(
-      "Shop login information nahi mila.",
-      "error"
-    );
+          showMessage("Shop login information nahi mila.", "error");
 
-    saveBtn.disabled = true;
-    return;
-  }
+          saveBtn.disabled = true;
+          return;
+        }
 
-  const shopId = loggedInShop.shop_id;
+        const shopId = loggedInShop.shop_id;
 
-  console.log("Logged-in Shop:", loggedInShop);
-  console.log("Shop ID:", shopId);
+        console.log("Logged-in Shop:", loggedInShop);
+        console.log("Shop ID:", shopId);
 
-
-  /* -----------------------------------------
+        /* -----------------------------------------
      LOAD SHOP DATA
   ----------------------------------------- */
-  async function loadShopProfile() {
-    try {
-      const { data, error } = await supabaseClient
-        .from("shops")
-        .select(`
+        async function loadShopProfile() {
+          try {
+            const { data, error } = await supabaseClient
+              .from("shops")
+              .select(
+                `
           shop_id,
           shop_name,
           owner_name,
@@ -4102,175 +4612,141 @@ document.addEventListener("DOMContentLoaded", () => {
           print_price,
           shop_status,
           qr_token
-        `)
-        .eq("shop_id", shopId)
-        .single();
+        `,
+              )
+              .eq("shop_id", shopId)
+              .single();
 
-      if (error) {
-        console.error("Load shop profile error:", error);
+            if (error) {
+              console.error("Load shop profile error:", error);
 
-        showMessage(
-          "Shop profile load nahi ho paya.",
-          "error"
-        );
+              showMessage("Shop profile load nahi ho paya.", "error");
 
-        return;
-      }
+              return;
+            }
 
-      if (!data) {
-        showMessage(
-          "Shop profile nahi mila.",
-          "error"
-        );
+            if (!data) {
+              showMessage("Shop profile nahi mila.", "error");
 
-        return;
-      }
+              return;
+            }
 
-      /* Fill form */
+            /* Fill form */
 
-      document.getElementById("settings-shop-name").value =
-        data.shop_name || "";
+            document.getElementById("settings-shop-name").value =
+              data.shop_name || "";
 
-      document.getElementById("settings-owner-name").value =
-        data.owner_name || "";
+            document.getElementById("settings-owner-name").value =
+              data.owner_name || "";
 
-      document.getElementById("settings-mobile").value =
-        data.whatsapp_number || "";
+            document.getElementById("settings-mobile").value =
+              data.whatsapp_number || "";
 
-      document.getElementById("settings-email").value =
-        data.email || "";
+            document.getElementById("settings-email").value = data.email || "";
 
-      document.getElementById("settings-address").value =
-        data.shop_address || "";
+            document.getElementById("settings-address").value =
+              data.shop_address || "";
 
-      document.getElementById("settings-print-price").value =
-        data.print_price ?? 5;
+            document.getElementById("settings-print-price").value =
+              data.print_price ?? 5;
 
-      document.getElementById("settings-shop-id").value =
-        data.shop_id || "";
+            document.getElementById("settings-shop-id").value =
+              data.shop_id || "";
 
-      document.getElementById("settings-qr-token").value =
-        data.qr_token || "";
+            document.getElementById("settings-qr-token").value =
+              data.qr_token || "";
 
-      updateStatus(data.shop_status);
+            updateStatus(data.shop_status);
 
-      console.log("Shop profile loaded:", data);
+            console.log("Shop profile loaded:", data);
+          } catch (error) {
+            console.error("Unexpected load error:", error);
 
-    } catch (error) {
-      console.error("Unexpected load error:", error);
+            showMessage("Something went wrong.", "error");
+          }
+        }
 
-      showMessage(
-        "Something went wrong.",
-        "error"
-      );
-    }
-  }
-
-
-  /* -----------------------------------------
+        /* -----------------------------------------
      SAVE SHOP PROFILE
   ----------------------------------------- */
-  saveBtn.addEventListener("click", async () => {
+        saveBtn.addEventListener("click", async () => {
+          const shopName = document
+            .getElementById("settings-shop-name")
+            .value.trim();
 
-    const shopName =
-      document.getElementById("settings-shop-name")
-        .value.trim();
+          const ownerName = document
+            .getElementById("settings-owner-name")
+            .value.trim();
 
-    const ownerName =
-      document.getElementById("settings-owner-name")
-        .value.trim();
+          const email = document.getElementById("settings-email").value.trim();
 
-    const email =
-      document.getElementById("settings-email")
-        .value.trim();
+          const address = document
+            .getElementById("settings-address")
+            .value.trim();
 
-    const address =
-      document.getElementById("settings-address")
-        .value.trim();
+          const printPrice = Number(
+            document.getElementById("settings-print-price").value,
+          );
 
-    const printPrice =
-      Number(
-        document.getElementById("settings-print-price")
-          .value
-      );
-
-
-    /* -----------------------------------------
+          /* -----------------------------------------
        VALIDATION
     ----------------------------------------- */
 
-    if (!shopName) {
-      showMessage(
-        "Shop name enter karein.",
-        "error"
-      );
-      return;
-    }
+          if (!shopName) {
+            showMessage("Shop name enter karein.", "error");
+            return;
+          }
 
-    if (!ownerName) {
-      showMessage(
-        "Owner name enter karein.",
-        "error"
-      );
-      return;
-    }
+          if (!ownerName) {
+            showMessage("Owner name enter karein.", "error");
+            return;
+          }
 
-    if (!address) {
-      showMessage(
-        "Shop address enter karein.",
-        "error"
-      );
-      return;
-    }
+          if (!address) {
+            showMessage("Shop address enter karein.", "error");
+            return;
+          }
 
-    if (
-      !Number.isFinite(printPrice) ||
-      printPrice < 0
-    ) {
-      showMessage(
-        "Valid print price enter karein.",
-        "error"
-      );
-      return;
-    }
+          if (!Number.isFinite(printPrice) || printPrice < 0) {
+            showMessage("Valid print price enter karein.", "error");
+            return;
+          }
 
-
-    /* -----------------------------------------
+          /* -----------------------------------------
        BUTTON LOADING
     ----------------------------------------- */
 
-    const originalHTML = saveBtn.innerHTML;
+          const originalHTML = saveBtn.innerHTML;
 
-    saveBtn.disabled = true;
+          saveBtn.disabled = true;
 
-    saveBtn.innerHTML = `
+          saveBtn.innerHTML = `
       <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
       Saving...
     `;
 
-    if (typeof lucide !== "undefined") {
-      lucide.createIcons();
-    }
+          if (typeof lucide !== "undefined") {
+            lucide.createIcons();
+          }
 
-
-    try {
-
-      /* ---------------------------------------
+          try {
+            /* ---------------------------------------
          UPDATE SUPABASE
       --------------------------------------- */
 
-      const { data, error } = await supabaseClient
-        .from("shops")
-        .update({
-          shop_name: shopName,
-          owner_name: ownerName,
-          email: email || null,
-          shop_address: address,
-          print_price: printPrice,
-          updated_at: new Date().toISOString()
-        })
-        .eq("shop_id", shopId)
-        .select(`
+            const { data, error } = await supabaseClient
+              .from("shops")
+              .update({
+                shop_name: shopName,
+                owner_name: ownerName,
+                email: email || null,
+                shop_address: address,
+                print_price: printPrice,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("shop_id", shopId)
+              .select(
+                `
           shop_id,
           shop_name,
           owner_name,
@@ -4280,192 +4756,139 @@ document.addEventListener("DOMContentLoaded", () => {
           print_price,
           shop_status,
           qr_token
-        `)
-        .single();
+        `,
+              )
+              .single();
 
+            if (error) {
+              console.error("Update shop profile error:", error);
 
-      if (error) {
-        console.error(
-          "Update shop profile error:",
-          error
-        );
+              showMessage(error.message || "Profile update failed.", "error");
 
-        showMessage(
-          error.message || "Profile update failed.",
-          "error"
-        );
+              return;
+            }
 
-        return;
-      }
-
-
-      /* ---------------------------------------
+            /* ---------------------------------------
          UPDATE LOCAL STORAGE
       --------------------------------------- */
 
-      const updatedShop = {
-        ...loggedInShop,
-        ...data
-      };
+            const updatedShop = {
+              ...loggedInShop,
+              ...data,
+            };
 
-      localStorage.setItem(
-        "loggedInShop",
-        JSON.stringify(updatedShop)
-      );
+            localStorage.setItem("loggedInShop", JSON.stringify(updatedShop));
 
-      /* Keep local variable updated */
-      loggedInShop = updatedShop;
+            /* Keep local variable updated */
+            loggedInShop = updatedShop;
 
-
-      /* ---------------------------------------
+            /* ---------------------------------------
          SUCCESS
       --------------------------------------- */
 
-      showMessage(
-        "Profile successfully update ho gaya.",
-        "success"
-      );
+            showMessage("Profile successfully update ho gaya.", "success");
 
-      console.log(
-        "Updated loggedInShop:",
-        updatedShop
-      );
+            console.log("Updated loggedInShop:", updatedShop);
+          } catch (error) {
+            console.error("Unexpected profile update error:", error);
 
-    } catch (error) {
+            showMessage("Profile update nahi ho paya.", "error");
+          } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalHTML;
 
-      console.error(
-        "Unexpected profile update error:",
-        error
-      );
+            if (typeof lucide !== "undefined") {
+              lucide.createIcons();
+            }
+          }
+        });
 
-      showMessage(
-        "Profile update nahi ho paya.",
-        "error"
-      );
-
-    } finally {
-
-      saveBtn.disabled = false;
-      saveBtn.innerHTML = originalHTML;
-
-      if (typeof lucide !== "undefined") {
-        lucide.createIcons();
-      }
-    }
-  });
-
-
-  /* -----------------------------------------
+        /* -----------------------------------------
      STATUS DISPLAY
   ----------------------------------------- */
-  function updateStatus(status) {
+        function updateStatus(status) {
+          const statusBox = document.getElementById("settings-shop-status");
 
-    const statusBox =
-      document.getElementById("settings-shop-status");
+          const statusDot = document.getElementById("settings-status-dot");
 
-    const statusDot =
-      document.getElementById("settings-status-dot");
+          const statusText = document.getElementById("settings-status-text");
 
-    const statusText =
-      document.getElementById("settings-status-text");
+          if (!statusBox || !statusDot || !statusText) {
+            return;
+          }
 
-    if (!statusBox || !statusDot || !statusText) {
-      return;
-    }
+          if (status === "online") {
+            statusBox.className =
+              "flex items-center gap-2 px-3 py-1 bg-green-100 rounded-full";
 
+            statusDot.className = "w-2.5 h-2.5 rounded-full bg-green-500";
 
-    if (status === "online") {
+            statusText.className = "font-bold text-sm text-green-700";
 
-      statusBox.className =
-        "flex items-center gap-2 px-3 py-1 bg-green-100 rounded-full";
+            statusText.textContent = "Online";
+          } else if (status === "low_ink") {
+            statusBox.className =
+              "flex items-center gap-2 px-3 py-1 bg-yellow-100 rounded-full";
 
-      statusDot.className =
-        "w-2.5 h-2.5 rounded-full bg-green-500";
+            statusDot.className = "w-2.5 h-2.5 rounded-full bg-yellow-500";
 
-      statusText.className =
-        "font-bold text-sm text-green-700";
+            statusText.className = "font-bold text-sm text-yellow-700";
 
-      statusText.textContent = "Online";
+            statusText.textContent = "Low Ink";
+          } else if (status === "out_of_paper") {
+            statusBox.className =
+              "flex items-center gap-2 px-3 py-1 bg-orange-100 rounded-full";
 
-    } else if (status === "low_ink") {
+            statusDot.className = "w-2.5 h-2.5 rounded-full bg-orange-500";
 
-      statusBox.className =
-        "flex items-center gap-2 px-3 py-1 bg-yellow-100 rounded-full";
+            statusText.className = "font-bold text-sm text-orange-700";
 
-      statusDot.className =
-        "w-2.5 h-2.5 rounded-full bg-yellow-500";
+            statusText.textContent = "Out of Paper";
+          } else {
+            statusBox.className =
+              "flex items-center gap-2 px-3 py-1 bg-red-100 rounded-full";
 
-      statusText.className =
-        "font-bold text-sm text-yellow-700";
+            statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
 
-      statusText.textContent = "Low Ink";
+            statusText.className = "font-bold text-sm text-red-700";
 
-    } else if (status === "out_of_paper") {
+            statusText.textContent = "Offline";
+          }
+        }
 
-      statusBox.className =
-        "flex items-center gap-2 px-3 py-1 bg-orange-100 rounded-full";
-
-      statusDot.className =
-        "w-2.5 h-2.5 rounded-full bg-orange-500";
-
-      statusText.className =
-        "font-bold text-sm text-orange-700";
-
-      statusText.textContent = "Out of Paper";
-
-    } else {
-
-      statusBox.className =
-        "flex items-center gap-2 px-3 py-1 bg-red-100 rounded-full";
-
-      statusDot.className =
-        "w-2.5 h-2.5 rounded-full bg-red-500";
-
-      statusText.className =
-        "font-bold text-sm text-red-700";
-
-      statusText.textContent = "Offline";
-    }
-  }
-
-
-  /* -----------------------------------------
+        /* -----------------------------------------
      MESSAGE
   ----------------------------------------- */
-  function showMessage(message, type) {
+        function showMessage(message, type) {
+          if (!saveMessage) return;
 
-    if (!saveMessage) return;
+          saveMessage.classList.remove(
+            "hidden",
+            "text-green-600",
+            "text-red-600",
+          );
 
-    saveMessage.classList.remove(
-      "hidden",
-      "text-green-600",
-      "text-red-600"
-    );
+          if (type === "success") {
+            saveMessage.classList.add("text-green-600");
+          } else {
+            saveMessage.classList.add("text-red-600");
+          }
 
-    if (type === "success") {
-      saveMessage.classList.add("text-green-600");
-    } else {
-      saveMessage.classList.add("text-red-600");
-    }
+          saveMessage.textContent = message;
 
-    saveMessage.textContent = message;
+          clearTimeout(showMessage.timeout);
 
-    clearTimeout(
-      showMessage.timeout
-    );
+          showMessage.timeout = setTimeout(() => {
+            saveMessage.classList.add("hidden");
+          }, 4000);
+        }
 
-    showMessage.timeout = setTimeout(() => {
-      saveMessage.classList.add("hidden");
-    }, 4000);
-  }
-
-
-  /* -----------------------------------------
+        /* -----------------------------------------
      INITIAL LOAD
   ----------------------------------------- */
 
-  loadShopProfile();
-});
-</script>
+        loadShopProfile();
+      });
+    </script>
   </body>
 </html>
