@@ -778,149 +778,6 @@
 
        * ============================================================
 
-       * VERIFY PAYMENT
-
-       * ============================================================
-
-       */
-      async function verifyPayment() {
-        const { subscriptionId, shopId } = queryParams();
-
-        if (!subscriptionId || !shopId) {
-          throw new Error("Subscription ID or Shop ID is missing.");
-        }
-
-        const response = await fetch(`${PAYMENT_API}/api/subscription/verify`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            subscriptionId,
-            shopId,
-          }),
-        });
-
-        let result;
-
-        try {
-          result = await response.json();
-        } catch {
-          throw new Error("Invalid response received from payment server.");
-        }
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || "Payment verification failed.");
-        }
-
-        const paymentStatus = String(
-          result?.data?.payment_status || "",
-        ).toUpperCase();
-
-        if (paymentStatus !== "PAID") {
-          return {
-            status: paymentStatus || "PENDING",
-            result,
-          };
-        }
-
-        const shop = result.data?.shop || {};
-
-        $("successPlan").textContent =
-          subscription?.plan_name ||
-          shop.plan_name ||
-          shop.plan_id ||
-          subscription?.plan_id ||
-          "—";
-
-        $("successExpiry").textContent = shop.plan_expires_at
-          ? new Date(shop.plan_expires_at).toLocaleDateString("en-IN", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })
-          : "—";
-
-        $("successMessage").textContent =
-          result.message || "Your Quick2Print subscription is now active.";
-
-        return {
-          status: "PAID",
-          result,
-        };
-      }
-
-      async function verifyPaymentWithRetry() {
-        showOverlay(
-          "Verifying Payment",
-          "Please wait while we confirm your Cashfree payment.",
-        );
-
-        const maxAttempts = 10;
-        const delayMs = 3000;
-
-        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-          try {
-            const result = await verifyPayment();
-
-            if (result.status === "PAID") {
-              hideOverlay();
-              show("successState");
-              return true;
-            }
-
-            if (result.status === "FAILED" || result.status === "EXPIRED") {
-              throw new Error(
-                result.result?.message ||
-                  `Payment ${result.status.toLowerCase()}.`,
-              );
-            }
-
-            if (attempt < maxAttempts) {
-              $("q2pOverlayTitle").textContent = "Confirming Payment";
-              $("q2pOverlayText").textContent =
-                `Waiting for Cashfree confirmation... (${attempt}/${maxAttempts})`;
-
-              await new Promise((resolve) => setTimeout(resolve, delayMs));
-            }
-          } catch (error) {
-            if (attempt < maxAttempts) {
-              console.warn(
-                `Payment verification attempt ${attempt} failed:`,
-                error,
-              );
-
-              $("q2pOverlayTitle").textContent = "Checking Payment";
-              $("q2pOverlayText").textContent =
-                "Payment was completed. Confirming with Cashfree...";
-
-              await new Promise((resolve) => setTimeout(resolve, delayMs));
-
-              continue;
-            }
-
-            hideOverlay();
-            $("errorText").textContent =
-              error?.message ||
-              "We could not confirm your payment. Please contact Quick2Print support.";
-
-            show("errorState");
-            return false;
-          }
-        }
-
-        hideOverlay();
-        $("errorText").textContent =
-          "Payment confirmation is taking longer than expected. Please try again shortly.";
-
-        show("errorState");
-        return false;
-      }
-
-      /*
-
-       * ============================================================
-
        * RETURN TO DASHBOARD
 
        * ============================================================
@@ -965,23 +822,16 @@
           await loadSubscription();
 
           /*
-           * Cashfree normally returns to this page with
-           * payment/order status parameters. On return,
-           * always verify on the server before showing success.
+           * Cashfree is configured by the backend to return to
+           * subscription-payment-success.html. This page is only
+           * responsible for creating/loading the pending subscription
+           * and opening Cashfree Checkout.
+           *
+           * The success page performs server-side verification before
+           * displaying any successful/PAID state.
            */
-          const isCashfreeReturn =
-            Boolean(params.paymentStatus) ||
-            Boolean(params.orderStatus) ||
-            Boolean(params.cfPaymentId) ||
-            Boolean(params.txStatus) ||
-            Boolean(params.paymentSessionId);
-
-          if (isCashfreeReturn) {
-            await verifyPaymentWithRetry();
-          } else {
-            hideOverlay();
-            show("paymentState");
-          }
+          hideOverlay();
+          show("paymentState");
         } catch (e) {
           console.error("Payment page initialization error:", e);
 
