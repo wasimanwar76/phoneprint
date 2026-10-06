@@ -506,7 +506,7 @@
                       <h2
                         class="text-lg sm:text-xl font-heading font-bold text-[#17135F]"
                       >
-                        Software Version V 1.2.0. Available
+                        Software Version V36 Available
                       </h2>
                       <p class="text-sm text-[#17135F]/70 mt-1">
                         Always keep the latest version installed — new features
@@ -522,14 +522,12 @@
                   </button>
                 </div>
 
-                <a
-                  href="./download/Quick2Print Agent Setup 1.2.0.exe"
-                  download
+                <button
                   class="manga-btn w-full py-4 sm:py-5 text-base sm:text-lg flex items-center justify-center gap-3"
                 >
                   <span class="text-xl">⬇️</span>
                   Download &amp; Install
-                </a>
+                </button>
 
                 <p
                   class="text-center text-[#17135F]/60 font-medium text-xs sm:text-sm"
@@ -540,501 +538,626 @@
               </div>
             </div>
 
-            <!-- Demo Countdown + Agent Connection -->
-            <div class="manga-card overflow-hidden">
-              <div
-                class="bg-[#211B8F] text-white text-center px-5 sm:px-8 py-7 sm:py-8"
-              >
-                <div class="text-3xl sm:text-4xl mb-2">⏳</div>
-
-                <h2 class="text-xl sm:text-2xl font-heading font-bold">
-                  Your Demo Is Running
-                </h2>
-
-                <div
-                  class="mx-auto mt-4 max-w-md rounded-2xl border border-white/15 bg-white/5 px-4 py-4 text-left"
-                >
-                  <div class="flex items-start gap-3">
-                    <div
-                      class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFB800] text-[#17135F]"
-                    >
-                      <i data-lucide="badge-check" class="w-5 h-5"></i>
-                    </div>
-
-                    <div class="min-w-0 flex-1">
-                      <p
-                        class="text-xs font-bold uppercase tracking-wider text-white/50"
-                      >
-                        Connected with
-                      </p>
-                      <p
-                        id="demo-account-name"
-                        class="mt-0.5 truncate font-heading text-base sm:text-lg font-extrabold text-white"
-                      >
-                        Demo Account
-                      </p>
-
-                      <div
-                        class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/65"
-                      >
-                        <span class="inline-flex items-center gap-1.5">
-                          <i data-lucide="store" class="w-3.5 h-3.5"></i>
-                          <span id="demo-account-shop-id">Shop ID —</span>
-                        </span>
-
-                        <span class="inline-flex items-center gap-1.5">
-                          <i
-                            data-lucide="calendar-plus"
-                            class="w-3.5 h-3.5"
-                          ></i>
-                          Created:
-                          <span id="demo-account-created">Loading...</span>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  id="demo-countdown"
-                  class="inline-flex mt-5 rounded-full border-2 border-[#FFB800] bg-[#FFB800]/15 px-6 sm:px-7 py-2 text-2xl sm:text-3xl font-mono font-bold tracking-wider text-white"
-                >
-                  24:00:00
-                </div>
-
-                <p class="mt-3 text-sm font-medium text-white/70">
-                  Demo khatam hone me bacha time
-                </p>
-
-                <div
-                  class="mt-4 text-sm sm:text-base leading-relaxed text-white/85"
-                >
-                  <p>As soon as the demo ends, printing will stop.</p>
-                  <p>Get a plan now — your shop will never stop.</p>
-                </div>
-
-                <button
-                  onclick="
-                    switchTabById('overview');
-                    document
-                      .getElementById('pricing-cards')
-                      .scrollIntoView({ behavior: 'smooth' });
-                  "
-                  class="mt-5 manga-btn bg-[#FFB800] !text-[#17135F] shadow-[3px_3px_0px_#00B8D9] px-6 py-3 inline-flex items-center gap-2"
-                >
-                  Plan Dekhein →
-                </button>
-              </div>
-            </div>
-
-            <!-- Pricing -->
-            <section id="pricing-cards" class="pt-2">
-              <h2
-                class="font-heading font-bold text-2xl mb-6 text-center sm:text-left"
-              >
-                Apna Plan Chunein
-              </h2>
-
-              <div
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5"
-              >
-                <!-- FREE -->
-                <div
-                  class="flex min-h-[440px] flex-col rounded-2xl border-2 border-[#211B8F] bg-white p-6 shadow-sm"
-                >
-                  <h3 class="text-xl font-heading font-extrabold">
-                    Muft (Free)
-                  </h3>
-                  <p
-                    class="mt-2 min-h-[40px] text-sm leading-5 text-[#17135F]/60"
-                  >
-                    Chhoti dukaan aur CSC centres ke liye
-                  </p>
-                  <div class="mt-5">
-                    <span class="text-3xl font-heading font-extrabold">₹0</span>
-                    <span class="text-sm text-[#17135F]/60">/year</span>
-                  </div>
-                  <ul class="mt-6 space-y-3 text-sm font-medium flex-1">
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> 1 Printer Support
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> 10 Orders / Only
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> Apna Rate Set Karein
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> Community Support
-                    </li>
-                  </ul>
-                  <button class="manga-btn-secondary mt-6 py-2.5">Free</button>
-                </div>
-
-                <!-- STARTER -->
-                <div
-                  class="flex min-h-[440px] flex-col rounded-2xl border-2 border-[#211B8F] bg-white p-6 shadow-sm"
-                >
-                  <h3 class="text-xl font-heading font-extrabold">Starter</h3>
-                  <p
-                    class="mt-2 min-h-[40px] text-sm leading-5 text-[#17135F]/60"
-                  >
-                    Chhoti dukaan shuru karne walon ke liye
-                  </p>
-                  <div class="mt-5">
-                    <span class="text-3xl font-heading font-extrabold"
-                      >₹99</span
-                    >
-                    <span class="text-sm text-[#17135F]/60">/year</span>
-                  </div>
-                  <ul class="mt-6 space-y-3 text-sm font-medium flex-1">
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> 1 Printer Support
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> 10,000 Printouts /
-                      Year Tak
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> Apna Rate Set Karein
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> Email Support
-                    </li>
-                  </ul>
-                  <button class="manga-btn-secondary mt-6 py-2.5">
-                    Starter Plan Le
-                  </button>
-                </div>
-
-                <!-- SMART - POPULAR -->
-                <div
-                  class="relative flex min-h-[440px] flex-col rounded-2xl border-2 border-[#FFB800] bg-white p-6 shadow-sm-lg lg:-translate-y-2"
-                >
-                  <div
-                    class="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#FFB800] px-4 py-1.5 text-xs font-extrabold text-white shadow-sm"
-                  >
-                    SABSE ZYADA BIKNE WALA
-                  </div>
-                  <h3 class="text-xl font-heading font-extrabold mt-2">
-                    Smart
-                  </h3>
-                  <p
-                    class="mt-2 min-h-[40px] text-sm leading-5 text-[#17135F]/60"
-                  >
-                    Badhti hui dukaan ke liye
-                  </p>
-                  <div class="mt-5">
-                    <span class="text-3xl font-heading font-extrabold"
-                      >₹249</span
-                    >
-                    <span class="text-sm text-[#17135F]/60">/year</span>
-                  </div>
-                  <ul class="mt-6 space-y-3 text-sm font-medium flex-1">
-                    <li class="flex gap-2">
-                      <span class="text-[#E59F00]">✓</span> 2 Printers Support
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#E59F00]">✓</span> 50,000 Printouts /
-                      Year Tak
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#E59F00]">✓</span> Call Support - 1
-                      Ghante Mein Jawab
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#E59F00]">✓</span> Apna Rate Set Karein
-                    </li>
-                  </ul>
-                  <button class="manga-btn mt-6 py-2.5">Smart Plan Le</button>
-                </div>
-
-                <!-- BUSINESS -->
-                <div
-                  class="flex min-h-[440px] flex-col rounded-2xl border-2 border-[#211B8F] bg-white p-6 shadow-sm"
-                >
-                  <h3 class="text-xl font-heading font-extrabold">Business</h3>
-                  <p
-                    class="mt-2 min-h-[40px] text-sm leading-5 text-[#17135F]/60"
-                  >
-                    Badi dukaan jahan bheed hoti hai
-                  </p>
-                  <div class="mt-5">
-                    <span class="text-3xl font-heading font-extrabold"
-                      >₹499</span
-                    >
-                    <span class="text-sm text-[#17135F]/60">/year</span>
-                  </div>
-                  <ul class="mt-6 space-y-3 text-sm font-medium flex-1">
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> 3 Printers Tak
-                      Support
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> Unlimited Printouts
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> Installation Call -
-                      Turant Reply
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> Online UPI Payments
-                      (0% fee)*
-                    </li>
-                  </ul>
-                  <button class="manga-btn-secondary mt-6 py-2.5">
-                    Business Plan Le
-                  </button>
-                </div>
-
-                <!-- PRO -->
-                <div
-                  class="flex min-h-[440px] flex-col rounded-2xl border-2 border-[#211B8F] bg-white p-6 shadow-sm"
-                >
-                  <h3 class="text-xl font-heading font-extrabold">Pro</h3>
-                  <p
-                    class="mt-2 min-h-[40px] text-sm leading-5 text-[#17135F]/60"
-                  >
-                    Bade setup, zero dikkat
-                  </p>
-                  <div class="mt-5">
-                    <span class="text-3xl font-heading font-extrabold"
-                      >₹899</span
-                    >
-                    <span class="text-sm text-[#17135F]/60">/year</span>
-                  </div>
-                  <ul class="mt-6 space-y-3 text-sm font-medium flex-1">
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> Unlimited Printers
-                      Support
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> Unlimited Printouts
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> Technician Site
-                      Visit
-                    </li>
-                    <li class="flex gap-2">
-                      <span class="text-[#008EAA]">✓</span> Priority Call +
-                      WhatsApp Support
-                    </li>
-                  </ul>
-                  <button class="manga-btn-secondary mt-6 py-2.5">
-                    Pro Plan Le
-                  </button>
-                </div>
-              </div>
-
-              <p class="mt-8 text-center text-xs text-[#17135F]/50">
-                * Payment gateway charges as per actuals.
-              </p>
-            </section>
-          </section>
-
-          <!-- ============================================================ -->
-          <!-- SHOP STATUS SECTION                                          -->
-          <!-- ============================================================ -->
-          <section class="manga-card p-6 sm:p-7" id="shopStatusSection">
-            <!-- Header -->
-            <div class="flex items-start justify-between gap-4 mb-6">
-              <div class="flex items-start gap-3">
-                <div
-                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#211B8F]/10"
-                >
-                  <span class="text-lg">🏪</span>
-                </div>
-
-                <div>
-                  <h2 class="text-xl font-heading font-bold text-[#15181C]">
-                    Shop Status
-                  </h2>
-
-                  <p class="mt-1 text-sm text-[#17135F]/55">
-                    Manage your shop availability and printer condition.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Status Message -->
-            <div
-              id="shopStatusMsg"
-              role="alert"
-              class="hidden mb-5 rounded-xl border px-4 py-3 text-sm font-semibold"
-            ></div>
-
-            <!-- ======================================================== -->
-            <!-- SHOP AVAILABILITY                                         -->
-            <!-- ======================================================== -->
-            <div
-              class="rounded-2xl border border-gray-200 bg-[#FAFAFC] p-4 sm:p-5"
-            >
-              <div
-                class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <!-- Current Status -->
+            <!-- ============================================================ -->
+            <!-- SHOP STATUS SECTION                                          -->
+            <!-- ============================================================ -->
+            <section class="manga-card p-6 sm:p-7" id="shopStatusSection">
+              <!-- Header -->
+              <div class="flex items-start justify-between gap-4 mb-6">
                 <div class="flex items-start gap-3">
-                  <!-- Status Dot -->
                   <div
-                    class="mt-1.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center"
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#211B8F]/10"
                   >
-                    <span
-                      id="shopDot"
-                      class="h-3.5 w-3.5 rounded-full bg-gray-300"
-                    ></span>
+                    <span class="text-lg">🏪</span>
                   </div>
 
                   <div>
-                    <div class="flex flex-wrap items-center gap-2">
-                      <span
-                        id="shopTitle"
-                        class="text-lg font-heading font-bold text-[#15181C]"
-                      >
-                        Loading…
-                      </span>
+                    <h2 class="text-xl font-heading font-bold text-[#15181C]">
+                      Shop Status
+                    </h2>
 
-                      <!-- Status Badge -->
+                    <p class="mt-1 text-sm text-[#17135F]/55">
+                      Manage your shop availability and printer condition.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status Message -->
+              <div
+                id="shopStatusMsg"
+                role="alert"
+                class="hidden mb-5 rounded-xl border px-4 py-3 text-sm font-semibold"
+              ></div>
+
+              <!-- ======================================================== -->
+              <!-- SHOP AVAILABILITY                                         -->
+              <!-- ======================================================== -->
+              <div
+                class="rounded-2xl border border-gray-200 bg-[#FAFAFC] p-4 sm:p-5"
+              >
+                <div
+                  class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <!-- Current Status -->
+                  <div class="flex items-start gap-3">
+                    <!-- Status Dot -->
+                    <div
+                      class="mt-1.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center"
+                    >
                       <span
-                        id="shopStatusBadge"
-                        class="hidden rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+                        id="shopDot"
+                        class="h-3.5 w-3.5 rounded-full bg-gray-300"
                       ></span>
                     </div>
 
-                    <p
-                      id="shopDesc"
-                      class="mt-1 text-sm leading-5 text-[#17135F]/55"
+                    <div>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span
+                          id="shopTitle"
+                          class="text-lg font-heading font-bold text-[#15181C]"
+                        >
+                          Loading…
+                        </span>
+
+                        <!-- Status Badge -->
+                        <span
+                          id="shopStatusBadge"
+                          class="hidden rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+                        ></span>
+                      </div>
+
+                      <p
+                        id="shopDesc"
+                        class="mt-1 text-sm leading-5 text-[#17135F]/55"
+                      >
+                        Checking your shop status.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Toggle Button -->
+                  <button
+                    id="toggleShopBtn"
+                    type="button"
+                    disabled
+                    class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-bold text-[#15181C] shadow-sm transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <span id="toggleShopIcon" class="text-base"> ⏸️ </span>
+
+                    <span id="toggleShopLabel"> Close Shop </span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- ======================================================== -->
+              <!-- PRINTER STATUS                                            -->
+              <!-- ======================================================== -->
+              <div class="mt-6">
+                <!-- Section Header -->
+                <div
+                  class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4"
+                >
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#211B8F]/10"
                     >
-                      Checking your shop status.
-                    </p>
+                      <span class="text-base">🖨️</span>
+                    </div>
+
+                    <div>
+                      <h3 class="font-heading font-bold text-[#15181C]">
+                        Ink &amp; Paper Status
+                      </h3>
+
+                      <p class="text-xs text-[#17135F]/50">
+                        Visible to customers
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <!-- Toggle Button -->
-                <button
-                  id="toggleShopBtn"
-                  type="button"
-                  disabled
-                  class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-bold text-[#15181C] shadow-sm transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                <!-- Status Options -->
+                <div
+                  id="inkButtons"
+                  class="grid grid-cols-1 sm:grid-cols-3 gap-3"
                 >
-                  <span id="toggleShopIcon" class="text-base"> ⏸️ </span>
-
-                  <span id="toggleShopLabel"> Close Shop </span>
-                </button>
-              </div>
-            </div>
-
-            <!-- ======================================================== -->
-            <!-- PRINTER STATUS                                            -->
-            <!-- ======================================================== -->
-            <div class="mt-6">
-              <!-- Section Header -->
-              <div
-                class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4"
-              >
-                <div class="flex items-center gap-2">
-                  <div
-                    class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#211B8F]/10"
+                  <!-- ALL GOOD -->
+                  <button
+                    type="button"
+                    data-status="online"
+                    disabled
+                    class="status-option group relative flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-[#211B8F] bg-[#211B8F]/5 px-4 py-3 text-left transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/10 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <span class="text-base">🖨️</span>
+                    <span
+                      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-700"
+                    >
+                      ✓
+                    </span>
+
+                    <span class="flex-1">
+                      <span class="block text-sm font-bold text-[#15181C]">
+                        All Good
+                      </span>
+
+                      <span class="mt-0.5 block text-xs text-[#17135F]/50">
+                        Ready to print
+                      </span>
+                    </span>
+                  </button>
+
+                  <!-- LOW INK -->
+                  <button
+                    type="button"
+                    data-status="low_ink"
+                    disabled
+                    class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-yellow-400 hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <span
+                      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-yellow-100"
+                    >
+                      <span class="h-3 w-3 rounded-full bg-yellow-400"></span>
+                    </span>
+
+                    <span class="flex-1">
+                      <span class="block text-sm font-bold text-[#15181C]">
+                        Low on Ink
+                      </span>
+
+                      <span class="mt-0.5 block text-xs text-[#17135F]/50">
+                        Ink needs attention
+                      </span>
+                    </span>
+                  </button>
+
+                  <!-- OUT OF PAPER -->
+                  <button
+                    type="button"
+                    data-status="out_of_paper"
+                    disabled
+                    class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-[#FFB800] hover:bg-[#FFB800]/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <span
+                      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FFB800]/15"
+                    >
+                      <span class="h-3 w-3 rounded-full bg-[#FFB800]"></span>
+                    </span>
+
+                    <span class="flex-1">
+                      <span class="block text-sm font-bold text-[#15181C]">
+                        Out of Paper
+                      </span>
+
+                      <span class="mt-0.5 block text-xs text-[#17135F]/50">
+                        Paper needs refill
+                      </span>
+                    </span>
+                  </button>
+                </div>
+
+                <!-- Hint -->
+                <div
+                  id="inkHint"
+                  class="hidden mt-4 rounded-xl border border-[#211B8F]/10 bg-[#211B8F]/5 px-4 py-3 text-xs font-medium text-[#17135F]/60"
+                >
+                  Open the shop to change ink &amp; paper status.
+                </div>
+              </div>
+            </section>
+
+            <!-- ================= SUBSCRIPTION ================= -->
+            <!-- ================= SUBSCRIPTION ================= -->
+
+            <section id="subscription-section" class="space-y-5">
+              <!-- SUBSCRIPTION HERO -->
+
+              <div
+                id="subscription-card"
+                class="relative overflow-hidden rounded-3xl bg-[#17135F] p-6 sm:p-8 text-white shadow-lg"
+              >
+                <div
+                  class="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[#FFB800]/20"
+                ></div>
+
+                <div
+                  class="absolute -bottom-20 -left-10 h-44 w-44 rounded-full bg-[#00B8D9]/10"
+                ></div>
+
+                <div class="relative z-10">
+                  <div
+                    class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6"
+                  >
+                    <!-- LEFT -->
+
+                    <div class="flex gap-4">
+                      <div
+                        id="subscription-icon"
+                        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-2xl"
+                      >
+                        ✓
+                      </div>
+
+                      <div>
+                        <p class="text-sm font-semibold text-white/60">Your</p>
+
+                        <h2
+                          id="subscription-title"
+                          class="font-heading text-2xl sm:text-3xl font-extrabold"
+                        >
+                          Subscription Is Running
+                        </h2>
+
+                        <p
+                          id="subscription-description"
+                          class="mt-2 max-w-xl text-sm text-white/70"
+                        >
+                          Your plan is active and your shop is ready to accept
+                          print orders.
+                        </p>
+
+                        <div class="mt-4 flex flex-wrap gap-2">
+                          <span
+                            id="subscription-status-badge"
+                            class="rounded-full bg-green-400/20 px-3 py-1 text-xs font-extrabold text-green-300"
+                          >
+                            ACTIVE
+                          </span>
+
+                          <span
+                            id="subscription-plan-badge"
+                            class="rounded-full bg-white/10 px-3 py-1 text-xs font-extrabold text-white"
+                          >
+                            —
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- PLAN PRICE -->
+
+                    <div class="lg:text-right">
+                      <p
+                        class="text-xs font-bold uppercase tracking-wider text-white/50"
+                      >
+                        Current Plan
+                      </p>
+
+                      <h3
+                        id="subscription-plan-name"
+                        class="mt-1 font-heading text-2xl font-extrabold"
+                      >
+                        —
+                      </h3>
+
+                      <p
+                        id="subscription-plan-price"
+                        class="mt-1 text-lg font-bold text-[#FFB800]"
+                      >
+                        ₹0
+                      </p>
+                    </div>
                   </div>
 
+                  <!-- DETAILS -->
+
+                  <div class="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <div class="rounded-2xl bg-white/5 p-4">
+                      <p class="text-xs text-white/50">Started</p>
+
+                      <p id="subscription-start" class="mt-1 font-bold">—</p>
+                    </div>
+
+                    <div class="rounded-2xl bg-white/5 p-4">
+                      <p class="text-xs text-white/50">Expires</p>
+
+                      <p id="subscription-end" class="mt-1 font-bold">—</p>
+                    </div>
+
+                    <div class="rounded-2xl bg-white/5 p-4">
+                      <p class="text-xs text-white/50">Days Left</p>
+
+                      <p
+                        id="subscription-days-left"
+                        class="mt-1 font-bold text-[#FFB800]"
+                      >
+                        —
+                      </p>
+                    </div>
+
+                    <div class="rounded-2xl bg-white/5 p-4">
+                      <p class="text-xs text-white/50">Duration</p>
+
+                      <p id="subscription-duration" class="mt-1 font-bold">—</p>
+                    </div>
+                  </div>
+
+                  <!-- PRINT USAGE -->
+
+                  <div class="mt-4 rounded-2xl bg-white/5 p-5">
+                    <div class="flex items-center justify-between gap-4">
+                      <div>
+                        <p
+                          class="text-xs font-bold uppercase tracking-wider text-white/50"
+                        >
+                          Print Usage
+                        </p>
+
+                        <p
+                          id="subscription-print-usage"
+                          class="mt-1 font-heading text-lg font-extrabold"
+                        >
+                          —
+                        </p>
+                      </div>
+
+                      <span
+                        id="subscription-print-percentage"
+                        class="text-sm font-bold text-[#FFB800]"
+                      >
+                        0%
+                      </span>
+                    </div>
+
+                    <div
+                      class="mt-3 h-2 overflow-hidden rounded-full bg-white/10"
+                    >
+                      <div
+                        id="subscription-print-bar"
+                        class="h-full rounded-full bg-[#FFB800] transition-all duration-500"
+                        style="width: 0%"
+                      ></div>
+                    </div>
+
+                    <p
+                      id="subscription-print-remaining"
+                      class="mt-2 text-xs text-white/50"
+                    >
+                      —
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PLAN DETAILS -->
+
+              <div
+                class="rounded-3xl border-2 border-[#211B8F]/10 bg-white p-6 shadow-sm"
+              >
+                <div class="flex items-center justify-between gap-4 mb-5">
                   <div>
-                    <h3 class="font-heading font-bold text-[#15181C]">
-                      Ink &amp; Paper Status
+                    <h3
+                      class="font-heading text-xl font-extrabold text-[#17135F]"
+                    >
+                      Plan Details
                     </h3>
 
-                    <p class="text-xs text-[#17135F]/50">
-                      Visible to customers
+                    <p class="mt-1 text-sm text-[#17135F]/50">
+                      Your complete subscription information
+                    </p>
+                  </div>
+
+                  <span
+                    id="subscription-payment-status"
+                    class="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700"
+                  >
+                    PAID
+                  </span>
+                </div>
+
+                <div
+                  class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+                >
+                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                    <p class="text-xs font-semibold text-[#17135F]/50">Plan</p>
+
+                    <p
+                      id="detail-plan-name"
+                      class="mt-1 font-bold text-[#17135F]"
+                    >
+                      —
+                    </p>
+                  </div>
+
+                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                    <p class="text-xs font-semibold text-[#17135F]/50">Price</p>
+
+                    <p
+                      id="detail-plan-price"
+                      class="mt-1 font-bold text-[#17135F]"
+                    >
+                      —
+                    </p>
+                  </div>
+
+                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                    <p class="text-xs font-semibold text-[#17135F]/50">
+                      Printers
+                    </p>
+
+                    <p
+                      id="detail-printer-limit"
+                      class="mt-1 font-bold text-[#17135F]"
+                    >
+                      —
+                    </p>
+                  </div>
+
+                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                    <p class="text-xs font-semibold text-[#17135F]/50">
+                      Print Limit
+                    </p>
+
+                    <p
+                      id="detail-print-limit"
+                      class="mt-1 font-bold text-[#17135F]"
+                    >
+                      —
+                    </p>
+                  </div>
+
+                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                    <p class="text-xs font-semibold text-[#17135F]/50">
+                      Support
+                    </p>
+
+                    <p
+                      id="detail-support"
+                      class="mt-1 font-bold text-[#17135F]"
+                    >
+                      —
+                    </p>
+                  </div>
+
+                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                    <p class="text-xs font-semibold text-[#17135F]/50">
+                      Payment Method
+                    </p>
+
+                    <p
+                      id="detail-payment-method"
+                      class="mt-1 font-bold text-[#17135F]"
+                    >
+                      —
+                    </p>
+                  </div>
+
+                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                    <p class="text-xs font-semibold text-[#17135F]/50">
+                      Amount Paid
+                    </p>
+
+                    <p
+                      id="detail-payment-amount"
+                      class="mt-1 font-bold text-[#17135F]"
+                    >
+                      —
+                    </p>
+                  </div>
+
+                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                    <p class="text-xs font-semibold text-[#17135F]/50">
+                      Payment Date
+                    </p>
+
+                    <p
+                      id="detail-payment-date"
+                      class="mt-1 font-bold text-[#17135F]"
+                    >
+                      —
                     </p>
                   </div>
                 </div>
+
+                <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                    <p class="text-xs font-semibold text-[#17135F]/50">
+                      Cashfree Order ID
+                    </p>
+
+                    <p
+                      id="detail-cashfree-order"
+                      class="mt-1 break-all font-mono text-xs font-bold text-[#17135F]"
+                    >
+                      —
+                    </p>
+                  </div>
+
+                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                    <p class="text-xs font-semibold text-[#17135F]/50">
+                      Payment ID
+                    </p>
+
+                    <p
+                      id="detail-payment-id"
+                      class="mt-1 break-all font-mono text-xs font-bold text-[#17135F]"
+                    >
+                      —
+                    </p>
+                  </div>
+                </div>
+
+                <div class="mt-5 flex flex-wrap gap-3">
+                  <button
+                    id="subscription-renew-button"
+                    type="button"
+                    onclick="quick2PrintRenewPlan()"
+                    class="hidden rounded-xl bg-[#17135F] px-5 py-3 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-[#211B8F]"
+                  >
+                    Renew Plan
+                  </button>
+                </div>
               </div>
+            </section>
 
-              <!-- Status Options -->
+            <!-- QUICK2PRINT RENEW PLAN MODAL -->
+            <div id="renew-plan-modal" class="fixed inset-0 z-[9999] hidden">
               <div
-                id="inkButtons"
-                class="grid grid-cols-1 sm:grid-cols-3 gap-3"
-              >
-                <!-- ALL GOOD -->
-                <button
-                  type="button"
-                  data-status="online"
-                  disabled
-                  class="status-option group relative flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-[#211B8F] bg-[#211B8F]/5 px-4 py-3 text-left transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/10 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <span
-                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-700"
-                  >
-                    ✓
-                  </span>
+                class="absolute inset-0 bg-[#17135F]/60 backdrop-blur-sm"
+                onclick="closeRenewPlanModal()"
+              ></div>
 
-                  <span class="flex-1">
-                    <span class="block text-sm font-bold text-[#15181C]">
-                      All Good
-                    </span>
-
-                    <span class="mt-0.5 block text-xs text-[#17135F]/50">
-                      Ready to print
-                    </span>
-                  </span>
-                </button>
-
-                <!-- LOW INK -->
-                <button
-                  type="button"
-                  data-status="low_ink"
-                  disabled
-                  class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-yellow-400 hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <span
-                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-yellow-100"
-                  >
-                    <span class="h-3 w-3 rounded-full bg-yellow-400"></span>
-                  </span>
-
-                  <span class="flex-1">
-                    <span class="block text-sm font-bold text-[#15181C]">
-                      Low on Ink
-                    </span>
-
-                    <span class="mt-0.5 block text-xs text-[#17135F]/50">
-                      Ink needs attention
-                    </span>
-                  </span>
-                </button>
-
-                <!-- OUT OF PAPER -->
-                <button
-                  type="button"
-                  data-status="out_of_paper"
-                  disabled
-                  class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-[#FFB800] hover:bg-[#FFB800]/10 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <span
-                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FFB800]/15"
-                  >
-                    <span class="h-3 w-3 rounded-full bg-[#FFB800]"></span>
-                  </span>
-
-                  <span class="flex-1">
-                    <span class="block text-sm font-bold text-[#15181C]">
-                      Out of Paper
-                    </span>
-
-                    <span class="mt-0.5 block text-xs text-[#17135F]/50">
-                      Paper needs refill
-                    </span>
-                  </span>
-                </button>
-              </div>
-
-              <!-- Hint -->
               <div
-                id="inkHint"
-                class="hidden mt-4 rounded-xl border border-[#211B8F]/10 bg-[#211B8F]/5 px-4 py-3 text-xs font-medium text-[#17135F]/60"
+                class="relative flex min-h-full items-center justify-center p-4 sm:p-6"
               >
-                Open the shop to change ink &amp; paper status.
+                <div
+                  class="relative w-full max-w-4xl overflow-hidden rounded-3xl bg-[#F8FAFC] shadow-2xl"
+                >
+                  <div
+                    class="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4 sm:px-7"
+                  >
+                    <div>
+                      <p
+                        class="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#00B8D9]"
+                      >
+                        Quick2Print
+                      </p>
+                      <h3
+                        class="mt-1 text-xl font-extrabold text-[#17135F] sm:text-2xl"
+                      >
+                        Renew your subscription
+                      </h3>
+                      <p class="mt-1 text-xs text-slate-500">
+                        Choose a plan and continue to secure payment.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onclick="closeRenewPlanModal()"
+                      class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-xl font-bold text-slate-500 hover:bg-slate-200"
+                      aria-label="Close"
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  <div class="max-h-[75vh] overflow-y-auto p-5 sm:p-7">
+                    <div id="renew-plan-loading" class="py-12 text-center">
+                      <div
+                        class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-[#211B8F]"
+                      ></div>
+                      <p class="mt-4 text-sm font-semibold text-slate-600">
+                        Loading available plans…
+                      </p>
+                    </div>
+
+                    <div
+                      id="renew-plan-error"
+                      class="hidden rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+                    ></div>
+
+                    <div
+                      id="renew-plan-grid"
+                      class="hidden grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                    ></div>
+                  </div>
+
+                  <div
+                    class="border-t border-slate-200 bg-white px-5 py-4 text-center text-xs text-slate-400"
+                  >
+                    Secure checkout powered by Cashfree • Plan activation after
+                    server verification
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -4555,9 +4678,7 @@
           startController();
         }
       })();
-    </script>
 
-    <script>
       /* =========================================
    QUICK2PRINT - SHOP PROFILE SETTINGS
    Source: localStorage.loggedInShop ONLY
@@ -4890,6 +5011,727 @@
   ----------------------------------------- */
 
         loadShopProfile();
+      });
+
+      /* ============================================================
+
+   QUICK2PRINT SUBSCRIPTION
+
+   Supabase is the source of truth
+
+   ============================================================ */
+
+      let subscriptionShop = null;
+
+      let subscriptionPlan = null;
+
+      let subscriptionRecord = null;
+
+      function q2pFormatDate(value) {
+        if (!value) return "—";
+
+        const d = new Date(value);
+
+        if (Number.isNaN(d.getTime())) return "—";
+
+        return d.toLocaleDateString("en-IN", {
+          day: "2-digit",
+
+          month: "short",
+
+          year: "numeric",
+        });
+      }
+
+      function q2pFormatDateTime(value) {
+        if (!value) return "—";
+
+        const d = new Date(value);
+
+        if (Number.isNaN(d.getTime())) return "—";
+
+        return d.toLocaleString("en-IN", {
+          day: "2-digit",
+
+          month: "short",
+
+          year: "numeric",
+
+          hour: "2-digit",
+
+          minute: "2-digit",
+        });
+      }
+
+      function q2pFormatINR(value) {
+        return new Intl.NumberFormat("en-IN", {
+          style: "currency",
+
+          currency: "INR",
+
+          maximumFractionDigits: 2,
+        }).format(Number(value || 0));
+      }
+
+      function q2pFormatNumber(value) {
+        return new Intl.NumberFormat("en-IN").format(Number(value || 0));
+      }
+
+      function q2pGetShopId() {
+        return (
+          currentShop?.shop_id ||
+          window.currentShop?.shop_id ||
+          localStorage.getItem("shop_id") ||
+          localStorage.getItem("shopId") ||
+          JSON.parse(localStorage.getItem("loggedInShop") || "null")?.shop_id
+        );
+      }
+
+      function q2pDaysLeft(expiry) {
+        if (!expiry) return null;
+
+        const end = new Date(expiry);
+
+        const now = new Date();
+
+        if (Number.isNaN(end.getTime())) return null;
+
+        return Math.max(
+          0,
+
+          Math.ceil((end.getTime() - now.getTime()) / 86400000),
+        );
+      }
+
+      function q2pIsActiveSubscription(shop) {
+        if (!shop) return false;
+
+        const status = String(shop.subscription_status || "").toLowerCase();
+
+        if (status !== "active") return false;
+
+        if (!shop.plan_expires_at) return false;
+
+        return new Date(shop.plan_expires_at) > new Date();
+      }
+
+      function q2pGetPrintLimit(plan) {
+        const limit = plan?.max_prints_per_year;
+
+        if (limit === null || limit === undefined || Number(limit) <= 0) {
+          return null;
+        }
+
+        return Number(limit);
+      }
+
+      function q2pRenderPrintUsage() {
+        if (!subscriptionShop || !subscriptionPlan) return;
+
+        const used = Number(subscriptionShop.total_prints || 0);
+
+        const limit = q2pGetPrintLimit(subscriptionPlan);
+
+        const usageEl = document.getElementById("subscription-print-usage");
+
+        const percentageEl = document.getElementById(
+          "subscription-print-percentage",
+        );
+
+        const barEl = document.getElementById("subscription-print-bar");
+
+        const remainingEl = document.getElementById(
+          "subscription-print-remaining",
+        );
+
+        if (!limit) {
+          if (usageEl) usageEl.textContent = `${q2pFormatNumber(used)} prints`;
+
+          if (percentageEl) percentageEl.textContent = "Unlimited";
+
+          if (barEl) barEl.style.width = "8%";
+
+          if (remainingEl)
+            remainingEl.textContent = "Unlimited printing available";
+
+          return;
+        }
+
+        const percentage = Math.min(100, Math.round((used / limit) * 100));
+
+        const remaining = Math.max(0, limit - used);
+
+        if (usageEl)
+          usageEl.textContent = `${q2pFormatNumber(used)} / ${q2pFormatNumber(limit)} prints`;
+
+        if (percentageEl) percentageEl.textContent = `${percentage}%`;
+
+        if (barEl) barEl.style.width = `${percentage}%`;
+
+        if (remainingEl)
+          remainingEl.textContent = `${q2pFormatNumber(remaining)} prints remaining`;
+      }
+
+      function q2pRenderSubscription() {
+        const shop = subscriptionShop;
+
+        const plan = subscriptionPlan;
+
+        const payment = subscriptionRecord;
+
+        if (!shop) return;
+
+        const active = q2pIsActiveSubscription(shop);
+
+        const title = document.getElementById("subscription-title");
+
+        const description = document.getElementById("subscription-description");
+
+        const icon = document.getElementById("subscription-icon");
+
+        const badge = document.getElementById("subscription-status-badge");
+
+        const planBadge = document.getElementById("subscription-plan-badge");
+
+        const status = String(shop.subscription_status || "").toUpperCase();
+
+        if (active) {
+          if (icon) icon.textContent = "✓";
+
+          if (title) title.textContent = "Subscription Is Running";
+
+          if (description)
+            description.textContent =
+              "Your plan is active and your shop is ready to accept print orders.";
+
+          if (badge) {
+            badge.textContent = status || "ACTIVE";
+
+            badge.className =
+              "rounded-full bg-green-400/20 px-3 py-1 text-xs font-extrabold text-green-300";
+          }
+        } else if (
+          status === "EXPIRED" ||
+          (shop.plan_expires_at && new Date(shop.plan_expires_at) <= new Date())
+        ) {
+          if (icon) icon.textContent = "⚠";
+
+          if (title) title.textContent = "Subscription Has Expired";
+
+          if (description)
+            description.textContent =
+              "Purchase or renew a plan to continue printing.";
+
+          if (badge) {
+            badge.textContent = "EXPIRED";
+
+            badge.className =
+              "rounded-full bg-red-400/20 px-3 py-1 text-xs font-extrabold text-red-300";
+          }
+        } else {
+          if (icon) icon.textContent = "⏳";
+
+          if (title) title.textContent = "Your Subscription Is Running";
+
+          if (description)
+            description.textContent =
+              "Choose a plan to continue using Quick2Print.";
+
+          if (badge) {
+            badge.textContent = status || "FREE";
+
+            badge.className =
+              "rounded-full bg-white/10 px-3 py-1 text-xs font-extrabold text-white";
+          }
+        }
+
+        const planName = plan?.name || shop.plan_id || "Free";
+
+        const planPrice = plan?.price_inr ?? 0;
+
+        const daysLeft = q2pDaysLeft(shop.plan_expires_at);
+
+        document.getElementById("subscription-plan-name").textContent =
+          planName;
+
+        document.getElementById("subscription-plan-badge").textContent =
+          planName;
+
+        document.getElementById("subscription-plan-price").textContent =
+          q2pFormatINR(planPrice);
+
+        document.getElementById("subscription-start").textContent =
+          q2pFormatDate(shop.subscription_start);
+
+        document.getElementById("subscription-end").textContent = q2pFormatDate(
+          shop.plan_expires_at || shop.subscription_end,
+        );
+
+        document.getElementById("subscription-days-left").textContent =
+          daysLeft === null ? "—" : `${daysLeft} days`;
+
+        document.getElementById("subscription-duration").textContent =
+          plan?.duration_label ||
+          (plan?.duration_months ? `${plan.duration_months} Months` : "—");
+
+        document.getElementById("detail-plan-name").textContent = planName;
+
+        document.getElementById("detail-plan-price").textContent =
+          q2pFormatINR(planPrice);
+
+        document.getElementById("detail-printer-limit").textContent =
+          plan?.max_printers ? `${plan.max_printers}` : "Unlimited";
+
+        document.getElementById("detail-print-limit").textContent =
+          plan?.max_prints_per_year
+            ? q2pFormatNumber(plan.max_prints_per_year)
+            : "Unlimited";
+
+        document.getElementById("detail-support").textContent =
+          plan?.support_level || "—";
+
+        document.getElementById("detail-payment-method").textContent =
+          payment?.payment_method || "—";
+
+        document.getElementById("detail-payment-amount").textContent = payment
+          ? q2pFormatINR(payment.amount)
+          : "—";
+
+        document.getElementById("detail-payment-date").textContent = payment
+          ? q2pFormatDateTime(payment.created_at)
+          : "—";
+
+        document.getElementById("detail-cashfree-order").textContent =
+          payment?.cashfree_order_id || "—";
+
+        document.getElementById("detail-payment-id").textContent =
+          payment?.cashfree_payment_id || "—";
+
+        const paymentStatus = String(
+          payment?.payment_status || "",
+        ).toUpperCase();
+
+        const paymentBadge = document.getElementById(
+          "subscription-payment-status",
+        );
+
+        if (paymentBadge) {
+          paymentBadge.textContent = paymentStatus || "—";
+
+          if (paymentStatus === "PAID") {
+            paymentBadge.className =
+              "rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700";
+          } else if (
+            paymentStatus === "FAILED" ||
+            paymentStatus === "EXPIRED"
+          ) {
+            paymentBadge.className =
+              "rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700";
+          } else {
+            paymentBadge.className =
+              "rounded-full bg-yellow-100 px-3 py-1 text-xs font-bold text-yellow-800";
+          }
+        }
+
+        q2pRenderPrintUsage();
+
+        q2pUpdateRenewButton();
+
+        if (window.lucide) {
+          lucide.createIcons();
+        }
+      }
+
+      async function loadSubscriptionDetails() {
+        const shopId = q2pGetShopId();
+
+        if (!shopId) {
+          console.error("Quick2Print: Shop ID not found.");
+
+          return;
+        }
+
+        try {
+          const { data: shop, error: shopError } = await supabaseClient
+
+            .from("shops")
+
+            .select(
+              `
+
+        shop_id,
+
+        shop_name,
+
+        created_at,
+
+        plan_id,
+
+        plan_expires_at,
+
+        subscription_status,
+
+        subscription_start,
+
+        subscription_end,
+
+        total_prints
+
+      `,
+            )
+
+            .eq("shop_id", shopId)
+
+            .maybeSingle();
+
+          if (shopError) throw shopError;
+
+          if (!shop) return;
+
+          subscriptionShop = shop;
+
+          const { data: plan, error: planError } = await supabaseClient
+
+            .from("plans")
+
+            .select(
+              `
+
+        plan_id,
+
+        name,
+
+        price_inr,
+
+        max_printers,
+
+        max_prints_per_year,
+
+        support_level,
+
+        duration_months,
+
+        duration_label
+
+      `,
+            )
+
+            .eq("plan_id", shop.plan_id)
+
+            .maybeSingle();
+
+          if (planError) throw planError;
+
+          subscriptionPlan = plan;
+
+          const { data: payment, error: paymentError } = await supabaseClient
+
+            .from("shop_subscriptions")
+
+            .select(
+              `
+
+        subscription_id,
+
+        amount,
+
+        cashfree_order_id,
+
+        cashfree_payment_id,
+
+        payment_status,
+
+        payment_method,
+
+        created_at
+
+      `,
+            )
+
+            .eq("shop_id", shopId)
+
+            .order("created_at", {
+              ascending: false,
+            })
+
+            .limit(1)
+
+            .maybeSingle();
+
+          if (paymentError) {
+            console.warn(
+              "Subscription payment history unavailable:",
+
+              paymentError,
+            );
+
+            subscriptionRecord = null;
+          } else {
+            subscriptionRecord = payment;
+          }
+
+          q2pRenderSubscription();
+        } catch (error) {
+          console.error("Subscription load failed:", error);
+        }
+      }
+
+      const SUBSCRIPTION_PAYMENT_API =
+        "https://quick2print-payment-subscription-na.vercel.app";
+
+      let renewPlans = [];
+
+      function q2pEscapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function q2pIsExpiredSubscription(shop) {
+        if (!shop) return false;
+        const expiry = shop.plan_expires_at || shop.subscription_end;
+        if (!expiry) return false;
+        return (
+          new Date(expiry) <= new Date() ||
+          String(shop.subscription_status || "").toLowerCase() === "expired"
+        );
+      }
+
+      function q2pUpdateRenewButton() {
+        const button = document.getElementById("subscription-renew-button");
+        if (!button) return;
+
+        const active = q2pIsActiveSubscription(subscriptionShop);
+        const expired = q2pIsExpiredSubscription(subscriptionShop);
+        const isFreePlan =
+          String(subscriptionShop?.plan_id || "").toLowerCase() === "free";
+
+        // Free plan: keep the subscription section visible and allow the
+        // shop owner to choose a paid plan. Active paid plans: hide renewal.
+        // Expired/cancelled/suspended paid plans: show renewal.
+        button.classList.toggle(
+          "hidden",
+          (!isFreePlan && active) || (!isFreePlan && !expired),
+        );
+        button.textContent = isFreePlan ? "Choose a Plan" : "Renew Plan";
+      }
+
+      function closeRenewPlanModal() {
+        const modal = document.getElementById("renew-plan-modal");
+        if (modal) modal.classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+      }
+
+      function q2pRenderRenewPlans() {
+        const grid = document.getElementById("renew-plan-grid");
+        const loading = document.getElementById("renew-plan-loading");
+        if (!grid) return;
+
+        loading?.classList.add("hidden");
+        grid.classList.remove("hidden");
+
+        if (!renewPlans.length) {
+          grid.innerHTML = `
+            <div class="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-200 bg-white p-8 text-center">
+              <p class="font-bold text-[#17135F]">No plans are currently available.</p>
+              <p class="mt-1 text-sm text-slate-500">Please try again later.</p>
+            </div>`;
+          return;
+        }
+
+        const currentPlanId = String(
+          subscriptionShop?.plan_id || "",
+        ).toLowerCase();
+
+        grid.innerHTML = renewPlans
+          .map((plan) => {
+            const planId = q2pEscapeHtml(plan.plan_id);
+            const name = q2pEscapeHtml(plan.name);
+            const price = q2pFormatINR(plan.price_inr);
+            const duration = q2pEscapeHtml(
+              plan.duration_label ||
+                (plan.duration_months ? `${plan.duration_months} Months` : "—"),
+            );
+            const printers = plan.max_printers
+              ? `${q2pFormatNumber(plan.max_printers)} printer${Number(plan.max_printers) === 1 ? "" : "s"}`
+              : "Unlimited printers";
+            const prints = plan.max_prints_per_year
+              ? `${q2pFormatNumber(plan.max_prints_per_year)} prints/year`
+              : "Unlimited printing";
+            const support = q2pEscapeHtml(
+              plan.support_level || "Standard support",
+            );
+            const isCurrent =
+              String(plan.plan_id || "").toLowerCase() === currentPlanId;
+
+            return `
+            <article class="relative flex flex-col rounded-2xl border ${isCurrent ? "border-[#211B8F] ring-2 ring-[#211B8F]/10" : "border-slate-200"} bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+              ${isCurrent ? `<span class="absolute right-4 top-4 rounded-full bg-indigo-50 px-2.5 py-1 text-[10px] font-extrabold uppercase text-[#211B8F]">Current plan</span>` : ""}
+              <div class="pr-20">
+                <p class="text-xs font-extrabold uppercase tracking-wider text-[#00B8D9]">${planId}</p>
+                <h4 class="mt-1 text-xl font-extrabold text-[#17135F]">${name}</h4>
+              </div>
+              <div class="mt-5">
+                <span class="text-3xl font-extrabold text-[#17135F]">${price}</span>
+                <span class="text-xs text-slate-400"> / ${duration}</span>
+              </div>
+              <div class="mt-5 space-y-2 text-xs text-slate-600">
+                <div>✓ ${q2pEscapeHtml(printers)}</div>
+                <div>✓ ${q2pEscapeHtml(prints)}</div>
+                <div>✓ ${support}</div>
+              </div>
+              <button type="button"
+                onclick="startQuick2PrintRenewal('${q2pEscapeHtml(plan.plan_id)}')"
+                class="mt-6 w-full rounded-xl bg-[#17135F] px-4 py-3 text-sm font-extrabold text-white transition hover:bg-[#211B8F]">
+                ${isCurrent ? "Renew This Plan" : "Choose Plan"}
+              </button>
+            </article>`;
+          })
+          .join("");
+      }
+
+      async function loadRenewPlans() {
+        const grid = document.getElementById("renew-plan-grid");
+        const loading = document.getElementById("renew-plan-loading");
+        const errorBox = document.getElementById("renew-plan-error");
+
+        loading?.classList.remove("hidden");
+        grid?.classList.add("hidden");
+        errorBox?.classList.add("hidden");
+
+        try {
+          const { data, error } = await supabaseClient
+            .from("plans")
+            .select(
+              "plan_id,name,price_inr,max_printers,max_prints_per_year,support_level,duration_months,duration_label",
+            )
+            .order("price_inr", { ascending: true });
+
+          if (error) throw error;
+
+          // Free plans are not sent to Cashfree; paid plans only.
+          renewPlans = (data || []).filter(
+            (plan) => Number(plan.price_inr) > 0,
+          );
+          q2pRenderRenewPlans();
+        } catch (error) {
+          console.error("Renew plan load failed:", error);
+          loading?.classList.add("hidden");
+          if (errorBox) {
+            errorBox.textContent =
+              "We couldn't load plans right now. Please close this window and try again.";
+            errorBox.classList.remove("hidden");
+          }
+        }
+      }
+
+      function quick2PrintRenewPlan() {
+        const isFreePlan =
+          String(subscriptionShop?.plan_id || "").toLowerCase() === "free";
+        const expired = q2pIsExpiredSubscription(subscriptionShop);
+        const active = q2pIsActiveSubscription(subscriptionShop);
+
+        // Free shops can choose a paid plan even when their free plan is active.
+        // Active paid shops must wait until expiry before renewing.
+        if (!isFreePlan && active && !expired) return;
+        if (!isFreePlan && !expired) return;
+
+        const modal = document.getElementById("renew-plan-modal");
+        if (!modal) return;
+
+        modal.classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+        loadRenewPlans();
+      }
+
+      async function startQuick2PrintRenewal(planId) {
+        const shopId = q2pGetShopId();
+        if (!shopId) {
+          alert("Shop ID was not found. Please sign in again.");
+          return;
+        }
+
+        const plan = renewPlans.find(
+          (p) => String(p.plan_id) === String(planId),
+        );
+        if (!plan) {
+          alert(
+            "The selected plan is no longer available. Please refresh and try again.",
+          );
+          return;
+        }
+
+        if (Number(plan.price_inr) <= 0) {
+          alert("This plan does not require online payment.");
+          return;
+        }
+
+        const buttons = document.querySelectorAll("#renew-plan-grid button");
+        buttons.forEach((btn) => {
+          btn.disabled = true;
+          btn.classList.add("opacity-60", "cursor-not-allowed");
+        });
+
+        try {
+          const response = await fetch(
+            `${SUBSCRIPTION_PAYMENT_API}/api/subscription/create`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                shopId,
+                planName: plan.name,
+              }),
+            },
+          );
+
+          const result = await response.json().catch(() => ({}));
+
+          if (!response.ok || !result.success) {
+            throw new Error(
+              result.message ||
+                "We couldn't create your subscription payment. Please try again.",
+            );
+          }
+
+          const data = result.data || {};
+          if (!data.subscription_id) {
+            throw new Error(
+              "Payment order was created without a subscription ID.",
+            );
+          }
+
+          const params = new URLSearchParams({
+            subscription_id: data.subscription_id,
+            shop_id: shopId,
+          });
+
+          closeRenewPlanModal();
+          window.location.href = `${SUBSCRIPTION_PAYMENT_API}/subscription-payment.html?${params.toString()}`;
+        } catch (error) {
+          console.error("Renewal payment creation failed:", error);
+          alert(error.message || "Unable to start payment. Please try again.");
+
+          buttons.forEach((btn) => {
+            btn.disabled = false;
+            btn.classList.remove("opacity-60", "cursor-not-allowed");
+          });
+        }
+      }
+
+      window.closeRenewPlanModal = closeRenewPlanModal;
+      window.startQuick2PrintRenewal = startQuick2PrintRenewal;
+      window.quick2PrintRenewPlan = quick2PrintRenewPlan;
+
+      window.loadSubscriptionDetails = loadSubscriptionDetails;
+
+      window.quick2PrintRenewPlan = quick2PrintRenewPlan;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadSubscriptionDetails();
       });
     </script>
   </body>

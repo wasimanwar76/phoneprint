@@ -1,0 +1,661 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Quick2Print — Subscription Payment</title>
+
+    <meta
+      name="description"
+      content="Secure Quick2Print subscription payment"
+    />
+
+    <script src="https\://cdn.tailwindcss.com"></script>
+
+    <script src="https\://sdk.cashfree.com/js/v3/cashfree.js"></script>
+
+    <link rel="preconnect" href="https\://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https\://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https\://fonts.googleapis.com/css2?family=Inter:wght\@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Inter, sans-serif;
+
+        background:
+          radial-gradient(
+            circle at 15% 10%,
+
+            rgba(0, 184, 217, 0.12),
+            transparent 28%
+          ),
+          radial-gradient(
+            circle at 90% 15%,
+
+            rgba(232, 62, 140, 0.1),
+            transparent 25%
+          ),
+          #f8fafc;
+      }
+
+      .glass {
+        background: rgba(255, 255, 255, 0.84);
+
+        backdrop-filter: blur(18px);
+      }
+
+      .shadow-soft {
+        box-shadow: 0 24px 70px rgba(23, 19, 95, 0.1);
+      }
+
+      .gradient-text {
+        background: linear-gradient(90deg, #211b8f, #00b8d9);
+
+        -webkit-background-clip: text;
+
+        background-clip: text;
+
+        color: transparent;
+      }
+
+      .spinner {
+        width: 18px;
+
+        height: 18px;
+
+        border: 2px solid rgba(255, 255, 255, 0.35);
+
+        border-top-color: white;
+
+        border-radius: 50%;
+
+        animation: spin 0.7s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen text-slate-900">
+    <header class="border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
+      <div
+        class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"
+      >
+        <a href="#" class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#211B8F] text-white shadow-lg shadow-indigo-900/20"
+          >
+            <svg
+              width="23"
+              height="23"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z" />
+
+              <path
+                d="M14 14h3v3h-3zM18 18h3v3h-3zM18 14h3v3h-3zM14 18h3v3h-3z"
+              />
+            </svg>
+          </div>
+
+          <div>
+            <div class="text-lg font-extrabold tracking-tight">
+              Quick<span class="text-[#00B8D9]">2</span>Print
+            </div>
+
+            <div
+              class="text-[10px] font-semibold uppercase tracking-[.18em] text-slate-400"
+            >
+              QR → Upload → Auto Print
+            </div>
+          </div>
+        </a>
+
+        <div
+          class="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-semibold text-emerald-700 sm:flex"
+        >
+          <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+
+          Secure Payment
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-6xl px-5 py-10 lg:py-16">
+      <div
+        id="alert"
+        class="mx-auto mb-6 hidden max-w-3xl rounded-2xl border px-5 py-4 text-sm"
+      ></div>
+
+      <section id="loadingState" class="mx-auto max-w-3xl py-20 text-center">
+        <div
+          class="mx-auto mb-5 h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-[#211B8F]"
+        ></div>
+
+        <h1 class="text-xl font-bold">Preparing your payment</h1>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Please wait while we load your subscription details.
+        </p>
+      </section>
+
+      <section id="paymentState" class="hidden">
+        <div class="mb-10 text-center">
+          <div
+            class="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#211B8F]"
+          >
+            <span class="h-2 w-2 rounded-full bg-[#00B8D9]"></span>
+
+            Subscription Checkout
+          </div>
+
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">
+            Upgrade your <span class="gradient-text">Quick2Print</span> shop
+          </h1>
+
+          <p class="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-500">
+            Complete your secure payment to activate your selected plan.
+          </p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-[1.15fr_.85fr]">
+          <div
+            class="glass shadow-soft rounded-3xl border border-white p-6 sm:p-8"
+          >
+            <div
+              class="flex items-start justify-between border-b border-slate-100 pb-6"
+            >
+              <div>
+                <p
+                  class="text-xs font-bold uppercase tracking-[.15em] text-slate-400"
+                >
+                  Selected Plan
+                </p>
+
+                <h2
+                  id="planName"
+                  class="mt-2 text-2xl font-extrabold text-[#211B8F]"
+                >
+                  —
+                </h2>
+
+                <p id="shopName" class="mt-1 text-sm text-slate-500">—</p>
+              </div>
+
+              <div class="rounded-2xl bg-indigo-50 px-4 py-3 text-right">
+                <p
+                  class="text-[10px] font-bold uppercase tracking-wider text-indigo-400"
+                >
+                  Plan ID
+                </p>
+
+                <p id="planId" class="mt-1 text-sm font-bold text-[#211B8F]">
+                  —
+                </p>
+              </div>
+            </div>
+
+            <div class="grid gap-4 py-7 sm:grid-cols-3">
+              <div class="rounded-2xl bg-slate-50 p-4">
+                <p class="text-xs text-slate-400">Subscription</p>
+
+                <p id="duration" class="mt-1 font-bold">—</p>
+              </div>
+
+              <div class="rounded-2xl bg-slate-50 p-4">
+                <p class="text-xs text-slate-400">Payment</p>
+
+                <p class="mt-1 font-bold">Secure UPI</p>
+              </div>
+
+              <div class="rounded-2xl bg-slate-50 p-4">
+                <p class="text-xs text-slate-400">Activation</p>
+
+                <p class="mt-1 font-bold">Instant</p>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-100 bg-white p-5">
+              <div class="flex items-center gap-3">
+                <div
+                  class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"
+                >
+                  ✓
+                </div>
+
+                <div>
+                  <p class="font-bold">Secure & verified payment</p>
+
+                  <p class="mt-1 text-xs leading-5 text-slate-500">
+                    Your payment is processed securely through Cashfree. Your
+                    plan is activated only after server-side payment
+                    verification.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="glass shadow-soft rounded-3xl border border-white p-6 sm:p-8"
+          >
+            <p
+              class="text-xs font-bold uppercase tracking-[.15em] text-slate-400"
+            >
+              Payment Summary
+            </p>
+
+            <div class="mt-6 space-y-4">
+              <div class="flex justify-between text-sm">
+                <span class="text-slate-500">Subscription plan</span>
+
+                <span id="summaryPlan" class="font-semibold">—</span>
+              </div>
+
+              <div class="flex justify-between text-sm">
+                <span class="text-slate-500">Duration</span>
+
+                <span id="summaryDuration" class="font-semibold">—</span>
+              </div>
+
+              <div class="border-t border-dashed border-slate-200 pt-5">
+                <div class="flex items-end justify-between">
+                  <div>
+                    <p class="text-xs font-medium text-slate-400">
+                      Total payable
+                    </p>
+
+                    <p class="mt-1 text-3xl font-extrabold text-[#211B8F]">
+                      ₹<span id="amount">0</span>
+                    </p>
+                  </div>
+
+                  <span
+                    class="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700"
+                    >INR</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <button
+              id="payButton"
+              type="button"
+              class="mt-8 flex w-full items-center justify-center gap-3 rounded-2xl bg-[#211B8F] px-5 py-4 text-sm font-bold text-white shadow-xl shadow-indigo-900/20 transition hover:-translate-y-0.5 hover:bg-[#17135F] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <span id="buttonText">Pay Securely</span>
+            </button>
+
+            <p class="mt-4 text-center text-[11px] leading-5 text-slate-400">
+              By continuing, you authorize payment for the selected Quick2Print
+              subscription.
+            </p>
+
+            <div
+              class="mt-7 flex items-center justify-center gap-5 text-[10px] font-semibold uppercase tracking-wider text-slate-400"
+            >
+              <span>🔒 SSL Secure</span>
+
+              <span>•</span>
+
+              <span>Cashfree</span>
+
+              <span>•</span>
+
+              <span>Quick2Print</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="successState" class="hidden">
+        <div
+          class="mx-auto max-w-2xl rounded-[2rem] border border-emerald-100 bg-white p-8 text-center shadow-soft sm:p-12"
+        >
+          <div
+            class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 text-4xl text-emerald-600"
+          >
+            ✓
+          </div>
+
+          <div
+            class="mt-6 inline-flex rounded-full bg-emerald-50 px-4 py-2 text-xs font-bold uppercase tracking-wider text-emerald-700"
+          >
+            Payment Successful
+          </div>
+
+          <h1 class="mt-5 text-3xl font-extrabold tracking-tight">
+            Subscription Activated
+          </h1>
+
+          <p
+            id="successMessage"
+            class="mx-auto mt-3 max-w-lg text-sm leading-6 text-slate-500"
+          >
+            Your Quick2Print subscription is now active.
+          </p>
+
+          <div class="mt-8 grid gap-3 text-left sm:grid-cols-2">
+            <div class="rounded-2xl bg-slate-50 p-4">
+              <p class="text-xs text-slate-400">Plan</p>
+
+              <p id="successPlan" class="mt-1 font-bold">—</p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 p-4">
+              <p class="text-xs text-slate-400">Valid Until</p>
+
+              <p id="successExpiry" class="mt-1 font-bold">—</p>
+            </div>
+          </div>
+
+          <button
+            onclick="goBack()"
+            class="mt-8 rounded-2xl bg-[#211B8F] px-6 py-3 text-sm font-bold text-white hover:bg-[#17135F]"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </section>
+
+      <section id="errorState" class="hidden">
+        <div
+          class="mx-auto max-w-2xl rounded-[2rem] border border-red-100 bg-white p-8 text-center shadow-soft sm:p-12"
+        >
+          <div
+            class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-50 text-3xl text-red-500"
+          >
+            !
+          </div>
+
+          <div
+            class="mt-6 inline-flex rounded-full bg-red-50 px-4 py-2 text-xs font-bold uppercase tracking-wider text-red-600"
+          >
+            Payment Issue
+          </div>
+
+          <h1 class="mt-5 text-3xl font-extrabold tracking-tight">
+            We couldn't complete this payment
+          </h1>
+
+          <p
+            id="errorText"
+            class="mx-auto mt-3 max-w-lg text-sm leading-6 text-slate-500"
+          >
+            Please try again.
+          </p>
+
+          <button
+            onclick="location.reload()"
+            class="mt-8 rounded-2xl bg-[#211B8F] px-6 py-3 text-sm font-bold text-white hover:bg-[#17135F]"
+          >
+            Try Again
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-white/70">
+      <div
+        class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-6 text-center text-xs text-slate-400 sm:flex-row sm:justify-between sm:text-left"
+      >
+        <span>© 2026 Quick2Print. All rights reserved.</span>
+
+        <span>Secure subscription payments powered by Cashfree.</span>
+      </div>
+    </footer>
+
+    <script>
+      const PAYMENT_API =
+        "https\://quick2print-payment-subscription-na.vercel.app";
+
+      let subscription = null;
+
+      const $ = (id) => document.getElementById(id);
+
+      function queryParams() {
+        const p = new URLSearchParams(location.search);
+
+        return {
+          subscriptionId: p.get("subscription_id") || "",
+
+          shopId: p.get("shop_id") || "",
+        };
+      }
+
+      function show(id) {
+        ["loadingState", "paymentState", "successState", "errorState"].forEach(
+          (x) => $(x).classList.add("hidden"),
+        );
+
+        $(id).classList.remove("hidden");
+      }
+
+      function alertBox(message, type = "error") {
+        const el = $("alert");
+
+        el.className =
+          "mx-auto mb-6 max-w-3xl rounded-2xl border px-5 py-4 text-sm";
+
+        if (type === "success") {
+          el.classList.add(
+            "border-emerald-200",
+
+            "bg-emerald-50",
+
+            "text-emerald-700",
+          );
+        } else {
+          el.classList.add("border-red-200", "bg-red-50", "text-red-700");
+        }
+
+        el.textContent = message;
+
+        el.classList.remove("hidden");
+      }
+
+      async function loadSubscription() {
+        const { subscriptionId, shopId } = queryParams();
+
+        if (!subscriptionId || !shopId) {
+          throw new Error(
+            "Invalid payment link. Subscription ID or Shop ID is missing.",
+          );
+        }
+
+        const response = await fetch(
+          `${PAYMENT_API}/api/subscription/${encodeURIComponent(subscriptionId)}`,
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(
+            result.message || "Unable to load subscription details.",
+          );
+        }
+
+        subscription = result.data;
+
+        if (subscription.shop_id !== shopId) {
+          throw new Error(
+            "This payment session does not belong to the selected shop.",
+          );
+        }
+
+        $("planName").textContent =
+          subscription.plan_name || subscription.plan_id;
+
+        $("planId").textContent = subscription.plan_id;
+
+        $("summaryPlan").textContent =
+          subscription.plan_name || subscription.plan_id;
+
+        $("duration").textContent =
+          `${subscription.duration_months} Month${subscription.duration_months > 1 ? "s" : ""}`;
+
+        $("summaryDuration").textContent =
+          `${subscription.duration_months} months`;
+
+        $("amount").textContent = Number(subscription.amount).toLocaleString(
+          "en-IN",
+        );
+
+        if (subscription.payment_status === "PAID") {
+          await verifyPayment();
+
+          return;
+        }
+
+        show("paymentState");
+      }
+
+      async function startPayment() {
+        if (!subscription) return;
+
+        const button = $("payButton");
+
+        const original = $("buttonText").textContent;
+
+        button.disabled = true;
+
+        $("buttonText").innerHTML =
+          '<span class="spinner"></span> Preparing Secure Checkout...';
+
+        try {
+          // If this page is opened directly from the Cashfree return URL,
+
+          // the subscription already exists. We only need the session ID.
+
+          if (!subscription.cashfree_payment_session_id) {
+            throw new Error(
+              "Payment session is unavailable. Please start the subscription again from your dashboard.",
+            );
+          }
+
+          const mode =
+            subscription.payment_environment === "PRODUCTION"
+              ? "production"
+              : "sandbox";
+
+          const cashfree = Cashfree({ mode });
+
+          await cashfree.checkout({
+            paymentSessionId: subscription.cashfree_payment_session_id,
+
+            redirectTarget: "_self",
+          });
+        } catch (e) {
+          alertBox(e.message || "Unable to open secure payment checkout.");
+
+          button.disabled = false;
+
+          $("buttonText").textContent = original;
+        }
+      }
+
+      async function verifyPayment() {
+        const { subscriptionId, shopId } = queryParams();
+
+        try {
+          const response = await fetch(
+            `${PAYMENT_API}/api/subscription/verify`,
+
+            {
+              method: "POST",
+
+              headers: { "Content-Type": "application/json" },
+
+              body: JSON.stringify({
+                subscriptionId,
+
+                shopId,
+              }),
+            },
+          );
+
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            if (result?.data?.payment_status === "PENDING") {
+              alertBox(
+                "Payment is not confirmed yet. Please complete the payment and try again.",
+              );
+
+              show("paymentState");
+
+              return;
+            }
+
+            throw new Error(result.message || "Payment verification failed.");
+          }
+
+          const shop = result.data.shop || {};
+
+          $("successPlan").textContent =
+            subscription.plan_name || shop.plan_id || subscription.plan_id;
+
+          $("successExpiry").textContent = shop.plan_expires_at
+            ? new Date(shop.plan_expires_at).toLocaleDateString("en-IN", {
+                day: "2-digit",
+
+                month: "short",
+
+                year: "numeric",
+              })
+            : "—";
+
+          $("successMessage").textContent =
+            result.message || "Your Quick2Print subscription is now active.";
+
+          show("successState");
+        } catch (e) {
+          $("errorText").textContent =
+            e.message || "We couldn't verify your payment. Please try again.";
+
+          show("errorState");
+        }
+      }
+
+      function goBack() {
+        if (document.referrer) {
+          history.back();
+        } else {
+          location.href = "/";
+        }
+      }
+
+      $("payButton").addEventListener("click", startPayment);
+
+      (async function init() {
+        try {
+          await loadSubscription();
+        } catch (e) {
+          $("errorText").textContent =
+            e.message || "Unable to load the payment session.";
+
+          show("errorState");
+        }
+      })();
+    </script>
+  </body>
+</html>
