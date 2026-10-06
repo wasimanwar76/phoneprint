@@ -1090,72 +1090,277 @@
             </section>
 
             <!-- QUICK2PRINT RENEW PLAN MODAL -->
-            <div id="renew-plan-modal" class="fixed inset-0 z-[9999] hidden">
+            <!-- ==================== RENEW PLAN MODAL ==================== -->
+            <div
+              id="renew-plan-modal"
+              class="fixed inset-0 z-[9999] hidden"
+              aria-hidden="true"
+            >
+              <!-- Backdrop -->
               <div
-                class="absolute inset-0 bg-[#17135F]/60 backdrop-blur-sm"
+                class="absolute inset-0 bg-[#09083A]/70 backdrop-blur-md transition-opacity"
                 onclick="closeRenewPlanModal()"
               ></div>
 
+              <!-- Modal Wrapper -->
               <div
-                class="relative flex min-h-full items-center justify-center p-4 sm:p-6"
+                class="relative flex min-h-full items-center justify-center p-3 sm:p-5"
               >
                 <div
-                  class="relative w-full max-w-4xl overflow-hidden rounded-3xl bg-[#F8FAFC] shadow-2xl"
+                  class="relative flex w-full max-w-5xl flex-col overflow-hidden rounded-[28px] border border-white/70 bg-[#F8FAFC] shadow-[0_30px_100px_rgba(23,19,95,0.30)]"
                 >
+                  <!-- Decorative Glow -->
                   <div
-                    class="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4 sm:px-7"
+                    class="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[#00B8D9]/10 blur-3xl"
+                  ></div>
+
+                  <div
+                    class="pointer-events-none absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-[#211B8F]/10 blur-3xl"
+                  ></div>
+
+                  <!-- ================= HEADER ================= -->
+                  <div
+                    class="relative border-b border-slate-200/80 bg-white/95 px-5 py-5 sm:px-8 sm:py-6"
                   >
-                    <div>
-                      <p
-                        class="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#00B8D9]"
+                    <div class="flex items-start justify-between gap-4">
+                      <div class="flex items-start gap-4">
+                        <!-- Icon -->
+                        <div
+                          class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#211B8F] to-[#17135F] shadow-lg shadow-[#211B8F]/20"
+                        >
+                          <svg
+                            class="h-6 w-6 text-white"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M20 7h-9m9 0-3-3m3 3-3 3M4 17h9m-9 0 3 3m-3-3 3-3"
+                            />
+                          </svg>
+                        </div>
+
+                        <div>
+                          <div class="flex items-center gap-2">
+                            <span
+                              class="text-[10px] font-black uppercase tracking-[0.2em] text-[#00A9C7]"
+                            >
+                              Quick2Print
+                            </span>
+
+                            <span
+                              class="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-600"
+                            >
+                              Secure
+                            </span>
+                          </div>
+
+                          <h3
+                            class="mt-1 text-xl font-black tracking-tight text-[#17135F] sm:text-2xl"
+                          >
+                            Renew your subscription
+                          </h3>
+
+                          <p
+                            class="mt-1 max-w-xl text-xs leading-5 text-slate-500 sm:text-sm"
+                          >
+                            Choose the plan that works best for your shop and
+                            continue to secure payment.
+                          </p>
+                        </div>
+                      </div>
+
+                      <!-- Close -->
+                      <button
+                        type="button"
+                        onclick="closeRenewPlanModal()"
+                        class="group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-400 transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                        aria-label="Close"
                       >
-                        Quick2Print
-                      </p>
-                      <h3
-                        class="mt-1 text-xl font-extrabold text-[#17135F] sm:text-2xl"
-                      >
-                        Renew your subscription
-                      </h3>
-                      <p class="mt-1 text-xs text-slate-500">
-                        Choose a plan and continue to secure payment.
-                      </p>
+                        <svg
+                          class="h-5 w-5 transition-transform group-hover:rotate-90"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 6l12 12M18 6 6 18"
+                          />
+                        </svg>
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onclick="closeRenewPlanModal()"
-                      class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-xl font-bold text-slate-500 hover:bg-slate-200"
-                      aria-label="Close"
-                    >
-                      ×
-                    </button>
                   </div>
 
-                  <div class="max-h-[75vh] overflow-y-auto p-5 sm:p-7">
-                    <div id="renew-plan-loading" class="py-12 text-center">
+                  <!-- ================= CONTENT ================= -->
+                  <div
+                    class="relative max-h-[72vh] overflow-y-auto px-4 py-5 sm:px-7 sm:py-7"
+                  >
+                    <!-- Loading State -->
+                    <div
+                      id="renew-plan-loading"
+                      class="flex min-h-[300px] flex-col items-center justify-center"
+                    >
+                      <!-- Loader -->
                       <div
-                        class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-[#211B8F]"
-                      ></div>
-                      <p class="mt-4 text-sm font-semibold text-slate-600">
-                        Loading available plans…
+                        class="relative flex h-20 w-20 items-center justify-center"
+                      >
+                        <!-- Outer ring -->
+                        <div
+                          class="absolute inset-0 animate-spin rounded-full border-[3px] border-slate-200 border-t-[#211B8F]"
+                        ></div>
+
+                        <!-- Inner ring -->
+                        <div
+                          class="absolute inset-2 animate-[spin_1.5s_linear_infinite_reverse] rounded-full border-2 border-transparent border-b-[#00B8D9]"
+                        ></div>
+
+                        <!-- Center icon -->
+                        <div
+                          class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#211B8F] to-[#17135F] shadow-md"
+                        >
+                          <svg
+                            class="h-5 w-5 animate-pulse text-white"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M12 8v4l3 2"
+                            />
+                            <circle cx="12" cy="12" r="9" />
+                          </svg>
+                        </div>
+                      </div>
+
+                      <p class="mt-6 text-sm font-bold text-[#17135F]">
+                        Loading subscription plans
                       </p>
+
+                      <p class="mt-1 text-xs text-slate-400">
+                        Please wait while we fetch the latest plans...
+                      </p>
+
+                      <!-- Loading dots -->
+                      <div class="mt-4 flex items-center gap-1.5">
+                        <span
+                          class="h-1.5 w-1.5 animate-bounce rounded-full bg-[#211B8F]"
+                        ></span>
+                        <span
+                          class="h-1.5 w-1.5 animate-bounce rounded-full bg-[#00B8D9] [animation-delay:150ms]"
+                        ></span>
+                        <span
+                          class="h-1.5 w-1.5 animate-bounce rounded-full bg-[#211B8F] [animation-delay:300ms]"
+                        ></span>
+                      </div>
                     </div>
 
+                    <!-- Error State -->
                     <div
                       id="renew-plan-error"
-                      class="hidden rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
-                    ></div>
+                      class="hidden rounded-2xl border border-red-200 bg-gradient-to-br from-red-50 to-white p-5"
+                    >
+                      <div class="flex items-start gap-4">
+                        <div
+                          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-600"
+                        >
+                          <svg
+                            class="h-5 w-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path
+                              stroke-linecap="round"
+                              d="M12 8v4m0 4h.01"
+                            ></path>
+                          </svg>
+                        </div>
 
+                        <div>
+                          <p class="font-bold text-red-700">
+                            Unable to load plans
+                          </p>
+
+                          <p
+                            id="renew-plan-error-message"
+                            class="mt-1 text-sm leading-5 text-red-600"
+                          ></p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Plans -->
                     <div
                       id="renew-plan-grid"
-                      class="hidden grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                      class="hidden grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
                     ></div>
                   </div>
 
+                  <!-- ================= FOOTER ================= -->
                   <div
-                    class="border-t border-slate-200 bg-white px-5 py-4 text-center text-xs text-slate-400"
+                    class="relative border-t border-slate-200/80 bg-white px-5 py-4 sm:px-7"
                   >
-                    Secure checkout powered by Cashfree • Plan activation after
-                    server verification
+                    <div
+                      class="flex flex-col items-center justify-between gap-3 sm:flex-row"
+                    >
+                      <!-- Security -->
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50"
+                        >
+                          <svg
+                            class="h-4 w-4 text-emerald-600"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4z"
+                            />
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="m9 12 2 2 4-4"
+                            />
+                          </svg>
+                        </div>
+
+                        <div>
+                          <p class="text-xs font-bold text-slate-700">
+                            Secure payment
+                          </p>
+
+                          <p class="text-[10px] text-slate-400">
+                            Protected by Cashfree
+                          </p>
+                        </div>
+                      </div>
+
+                      <!-- Payment Methods -->
+                      <div
+                        class="flex items-center gap-2 text-[10px] font-semibold text-slate-400"
+                      >
+                        <span>UPI</span>
+                        <span class="text-slate-200">•</span>
+                        <span>Cards</span>
+                        <span class="text-slate-200">•</span>
+                        <span>Net Banking</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
