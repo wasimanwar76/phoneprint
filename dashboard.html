@@ -5019,7 +5019,19 @@
 
    Supabase is the source of truth
 
-   ============================================================ */
+ /* ============================================================
+
+
+
+   QUICK2PRINT SUBSCRIPTION
+
+
+
+   Supabase is the source of truth
+
+
+
+   ============================================================ */
 
       let subscriptionShop = null;
 
@@ -5359,25 +5371,45 @@
             .select(
               `
 
-        shop_id,
 
-        shop_name,
 
-        created_at,
+        shop_id,
 
-        plan_id,
 
-        plan_expires_at,
 
-        subscription_status,
+        shop_name,
 
-        subscription_start,
 
-        subscription_end,
 
-        total_prints
+        created_at,
 
-      `,
+
+
+        plan_id,
+
+
+
+        plan_expires_at,
+
+
+
+        subscription_status,
+
+
+
+        subscription_start,
+
+
+
+        subscription_end,
+
+
+
+        total_prints
+
+
+
+      `,
             )
 
             .eq("shop_id", shopId)
@@ -5397,23 +5429,41 @@
             .select(
               `
 
-        plan_id,
 
-        name,
 
-        price_inr,
+        plan_id,
 
-        max_printers,
 
-        max_prints_per_year,
 
-        support_level,
+        name,
 
-        duration_months,
 
-        duration_label
 
-      `,
+        price_inr,
+
+
+
+        max_printers,
+
+
+
+        max_prints_per_year,
+
+
+
+        support_level,
+
+
+
+        duration_months,
+
+
+
+        duration_label
+
+
+
+      `,
             )
 
             .eq("plan_id", shop.plan_id)
@@ -5431,21 +5481,37 @@
             .select(
               `
 
-        subscription_id,
 
-        amount,
 
-        cashfree_order_id,
+        subscription_id,
 
-        cashfree_payment_id,
 
-        payment_status,
 
-        payment_method,
+        amount,
 
-        created_at
 
-      `,
+
+        cashfree_order_id,
+
+
+
+        cashfree_payment_id,
+
+
+
+        payment_status,
+
+
+
+        payment_method,
+
+
+
+        created_at
+
+
+
+      `,
             )
 
             .eq("shop_id", shopId)
@@ -5479,21 +5545,31 @@
       const SUBSCRIPTION_PAYMENT_API =
         "https://quick2print-payment-subscription-na.vercel.app";
 
+      const SUBSCRIPTION_PAYMENT_PAGE =
+        "https://www.quick2print.in/subscription-payment.html";
+
       let renewPlans = [];
 
       function q2pEscapeHtml(value) {
         return String(value ?? "")
           .replace(/&/g, "&amp;")
+
           .replace(/</g, "&lt;")
+
           .replace(/>/g, "&gt;")
+
           .replace(/"/g, "&quot;")
+
           .replace(/'/g, "&#039;");
       }
 
       function q2pIsExpiredSubscription(shop) {
         if (!shop) return false;
+
         const expiry = shop.plan_expires_at || shop.subscription_end;
+
         if (!expiry) return false;
+
         return (
           new Date(expiry) <= new Date() ||
           String(shop.subscription_status || "").toLowerCase() === "expired"
@@ -5502,43 +5578,57 @@
 
       function q2pUpdateRenewButton() {
         const button = document.getElementById("subscription-renew-button");
+
         if (!button) return;
 
         const active = q2pIsActiveSubscription(subscriptionShop);
-        const expired = q2pIsExpiredSubscription(subscriptionShop);
-        const isFreePlan =
-          String(subscriptionShop?.plan_id || "").toLowerCase() === "free";
 
-        // Free plan: keep the subscription section visible and allow the
+        const expired = q2pIsExpiredSubscription(subscriptionShop);
+
+        const isFreePlan =
+          String(subscriptionShop?.plan_id || "").toLowerCase() === "free"; // Free plan: keep the subscription section visible and allow the
         // shop owner to choose a paid plan. Active paid plans: hide renewal.
         // Expired/cancelled/suspended paid plans: show renewal.
+
         button.classList.toggle(
           "hidden",
+
           (!isFreePlan && active) || (!isFreePlan && !expired),
         );
+
         button.textContent = isFreePlan ? "Choose a Plan" : "Renew Plan";
       }
 
       function closeRenewPlanModal() {
         const modal = document.getElementById("renew-plan-modal");
+
         if (modal) modal.classList.add("hidden");
+
         document.body.classList.remove("overflow-hidden");
       }
 
       function q2pRenderRenewPlans() {
         const grid = document.getElementById("renew-plan-grid");
+
         const loading = document.getElementById("renew-plan-loading");
+
         if (!grid) return;
 
         loading?.classList.add("hidden");
+
         grid.classList.remove("hidden");
 
         if (!renewPlans.length) {
           grid.innerHTML = `
-            <div class="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-200 bg-white p-8 text-center">
-              <p class="font-bold text-[#17135F]">No plans are currently available.</p>
-              <p class="mt-1 text-sm text-slate-500">Please try again later.</p>
-            </div>`;
+
+            <div class="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-200 bg-white p-8 text-center">
+
+              <p class="font-bold text-[#17135F]">No plans are currently available.</p>
+
+              <p class="mt-1 text-sm text-slate-500">Please try again later.</p>
+
+            </div>`;
+
           return;
         }
 
@@ -5547,82 +5637,122 @@
         ).toLowerCase();
 
         grid.innerHTML = renewPlans
+
           .map((plan) => {
             const planId = q2pEscapeHtml(plan.plan_id);
+
             const name = q2pEscapeHtml(plan.name);
+
             const price = q2pFormatINR(plan.price_inr);
+
             const duration = q2pEscapeHtml(
               plan.duration_label ||
                 (plan.duration_months ? `${plan.duration_months} Months` : "—"),
             );
+
             const printers = plan.max_printers
               ? `${q2pFormatNumber(plan.max_printers)} printer${Number(plan.max_printers) === 1 ? "" : "s"}`
               : "Unlimited printers";
+
             const prints = plan.max_prints_per_year
               ? `${q2pFormatNumber(plan.max_prints_per_year)} prints/year`
               : "Unlimited printing";
+
             const support = q2pEscapeHtml(
               plan.support_level || "Standard support",
             );
+
             const isCurrent =
               String(plan.plan_id || "").toLowerCase() === currentPlanId;
 
             return `
-            <article class="relative flex flex-col rounded-2xl border ${isCurrent ? "border-[#211B8F] ring-2 ring-[#211B8F]/10" : "border-slate-200"} bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-              ${isCurrent ? `<span class="absolute right-4 top-4 rounded-full bg-indigo-50 px-2.5 py-1 text-[10px] font-extrabold uppercase text-[#211B8F]">Current plan</span>` : ""}
-              <div class="pr-20">
-                <p class="text-xs font-extrabold uppercase tracking-wider text-[#00B8D9]">${planId}</p>
-                <h4 class="mt-1 text-xl font-extrabold text-[#17135F]">${name}</h4>
-              </div>
-              <div class="mt-5">
-                <span class="text-3xl font-extrabold text-[#17135F]">${price}</span>
-                <span class="text-xs text-slate-400"> / ${duration}</span>
-              </div>
-              <div class="mt-5 space-y-2 text-xs text-slate-600">
-                <div>✓ ${q2pEscapeHtml(printers)}</div>
-                <div>✓ ${q2pEscapeHtml(prints)}</div>
-                <div>✓ ${support}</div>
-              </div>
-              <button type="button"
-                onclick="startQuick2PrintRenewal('${q2pEscapeHtml(plan.plan_id)}')"
-                class="mt-6 w-full rounded-xl bg-[#17135F] px-4 py-3 text-sm font-extrabold text-white transition hover:bg-[#211B8F]">
-                ${isCurrent ? "Renew This Plan" : "Choose Plan"}
-              </button>
-            </article>`;
+
+            <article class="relative flex flex-col rounded-2xl border ${isCurrent ? "border-[#211B8F] ring-2 ring-[#211B8F]/10" : "border-slate-200"} bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+
+              ${isCurrent ? `<span class="absolute right-4 top-4 rounded-full bg-indigo-50 px-2.5 py-1 text-[10px] font-extrabold uppercase text-[#211B8F]">Current plan</span>` : ""}
+
+              <div class="pr-20">
+
+                <p class="text-xs font-extrabold uppercase tracking-wider text-[#00B8D9]">${planId}</p>
+
+                <h4 class="mt-1 text-xl font-extrabold text-[#17135F]">${name}</h4>
+
+              </div>
+
+              <div class="mt-5">
+
+                <span class="text-3xl font-extrabold text-[#17135F]">${price}</span>
+
+                <span class="text-xs text-slate-400"> / ${duration}</span>
+
+              </div>
+
+              <div class="mt-5 space-y-2 text-xs text-slate-600">
+
+                <div>✓ ${q2pEscapeHtml(printers)}</div>
+
+                <div>✓ ${q2pEscapeHtml(prints)}</div>
+
+                <div>✓ ${support}</div>
+
+              </div>
+
+              <button type="button"
+
+                onclick="startQuick2PrintRenewal('${q2pEscapeHtml(plan.plan_id)}')"
+
+                class="mt-6 w-full rounded-xl bg-[#17135F] px-4 py-3 text-sm font-extrabold text-white transition hover:bg-[#211B8F]">
+
+                ${isCurrent ? "Renew This Plan" : "Choose Plan"}
+
+              </button>
+
+            </article>`;
           })
+
           .join("");
       }
 
       async function loadRenewPlans() {
         const grid = document.getElementById("renew-plan-grid");
+
         const loading = document.getElementById("renew-plan-loading");
+
         const errorBox = document.getElementById("renew-plan-error");
 
         loading?.classList.remove("hidden");
+
         grid?.classList.add("hidden");
+
         errorBox?.classList.add("hidden");
 
         try {
           const { data, error } = await supabaseClient
+
             .from("plans")
+
             .select(
               "plan_id,name,price_inr,max_printers,max_prints_per_year,support_level,duration_months,duration_label",
             )
+
             .order("price_inr", { ascending: true });
 
-          if (error) throw error;
+          if (error) throw error; // Free plans are not sent to Cashfree; paid plans only.
 
-          // Free plans are not sent to Cashfree; paid plans only.
           renewPlans = (data || []).filter(
             (plan) => Number(plan.price_inr) > 0,
           );
+
           q2pRenderRenewPlans();
         } catch (error) {
           console.error("Renew plan load failed:", error);
+
           loading?.classList.add("hidden");
+
           if (errorBox) {
             errorBox.textContent =
               "We couldn't load plans right now. Please close this window and try again.";
+
             errorBox.classList.remove("hidden");
           }
         }
@@ -5631,58 +5761,83 @@
       function quick2PrintRenewPlan() {
         const isFreePlan =
           String(subscriptionShop?.plan_id || "").toLowerCase() === "free";
-        const expired = q2pIsExpiredSubscription(subscriptionShop);
-        const active = q2pIsActiveSubscription(subscriptionShop);
 
-        // Free shops can choose a paid plan even when their free plan is active.
+        const expired = q2pIsExpiredSubscription(subscriptionShop);
+
+        const active = q2pIsActiveSubscription(subscriptionShop); // Free shops can choose a paid plan even when their free plan is active.
         // Active paid shops must wait until expiry before renewing.
+
         if (!isFreePlan && active && !expired) return;
+
         if (!isFreePlan && !expired) return;
 
         const modal = document.getElementById("renew-plan-modal");
+
         if (!modal) return;
 
         modal.classList.remove("hidden");
+
         document.body.classList.add("overflow-hidden");
+
         loadRenewPlans();
+      }
+
+      function showSubscriptionRedirectLoader() {
+        let el = document.getElementById("q2p-subscription-redirect-loader");
+        if (el) return;
+        el = document.createElement("div");
+        el.id = "q2p-subscription-redirect-loader";
+        el.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.72);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px"><div style="width:min(420px,100%);background:#fff;border-radius:24px;padding:32px;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.25)"><div style="width:58px;height:58px;margin:0 auto 18px;border-radius:18px;background:#211B8F;display:grid;place-items:center"><div style="width:26px;height:26px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:q2pSpin .7s linear infinite"></div></div><h3 style="margin:0;color:#17135F;font:800 20px Inter,Arial,sans-serif">Preparing Secure Checkout</h3><p style="margin:8px 0 0;color:#64748b;font:500 14px Inter,Arial,sans-serif">Please wait while we open the Cashfree payment page.</p></div></div><style>@keyframes q2pSpin{to{transform:rotate(360deg)}}</style>`;
+        document.body.appendChild(el);
       }
 
       async function startQuick2PrintRenewal(planId) {
         const shopId = q2pGetShopId();
+
         if (!shopId) {
           alert("Shop ID was not found. Please sign in again.");
+
           return;
         }
 
         const plan = renewPlans.find(
           (p) => String(p.plan_id) === String(planId),
         );
+
         if (!plan) {
           alert(
             "The selected plan is no longer available. Please refresh and try again.",
           );
+
           return;
         }
 
         if (Number(plan.price_inr) <= 0) {
           alert("This plan does not require online payment.");
+
           return;
         }
 
         const buttons = document.querySelectorAll("#renew-plan-grid button");
+
         buttons.forEach((btn) => {
           btn.disabled = true;
+
           btn.classList.add("opacity-60", "cursor-not-allowed");
         });
 
         try {
           const response = await fetch(
             `${SUBSCRIPTION_PAYMENT_API}/api/subscription/create`,
+
             {
               method: "POST",
+
               headers: { "Content-Type": "application/json" },
+
               body: JSON.stringify({
                 shopId,
+
                 planName: plan.name,
               }),
             },
@@ -5698,6 +5853,7 @@
           }
 
           const data = result.data || {};
+
           if (!data.subscription_id) {
             throw new Error(
               "Payment order was created without a subscription ID.",
@@ -5706,24 +5862,31 @@
 
           const params = new URLSearchParams({
             subscription_id: data.subscription_id,
+
             shop_id: shopId,
           });
 
           closeRenewPlanModal();
-          window.location.href = `${SUBSCRIPTION_PAYMENT_API}/subscription-payment.html?${params.toString()}`;
+
+          showSubscriptionRedirectLoader();
+          window.location.href = `${SUBSCRIPTION_PAYMENT_PAGE}?${params.toString()}`;
         } catch (error) {
           console.error("Renewal payment creation failed:", error);
+
           alert(error.message || "Unable to start payment. Please try again.");
 
           buttons.forEach((btn) => {
             btn.disabled = false;
+
             btn.classList.remove("opacity-60", "cursor-not-allowed");
           });
         }
       }
 
       window.closeRenewPlanModal = closeRenewPlanModal;
+
       window.startQuick2PrintRenewal = startQuick2PrintRenewal;
+
       window.quick2PrintRenewPlan = quick2PrintRenewPlan;
 
       window.loadSubscriptionDetails = loadSubscriptionDetails;
