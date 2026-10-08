@@ -205,6 +205,43 @@
 
       /* Sticky payment footer so it never gets pushed off-screen
          when multiple files/pages push the content taller than the viewport */
+
+      .pdf-page-card {
+        min-height: 92px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        background: #fff;
+        padding: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .pdf-page-card:hover {
+        border-color: #211b8f;
+        background: #eef2ff;
+      }
+      .pdf-page-card.is-removed {
+        border-color: #fecaca;
+        background: #fef2f2;
+        opacity: 0.75;
+      }
+      .pdf-page-card .page-preview {
+        height: 48px;
+        border-radius: 7px;
+        background: linear-gradient(135deg, #f8fafc, #e5e7eb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Space Mono", monospace;
+        font-size: 14px;
+        font-weight: 700;
+        color: #374151;
+      }
+      .pdf-page-card.is-removed .page-preview {
+        background: #fee2e2;
+        color: #b91c1c;
+        text-decoration: line-through;
+      }
+
       .sticky-payment-footer {
         position: sticky;
         bottom: 0;
@@ -873,6 +910,87 @@
       </div>
     </main>
 
+    <!-- ========================================================= -->
+    <!-- PDF PAGE EDITOR -->
+    <!-- ========================================================= -->
+    <div
+      id="pdfEditorModal"
+      class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="pdfEditorTitle"
+    >
+      <div
+        class="w-full max-w-md max-h-[90dvh] overflow-hidden rounded-2xl bg-white manga-shadow flex flex-col"
+      >
+        <div
+          class="flex items-start justify-between gap-3 border-b border-gray-100 px-5 py-4"
+        >
+          <div>
+            <p
+              class="text-[10px] font-bold uppercase tracking-widest text-[#211B8F]"
+            >
+              PDF Editor
+            </p>
+            <h3
+              id="pdfEditorTitle"
+              class="font-heading text-xl font-extrabold text-[#111827]"
+            >
+              Remove PDF Pages
+            </h3>
+            <p
+              id="pdfEditorFileName"
+              class="mt-1 text-xs text-gray-500 truncate"
+            ></p>
+          </div>
+          <button
+            type="button"
+            onclick="closePdfEditor()"
+            class="rounded-lg bg-gray-100 px-3 py-2 text-sm font-bold text-gray-500 hover:bg-gray-200"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="px-5 pt-4">
+          <div
+            class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-semibold text-amber-900"
+          >
+            Select the pages you want to remove. At least one page must remain.
+          </div>
+          <p
+            id="pdfEditorSummary"
+            class="mt-3 text-xs font-bold text-gray-500"
+          ></p>
+        </div>
+
+        <div
+          id="pdfPageGrid"
+          class="flex-1 overflow-y-auto px-5 py-4 grid grid-cols-4 gap-3"
+        ></div>
+
+        <div class="border-t border-gray-100 bg-white px-5 py-4">
+          <div class="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onclick="closePdfEditor()"
+              class="rounded-xl border-2 border-gray-200 py-3 font-bold text-gray-600 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onclick="applyPdfPageRemoval()"
+              class="rounded-xl bg-[#211B8F] py-3 font-bold text-white shadow-md hover:opacity-95"
+            >
+              Save PDF
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- =========================================================== -->
     <!-- APPLICATION -->
     <!-- =========================================================== -->
@@ -910,8 +1028,25 @@
 
       let currentShopRow = null;
 
+      // Subscription / upload-limit state
+      let subscriptionState = {
+        valid: false,
+        expiresAt: null,
+        paymentStatus: null,
+        uploadLimit: null,
+        currentPrints: null,
+      };
+
+      let pdfEditorState = {
+        fileIndex: -1,
+        removedPages: new Set(),
+        originalBytes: null,
+      };
+
       // Price per page, loaded from shops.print_price
       let printPrice = 0;
+
+      let colorPrice = 0;
 
       let filesList = [];
 
@@ -1087,6 +1222,425 @@
       }
 
       // ============================================================
+      // SUBSCRIPTION / UPLOAD LIMIT VALIDATION
+      // ============================================================
+
+      async function validateShopSubscription() {
+        const now = new Date();
+
+        // 1) Find the latest paid subscription for this shop.
+        const { data: subscription, error: subscriptionError } =
+          await supabaseClient
+            .from("shop_subscriptions")
+            .select(
+              "subscription_id, plan_id, payment_status, started_at, expires_at",
+            )
+            .eq("shop_id", currentShopId)
+            .eq("payment_status", "PAID")
+            .order("expires_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (subscriptionError) {
+          console.error("Subscription validation error:", subscriptionError);
+          throw new Error(
+            "Unable to verify the shop subscription. Please try again.",
+          );
+        }
+
+        if (!subscription || !subscription.expires_at) {
+          subscriptionState = {
+            valid: false,
+            reason: "EXPIRED",
+            planId: subscription?.plan_id || null,
+            planName: null,
+            maxPrints: null,
+            currentPrints: null,
+            remainingPrints: null,
+            expiresAt: null,
+            paymentStatus: subscription?.payment_status || null,
+          };
+
+          return {
+            valid: false,
+            reason: "EXPIRED",
+            message:
+              "This shop's subscription has expired. Please ask the shopkeeper to renew the subscription.",
+          };
+        }
+
+        const expiresAt = new Date(subscription.expires_at);
+
+        if (Number.isNaN(expiresAt.getTime()) || expiresAt <= now) {
+          subscriptionState = {
+            valid: false,
+            reason: "EXPIRED",
+            planId: subscription.plan_id || null,
+            planName: null,
+            maxPrints: null,
+            currentPrints: null,
+            remainingPrints: null,
+            expiresAt: subscription.expires_at,
+            paymentStatus: subscription.payment_status,
+          };
+
+          return {
+            valid: false,
+            reason: "EXPIRED",
+            message:
+              "This shop's subscription has expired. Please ask the shopkeeper to renew the subscription.",
+          };
+        }
+
+        // 2) Read the plan selected by the subscription.
+        //    max_prints_per_year comes from the plans table.
+        //    NULL/blank means unlimited for plans such as Business/Pro.
+        const { data: plan, error: planError } = await supabaseClient
+          .from("plans")
+          .select("plan_id, name, max_prints_per_year")
+          .eq("plan_id", subscription.plan_id)
+          .maybeSingle();
+
+        if (planError) {
+          console.error("Plan lookup error:", planError);
+          throw new Error(
+            "Unable to verify the subscription plan. Please try again.",
+          );
+        }
+
+        if (!plan) {
+          throw new Error(
+            "The active subscription plan could not be found. Please contact the shop.",
+          );
+        }
+
+        // 3) shops.total_prints is the CURRENT USED PRINT COUNT.
+        //    It is compared against plans.max_prints_per_year.
+        const { data: shopLimitRow, error: shopLimitError } =
+          await supabaseClient
+            .from("shops")
+            .select("total_prints")
+            .eq("shop_id", currentShopId)
+            .single();
+
+        if (shopLimitError) {
+          console.error("Print count lookup error:", shopLimitError);
+          throw new Error(
+            "Unable to verify the shop print count. Please try again.",
+          );
+        }
+
+        const currentPrintsRaw = Number(shopLimitRow?.total_prints);
+        const currentPrints = Number.isFinite(currentPrintsRaw)
+          ? Math.max(0, currentPrintsRaw)
+          : 0;
+
+        const maxPrintsRaw = Number(plan.max_prints_per_year);
+        const hasPrintLimit = Number.isFinite(maxPrintsRaw) && maxPrintsRaw > 0;
+
+        const maxPrints = hasPrintLimit ? maxPrintsRaw : null;
+        const remainingPrints = hasPrintLimit
+          ? Math.max(0, maxPrints - currentPrints)
+          : Infinity;
+
+        subscriptionState = {
+          valid: true,
+          reason: null,
+          planId: plan.plan_id,
+          planName: plan.name,
+          maxPrints,
+          currentPrints,
+          remainingPrints,
+          expiresAt: subscription.expires_at,
+          paymentStatus: subscription.payment_status,
+        };
+
+        // 4) Block ONLY when the used print count has reached the plan limit.
+        //    Do NOT treat total_prints=0 as "limit reached" because 0 means
+        //    the shop has printed zero pages so far.
+        if (hasPrintLimit && currentPrints >= maxPrints) {
+          subscriptionState.valid = false;
+          subscriptionState.reason = "LIMIT";
+          subscriptionState.remainingPrints = 0;
+
+          return {
+            valid: false,
+            reason: "LIMIT",
+            message: `This shop has reached the print limit for its current plan. Please ask the shopkeeper to upgrade or renew the plan.`,
+          };
+        }
+
+        return {
+          valid: true,
+          reason: null,
+          message: "",
+        };
+      }
+
+      function getRequestedPrintCount(list = filesList) {
+        return list.reduce((sum, item) => {
+          return sum + Number(item.pages || 1) * Number(item.copies || 1);
+        }, 0);
+      }
+
+      function checkRequestedPrintLimit(list = filesList) {
+        if (!subscriptionState.valid) {
+          return {
+            allowed: false,
+            message:
+              subscriptionState.reason === "LIMIT"
+                ? "This shop has reached the print limit for its current plan. Please ask the shopkeeper to upgrade or renew the plan."
+                : "This shop's subscription has expired. Please ask the shopkeeper to renew the subscription.",
+          };
+        }
+
+        if (!Number.isFinite(subscriptionState.maxPrints)) {
+          return { allowed: true, message: "" };
+        }
+
+        const requestedPrints = getRequestedPrintCount(list);
+        const currentPrints = Number(subscriptionState.currentPrints || 0);
+        const maxPrints = Number(subscriptionState.maxPrints);
+
+        if (currentPrints + requestedPrints > maxPrints) {
+          const remaining = Math.max(0, maxPrints - currentPrints);
+
+          return {
+            allowed: false,
+            message: `This shop has ${remaining.toLocaleString()} print${remaining === 1 ? "" : "s"} remaining on the ${subscriptionState.planName} plan, but this selection requires ${requestedPrints.toLocaleString()}. Please remove some pages/files or reduce copies.`,
+          };
+        }
+
+        return { allowed: true, message: "" };
+      }
+
+      function showUploadBlockedState(
+        message,
+        title = "File Uploads Disabled",
+      ) {
+        hideUploadError();
+
+        document.getElementById("loadingState").classList.add("hidden");
+        document.getElementById("step1").classList.remove("hidden");
+        document.getElementById("step1").classList.add("flex");
+
+        const banner = document.getElementById("uploadErrorBanner");
+        document.getElementById("uploadErrorText").textContent = message;
+        banner.querySelector("p.font-bold").textContent = title;
+        banner.classList.remove("hidden");
+        banner.classList.add("flex");
+
+        const fileInput = document.getElementById("fileInput");
+        const fileInputStep2 = document.getElementById("fileInputStep2");
+        [fileInput, fileInputStep2].forEach((input) => {
+          if (input) input.disabled = true;
+        });
+
+        document
+          .querySelectorAll(
+            'label[for="fileInput"], label[for="fileInputStep2"]',
+          )
+          .forEach((label) => {
+            label.classList.add("opacity-50", "cursor-not-allowed");
+            label.setAttribute("aria-disabled", "true");
+          });
+
+        setPayButtonsDisabled(true);
+      }
+
+      function ensureUploadAllowed() {
+        if (!subscriptionState.valid) {
+          showUploadBlockedState(
+            subscriptionState.reason === "LIMIT"
+              ? "This shop has reached the print limit for its current plan. Please ask the shopkeeper to upgrade or renew the plan."
+              : "This shop's subscription has expired. Please ask the shopkeeper to renew the subscription.",
+            subscriptionState.reason === "LIMIT"
+              ? "Print Limit Reached"
+              : "Subscription Expired",
+          );
+          return false;
+        }
+
+        return true;
+      }
+
+      // ============================================================
+      // PDF PAGE REMOVER
+      // ============================================================
+
+      function isPdfFile(file) {
+        return (
+          !!file &&
+          (file.type === "application/pdf" || /\.pdf$/i.test(file.name || ""))
+        );
+      }
+
+      function getPdfFileCount() {
+        return filesList.filter((item) => isPdfFile(item.file)).length;
+      }
+
+      function openPdfEditor(index) {
+        const item = filesList[index];
+        if (!item || !isPdfFile(item.file)) return;
+
+        const modal = document.getElementById("pdfEditorModal");
+        const grid = document.getElementById("pdfPageGrid");
+
+        pdfEditorState = {
+          fileIndex: index,
+          removedPages: new Set(item.removedPages || []),
+          originalBytes: null,
+        };
+
+        document.getElementById("pdfEditorFileName").textContent =
+          item.file.name;
+        grid.innerHTML = "";
+
+        for (let page = 0; page < item.pages; page++) {
+          const removed = pdfEditorState.removedPages.has(page);
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = `pdf-page-card ${removed ? "is-removed" : ""}`;
+          card.dataset.page = String(page);
+          card.innerHTML = `
+            <div class="page-preview">${removed ? "✕" : "P" + (page + 1)}</div>
+            <div class="mt-2 text-[10px] font-bold ${removed ? "text-red-600" : "text-gray-500"}">
+              ${removed ? "Remove" : "Keep"} · Page ${page + 1}
+            </div>
+          `;
+          card.onclick = () => togglePdfPage(page);
+          grid.appendChild(card);
+        }
+
+        updatePdfEditorSummary();
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
+
+      function togglePdfPage(pageIndex) {
+        const item = filesList[pdfEditorState.fileIndex];
+        if (!item) return;
+
+        const removing = !pdfEditorState.removedPages.has(pageIndex);
+        const remaining = item.pages - pdfEditorState.removedPages.size;
+
+        if (removing && remaining <= 1) {
+          showStep2Error("At least one page must remain in the PDF.");
+          return;
+        }
+
+        if (removing) {
+          pdfEditorState.removedPages.add(pageIndex);
+        } else {
+          pdfEditorState.removedPages.delete(pageIndex);
+        }
+
+        const card = document.querySelector(
+          `#pdfPageGrid .pdf-page-card[data-page="${pageIndex}"]`,
+        );
+        if (card) {
+          const removed = pdfEditorState.removedPages.has(pageIndex);
+          card.classList.toggle("is-removed", removed);
+          card.querySelector(".page-preview").textContent = removed
+            ? "✕"
+            : "P" + (pageIndex + 1);
+          const label = card.querySelector("div:last-child");
+          label.className = `mt-2 text-[10px] font-bold ${removed ? "text-red-600" : "text-gray-500"}`;
+          label.textContent = `${removed ? "Remove" : "Keep"} · Page ${pageIndex + 1}`;
+        }
+
+        updatePdfEditorSummary();
+      }
+
+      function updatePdfEditorSummary() {
+        const item = filesList[pdfEditorState.fileIndex];
+        if (!item) return;
+
+        const removed = pdfEditorState.removedPages.size;
+        const remaining = item.pages - removed;
+
+        document.getElementById("pdfEditorSummary").textContent =
+          `${remaining} page${remaining === 1 ? "" : "s"} will be printed${removed ? ` • ${removed} page${removed === 1 ? "" : "s"} removed` : ""}.`;
+      }
+
+      async function applyPdfPageRemoval() {
+        const index = pdfEditorState.fileIndex;
+        const item = filesList[index];
+
+        if (!item || !isPdfFile(item.file)) {
+          closePdfEditor();
+          return;
+        }
+
+        const removedPages = new Set(pdfEditorState.removedPages);
+
+        if (item.pages - removedPages.size < 1) {
+          showStep2Error("At least one page must remain in the PDF.");
+          return;
+        }
+
+        if (removedPages.size === 0) {
+          item.removedPages = [];
+          closePdfEditor();
+          renderFiles();
+          updateTotal();
+          return;
+        }
+
+        try {
+          const buffer = await item.file.arrayBuffer();
+          const sourcePdf = await PDFLib.PDFDocument.load(buffer, {
+            ignoreEncryption: false,
+          });
+          const outputPdf = await PDFLib.PDFDocument.create();
+
+          const keepIndexes = [];
+          for (let page = 0; page < item.pages; page++) {
+            if (!removedPages.has(page)) keepIndexes.push(page);
+          }
+
+          const copiedPages = await outputPdf.copyPages(sourcePdf, keepIndexes);
+          copiedPages.forEach((page) => outputPdf.addPage(page));
+
+          const bytes = await outputPdf.save();
+
+          if (!bytes || bytes.length === 0) {
+            throw new Error("The edited PDF is empty.");
+          }
+
+          const newName = item.file.name.replace(/\.pdf$/i, "") + "_edited.pdf";
+          item.file = new File([bytes], newName, { type: "application/pdf" });
+          item.pages = keepIndexes.length;
+          // The new PDF no longer contains the removed pages, so reset this list.
+          item.removedPages = [];
+          item.uploaded = false;
+          item.storagePath = null;
+          item.jobId = null;
+
+          closePdfEditor();
+          renderFiles();
+          updateTotal();
+        } catch (error) {
+          console.error("PDF page removal failed:", error);
+          showStep2Error(
+            "The PDF could not be edited. Please make sure it is a valid, non-password-protected PDF and try again.",
+          );
+        }
+      }
+
+      function closePdfEditor() {
+        const modal = document.getElementById("pdfEditorModal");
+        if (!modal) return;
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        pdfEditorState = {
+          fileIndex: -1,
+          removedPages: new Set(),
+          originalBytes: null,
+        };
+      }
+
+      // ============================================================
       // INIT
       // ============================================================
 
@@ -1111,7 +1665,7 @@
           const { data: shop, error } = await supabaseClient
             .from("shops")
             .select(
-              "shop_id, shop_name, shop_status, print_price, cashfree_app_id, cashfree_env",
+              "shop_id, shop_name, shop_status, print_price, color_price, total_prints, cashfree_app_id, cashfree_env",
             )
             .eq("shop_id", currentShopId)
             .single();
@@ -1173,22 +1727,50 @@
           }
 
           // ------------------------------------------------------
-          // 3. PRICE (shops.print_price)
+          // 3. PRINT PRICES
+          //    B&W   -> shops.print_price
+          //    Color -> shops.color_price
           // ------------------------------------------------------
-          const price = Number(shop.print_price);
+          const bwPrice = Number(shop.print_price);
+          const shopColorPrice = Number(shop.color_price);
 
-          if (!Number.isFinite(price) || price <= 0) {
+          if (!Number.isFinite(bwPrice) || bwPrice <= 0) {
             showErrorState(
-              "Price Not Set",
-              `${shop.shop_name || "This shop"} has not set a print price yet (print_price).\n\nPlease contact the shop.`,
+              "B&W Price Not Set",
+              `${shop.shop_name || "This shop"} has not set a valid B&W print price (print_price).\n\nPlease contact the shop.`,
             );
-
             return;
           }
 
-          printPrice = price;
+          if (!Number.isFinite(shopColorPrice) || shopColorPrice <= 0) {
+            showErrorState(
+              "Color Price Not Set",
+              `${shop.shop_name || "This shop"} has not set a valid color print price (color_price).\n\nPlease contact the shop.`,
+            );
+            return;
+          }
+
+          printPrice = bwPrice;
+          colorPrice = shopColorPrice;
 
           currentShopRow = shop;
+
+          // ------------------------------------------------------
+          // 4. SUBSCRIPTION + UPLOAD LIMIT VALIDATION
+          // ------------------------------------------------------
+          const subscriptionCheck = await validateShopSubscription();
+
+          if (!subscriptionCheck.valid) {
+            document.getElementById("loadingState").classList.add("hidden");
+            document.getElementById("step1").classList.remove("hidden");
+            showUploadBlockedState(
+              subscriptionCheck.message,
+              subscriptionCheck.reason === "LIMIT"
+                ? "Print Limit Reached"
+                : "Subscription Expired",
+            );
+            return;
+          }
 
           // ------------------------------------------------------
           // All checks passed: show the upload screen
@@ -1268,6 +1850,12 @@
       async function handleFileSelection(event) {
         hideUploadError();
 
+        // Never process or upload files when the subscription/limit check fails.
+        if (!ensureUploadAllowed()) {
+          event.target.value = "";
+          return;
+        }
+
         const incoming = Array.from(event.target.files || []);
 
         if (incoming.length === 0) {
@@ -1275,6 +1863,7 @@
         }
 
         const accepted = [];
+        const previousFiles = [...filesList];
 
         for (const file of incoming) {
           if (!ACCEPTED_TYPES.test(file.name)) {
@@ -1331,6 +1920,8 @@
 
             copies: 1,
 
+            removedPages: [],
+
             uploaded: false,
 
             storagePath: null,
@@ -1340,6 +1931,17 @@
         }
 
         if (filesList.length > 0) {
+          const requestedCheck = checkRequestedPrintLimit(filesList);
+
+          if (!requestedCheck.allowed) {
+            // Do not allow a selection that would exceed the subscription plan.
+            filesList = previousFiles;
+            renderFiles();
+            updateTotal();
+            showUploadError(requestedCheck.message);
+            return;
+          }
+
           showConfigStep();
         }
       }
@@ -1411,13 +2013,27 @@
                     <span
                       class="text-[9px] font-semibold bg-gray-100 text-gray-500 px-1 py-0.5 rounded w-max mt-0.5"
                     >
-                      ${pageText}
+                      ${pageText}${item.removedPages?.length ? ` • ${item.removedPages.length} removed` : ""}
                     </span>
 
                   </div>
 
                 </div>
 
+
+                ${
+                  isPdfFile(item.file)
+                    ? `
+                <button
+                  type="button"
+                  onclick="openPdfEditor(${index})"
+                  class="px-2 py-1 text-[10px] font-bold text-[#211B8F] bg-[#EEF2FF] hover:bg-[#D9DDFF] rounded-lg transition-colors shrink-0 ml-1.5"
+                  title="Remove pages from this PDF"
+                >
+                  Edit PDF
+                </button>`
+                    : ""
+                }
 
                 <button
                   type="button"
@@ -1572,33 +2188,49 @@
       }
 
       // ============================================================
-      // TOTAL  (pages x copies x shops.print_price)
+      // TOTAL  (pages x copies x selected shop price)
+      // B&W   -> shops.print_price
+      // Color -> shops.color_price
       // ============================================================
+
+      function getSelectedColorType() {
+        return (
+          document.querySelector('input[name="colorType"]:checked')?.value ||
+          "BW"
+        );
+      }
+
+      function getSelectedPrintPrice() {
+        return getSelectedColorType() === "Color" ? colorPrice : printPrice;
+      }
 
       function calculateTotals() {
         let totalPages = 0;
 
         filesList.forEach((item) => {
-          totalPages += Number(item.pages || 1) * Number(item.copies || 1);
+          totalPages +=
+            Math.max(1, Number(item.pages || 1)) *
+            Math.max(1, Number(item.copies || 1));
         });
 
-        // Round to 2 decimals to avoid floating point noise (e.g. 0.1 * 3)
-        const total = Math.round(totalPages * printPrice * 100) / 100;
+        const pricePerPage = Number(getSelectedPrintPrice());
+        const total = Math.round(totalPages * pricePerPage * 100) / 100;
 
-        return { totalPages, total };
+        return { totalPages, pricePerPage, total };
       }
 
       const formatMoney = (n) =>
-        Number.isInteger(n) ? String(n) : n.toFixed(2);
+        Number.isInteger(n) ? String(n) : Number(n).toFixed(2);
 
       function updateTotal() {
-        const { total } = calculateTotals();
+        const { pricePerPage, total } = calculateTotals();
+        const colorType = getSelectedColorType();
 
         document.getElementById("totalDisplay").textContent =
           formatMoney(total);
 
         document.getElementById("rateDisplay").textContent =
-          `₹${formatMoney(printPrice)} / page`;
+          `₹${formatMoney(pricePerPage)} / page (${colorType === "Color" ? "Color" : "B&W"})`;
 
         updatePayableTheme();
       }
@@ -1627,6 +2259,18 @@
       // ============================================================
 
       async function uploadAllFiles(jobIdPrefix) {
+        const latestCheck = await validateShopSubscription();
+
+        if (!latestCheck.valid) {
+          throw new Error(latestCheck.message);
+        }
+
+        const requestedCheck = checkRequestedPrintLimit(filesList);
+
+        if (!requestedCheck.allowed) {
+          throw new Error(requestedCheck.message);
+        }
+
         for (let i = 0; i < filesList.length; i++) {
           const item = filesList[i];
 
@@ -1670,6 +2314,26 @@
       // ============================================================
 
       async function processPayment(mode) {
+        if (!ensureUploadAllowed()) {
+          return;
+        }
+
+        const latestCheck = await validateShopSubscription();
+
+        if (!latestCheck.valid) {
+          showStep2Error(latestCheck.message);
+          setPayButtonsDisabled(true);
+          return;
+        }
+
+        const requestedCheck = checkRequestedPrintLimit(filesList);
+
+        if (!requestedCheck.allowed) {
+          showStep2Error(requestedCheck.message);
+          setPayButtonsDisabled(false);
+          return;
+        }
+
         if (filesList.length === 0) {
           showStep2Error("Kam se kam ek file upload karein.");
           return;
@@ -1694,13 +2358,17 @@
 
           const paperSize = document.getElementById("paperSizeSelect").value;
 
-          // The shop price comes from shops.print_price.
-          // Color/B&W currently use the same per-page price because
-          // the database has one print_price field.
-          const pricePerPage = Number(printPrice);
+          // B&W uses shops.print_price; Color uses shops.color_price.
+          const pricePerPage = Number(
+            colorType === "Color" ? colorPrice : printPrice,
+          );
 
           if (!Number.isFinite(pricePerPage) || pricePerPage <= 0) {
-            throw new Error("Print price is not configured for this shop.");
+            throw new Error(
+              colorType === "Color"
+                ? "Color print price is not configured for this shop."
+                : "B&W print price is not configured for this shop.",
+            );
           }
 
           let totalPages = 0;
@@ -1788,8 +2456,8 @@
            *
            * The SERVER creates the print_orders row, the print_jobs rows
            * (status: awaiting_payment) and the Cashfree order. The server
-           * calculates the price from shops.print_price, so no amounts
-           * are sent from the browser.
+           * calculates the price from shops.print_price / shops.color_price
+           * using the selected colorType. The browser amount is informational only.
            *
            * Jobs are released to the print agent (status: pending) only
            * after the server verifies the payment.
@@ -1824,6 +2492,10 @@
                   shopId: currentShopId,
                   colorType: colorType,
                   paperSize: paperSize,
+                  totalFiles: filesList.length,
+                  totalPages: totalPages,
+                  amountCharged: total,
+                  pricePerPage: pricePerPage,
                   customerName: "Quick2Print Customer",
                   customerPhone: "",
                   files: filesList.map((item) => ({
@@ -1903,11 +2575,23 @@
         }
 
         if (/print limit reached/i.test(msg)) {
-          return "This shop's print limit has been reached.";
+          return "This shop has reached the print limit for its current plan. Please ask the shopkeeper to upgrade or renew the plan.";
         }
 
-        if (/subscription.*expired/i.test(msg)) {
-          return "This shop's subscription has expired.";
+        if (
+          /subscription.*expired|file uploads are disabled because this shop's subscription has expired/i.test(
+            msg,
+          )
+        ) {
+          return "This shop's subscription has expired. Please ask the shopkeeper to renew the subscription.";
+        }
+
+        if (
+          /no further files can be uploaded|print\/upload limit|upload limit|plan allows|print limit/i.test(
+            msg,
+          )
+        ) {
+          return msg;
         }
 
         if (/does not exist/i.test(msg)) {
@@ -2094,6 +2778,12 @@
 
         filesList = [];
 
+        pdfEditorState = {
+          fileIndex: -1,
+          removedPages: new Set(),
+          originalBytes: null,
+        };
+
         paymentMode = "";
 
         setPayButtonsDisabled(false);
@@ -2109,6 +2799,8 @@
         if (bw) {
           bw.checked = true;
         }
+
+        colorPrice = Number(currentShopRow?.color_price || colorPrice || 0);
 
         document.getElementById("paperSizeSelect").value = "A4";
 
@@ -2152,6 +2844,10 @@
       // ============================================================
       // EVENTS
       // ============================================================
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closePdfEditor();
+      });
 
       document.addEventListener("DOMContentLoaded", () => {
         document

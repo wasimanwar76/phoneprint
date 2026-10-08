@@ -339,7 +339,7 @@
             class="w-11 h-11 rounded-xl bg-white border border-[#E6E8F0] flex items-center justify-center shrink-0 overflow-hidden shadow-sm"
           >
             <img
-              src="logo.png"
+              src="./logo.png"
               alt="Quick2Print"
               class="w-8 h-8 object-contain"
             />
@@ -2094,216 +2094,442 @@
           <!-- ============ TAB: SETTINGS ============ -->
           <section
             id="tab-settings"
-            class="tab-content hidden max-w-3xl mx-auto space-y-6"
+            class="tab-content hidden max-w-4xl mx-auto space-y-6 pb-10"
           >
-            <!-- Shop Profile -->
-            <div class="manga-card p-6">
-              <div class="flex items-start justify-between gap-4 mb-6">
-                <div>
-                  <h3
-                    class="font-heading font-bold text-xl sm:text-2xl flex items-center gap-2"
-                  >
-                    <i data-lucide="store" class="w-6 h-6"></i>
-                    Shop Profile
-                  </h3>
+            <!-- =========================================================
+       SHOP PROFILE HEADER
+  ========================================================== -->
+            <div
+              class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#17135F] via-[#211B8F] to-[#2F2AA8] text-white shadow-[6px_6px_0_#111827]"
+            >
+              <div
+                class="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-white/10 blur-2xl"
+              ></div>
 
-                  <p class="text-sm text-gray-500 font-semibold mt-1">
-                    Apni dukaan ki basic details manage karein.
-                  </p>
-                </div>
+              <div
+                class="absolute -left-20 -bottom-24 w-56 h-56 rounded-full bg-[#FFB800]/10 blur-3xl"
+              ></div>
 
+              <div class="relative p-6 sm:p-8">
                 <div
-                  id="settings-shop-status"
-                  class="flex items-center gap-2 px-3 py-1 bg-green-100 rounded-full"
+                  class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5"
                 >
-                  <div
-                    id="settings-status-dot"
-                    class="w-2.5 h-2.5 rounded-full bg-green-500"
-                  ></div>
+                  <div class="flex items-start gap-4">
+                    <div
+                      class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shadow-lg"
+                    >
+                      <i data-lucide="store" class="w-7 h-7 sm:w-8 sm:h-8"></i>
+                    </div>
 
-                  <span
-                    id="settings-status-text"
-                    class="font-bold text-sm text-green-700"
+                    <div>
+                      <div
+                        class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/10 text-white/80 text-[10px] font-black uppercase tracking-widest mb-2"
+                      >
+                        <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
+                        Shop Settings
+                      </div>
+
+                      <h2
+                        class="font-heading font-extrabold text-2xl sm:text-3xl tracking-tight"
+                      >
+                        Shop Profile
+                      </h2>
+
+                      <p class="text-sm text-white/65 font-medium mt-1">
+                        Apni dukaan ki details aur printing charges manage
+                        karein.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Shop Status -->
+                  <div
+                    id="settings-shop-status"
+                    class="self-start sm:self-auto inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 border border-white/10 backdrop-blur-sm"
                   >
-                    Online
-                  </span>
+                    <div
+                      id="settings-status-dot"
+                      class="w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,.7)]"
+                    ></div>
+
+                    <span
+                      id="settings-status-text"
+                      class="font-extrabold text-sm text-white"
+                    >
+                      Online
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- =========================================================
+       SHOP INFORMATION
+  ========================================================== -->
+            <div class="manga-card overflow-hidden">
+              <div
+                class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-[#F7F8FC] to-white"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-xl bg-[#211B8F]/10 text-[#211B8F] flex items-center justify-center"
+                  >
+                    <i data-lucide="user-round-cog" class="w-5 h-5"></i>
+                  </div>
+
+                  <div>
+                    <h3 class="font-heading font-extrabold text-lg sm:text-xl">
+                      Shop Information
+                    </h3>
+
+                    <p
+                      class="text-xs sm:text-sm text-gray-500 font-semibold mt-0.5"
+                    >
+                      Basic shop aur owner details.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div class="space-y-5">
-                <!-- Shop Name -->
-                <div>
-                  <label
-                    for="settings-shop-name"
-                    class="block font-bold mb-1.5 text-sm"
-                  >
-                    Dukaan Ka Naam
-                    <span class="text-gray-400 font-semibold">(Shop Name)</span>
-                  </label>
-
-                  <div class="relative">
-                    <i
-                      data-lucide="store"
-                      class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                    ></i>
-
-                    <input
-                      id="settings-shop-name"
-                      type="text"
-                      class="manga-input w-full font-bold pl-11"
-                      placeholder="Enter shop name"
-                      value=""
-                    />
-                  </div>
-                </div>
-
-                <!-- Owner Name -->
-                <div>
-                  <label
-                    for="settings-owner-name"
-                    class="block font-bold mb-1.5 text-sm"
-                  >
-                    Owner Ka Naam
-                    <span class="text-gray-400 font-semibold"
-                      >(Owner Name)</span
+              <div class="p-6 space-y-5">
+                <!-- Shop Name + Owner -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <!-- Shop Name -->
+                  <div>
+                    <label
+                      for="settings-shop-name"
+                      class="block font-extrabold mb-2 text-sm text-[#17135F]"
                     >
-                  </label>
+                      Dukaan Ka Naam
+                      <span class="text-gray-400 font-semibold">
+                        (Shop Name)
+                      </span>
+                    </label>
 
-                  <div class="relative">
-                    <i
-                      data-lucide="user"
-                      class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                    ></i>
+                    <div class="relative">
+                      <i
+                        data-lucide="store"
+                        class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                      ></i>
 
-                    <input
-                      id="settings-owner-name"
-                      type="text"
-                      class="manga-input w-full font-bold pl-11"
-                      placeholder="Enter owner name"
-                      value=""
-                    />
+                      <input
+                        id="settings-shop-name"
+                        type="text"
+                        class="manga-input w-full font-bold pl-11 pr-4"
+                        placeholder="Enter shop name"
+                        value=""
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Owner Name -->
+                  <div>
+                    <label
+                      for="settings-owner-name"
+                      class="block font-extrabold mb-2 text-sm text-[#17135F]"
+                    >
+                      Owner Ka Naam
+                      <span class="text-gray-400 font-semibold">
+                        (Owner Name)
+                      </span>
+                    </label>
+
+                    <div class="relative">
+                      <i
+                        data-lucide="user"
+                        class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                      ></i>
+
+                      <input
+                        id="settings-owner-name"
+                        type="text"
+                        class="manga-input w-full font-bold pl-11 pr-4"
+                        placeholder="Enter owner name"
+                        value=""
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <!-- Mobile -->
-                <div>
-                  <label
-                    for="settings-mobile"
-                    class="block font-bold mb-1.5 text-sm"
-                  >
-                    Mobile Number
-                  </label>
+                <!-- Mobile + Email -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <!-- Mobile -->
+                  <div>
+                    <label
+                      for="settings-mobile"
+                      class="block font-extrabold mb-2 text-sm text-[#17135F]"
+                    >
+                      Mobile Number
+                    </label>
 
-                  <div class="relative">
-                    <i
-                      data-lucide="phone"
-                      class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                    ></i>
+                    <div class="relative">
+                      <i
+                        data-lucide="phone"
+                        class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                      ></i>
 
-                    <input
-                      id="settings-mobile"
-                      type="text"
-                      class="manga-input w-full font-bold pl-11 bg-[#F7F8FC]"
-                      value=""
-                      disabled
-                    />
+                      <input
+                        id="settings-mobile"
+                        type="text"
+                        class="manga-input w-full font-bold pl-11 bg-[#F7F8FC] text-gray-500"
+                        value=""
+                        disabled
+                      />
+                    </div>
+
+                    <p class="text-[11px] text-gray-400 mt-1.5 font-bold">
+                      Mobile number change karne ke liye support se baat karein.
+                    </p>
                   </div>
 
-                  <p class="text-xs text-[#17135F]/50 mt-1.5 font-bold">
-                    Mobile number change karne ke liye support se baat karein.
-                  </p>
-                </div>
+                  <!-- Email -->
+                  <div>
+                    <label
+                      for="settings-email"
+                      class="block font-extrabold mb-2 text-sm text-[#17135F]"
+                    >
+                      Email Address
+                    </label>
 
-                <!-- Email -->
-                <div>
-                  <label
-                    for="settings-email"
-                    class="block font-bold mb-1.5 text-sm"
-                  >
-                    Email Address
-                  </label>
+                    <div class="relative">
+                      <i
+                        data-lucide="mail"
+                        class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                      ></i>
 
-                  <div class="relative">
-                    <i
-                      data-lucide="mail"
-                      class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                    ></i>
-
-                    <input
-                      id="settings-email"
-                      type="email"
-                      class="manga-input w-full font-bold pl-11"
-                      placeholder="shop@example.com"
-                      value=""
-                    />
+                      <input
+                        id="settings-email"
+                        type="email"
+                        class="manga-input w-full font-bold pl-11 pr-4"
+                        placeholder="shop@example.com"
+                        value=""
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <!-- Shop Address -->
+                <!-- Address -->
                 <div>
                   <label
                     for="settings-address"
-                    class="block font-bold mb-1.5 text-sm"
+                    class="block font-extrabold mb-2 text-sm text-[#17135F]"
                   >
                     Dukaan Ka Address
-                    <span class="text-gray-400 font-semibold"
-                      >(Shop Address)</span
-                    >
+                    <span class="text-gray-400 font-semibold">
+                      (Shop Address)
+                    </span>
                   </label>
 
                   <div class="relative">
                     <i
                       data-lucide="map-pin"
-                      class="absolute left-3 top-3 w-5 h-5 text-gray-400"
+                      class="absolute left-3.5 top-3.5 w-5 h-5 text-gray-400"
                     ></i>
 
                     <textarea
                       id="settings-address"
                       rows="3"
-                      class="manga-input w-full font-bold pl-11 resize-none"
+                      class="manga-input w-full font-bold pl-11 pr-4 resize-none"
                       placeholder="Enter complete shop address"
                     ></textarea>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                <!-- Print Price -->
-                <div>
-                  <label
-                    for="settings-print-price"
-                    class="block font-bold mb-1.5 text-sm"
+            <!-- =========================================================
+       PRINTING PRICES
+  ========================================================== -->
+            <div class="manga-card overflow-hidden">
+              <div
+                class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-[#FFF9E8] to-white"
+              >
+                <div class="flex items-start gap-3">
+                  <div
+                    class="w-10 h-10 rounded-xl bg-[#FFB800]/15 text-[#B77900] flex items-center justify-center"
                   >
-                    Print Price
-                    <span class="text-gray-400 font-semibold">(Per Page)</span>
-                  </label>
-
-                  <div class="relative">
-                    <span
-                      class="absolute left-3 top-1/2 -translate-y-1/2 font-black text-[#17135F]"
-                    >
-                      ₹
-                    </span>
-
-                    <input
-                      id="settings-print-price"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      class="manga-input w-full font-bold pl-9"
-                      placeholder="5.00"
-                      value="5"
-                    />
+                    <i data-lucide="receipt" class="w-5 h-5"></i>
                   </div>
 
-                  <p class="text-xs text-gray-500 mt-1.5 font-semibold">
-                    Customer se per page kitna charge lena hai.
-                  </p>
+                  <div>
+                    <h3 class="font-heading font-extrabold text-lg sm:text-xl">
+                      Printing Charges
+                    </h3>
+
+                    <p
+                      class="text-xs sm:text-sm text-gray-500 font-semibold mt-0.5"
+                    >
+                      Customer se per page kitna charge lena hai.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <!-- Black Print Cost -->
+                  <div
+                    class="rounded-2xl border-2 border-gray-100 bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="w-10 h-10 rounded-xl bg-gray-900 text-white flex items-center justify-center"
+                        >
+                          <i data-lucide="printer" class="w-5 h-5"></i>
+                        </div>
+
+                        <div>
+                          <p class="font-extrabold text-sm text-gray-900">
+                            Black Print Cost
+                          </p>
+
+                          <p class="text-[11px] text-gray-500 font-semibold">
+                            B&W · Per Page
+                          </p>
+                        </div>
+                      </div>
+
+                      <span
+                        class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-wide"
+                      >
+                        B&W
+                      </span>
+                    </div>
+
+                    <div class="relative">
+                      <span
+                        class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-[#17135F] text-lg"
+                      >
+                        ₹
+                      </span>
+
+                      <input
+                        id="settings-print-price"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        class="manga-input w-full font-extrabold text-lg pl-10 pr-4"
+                        placeholder="5.00"
+                        value="5"
+                      />
+                    </div>
+
+                    <!-- -->
+                  </div>
+
+                  <!-- Color Print Cost -->
+                  <div
+                    class="rounded-2xl border-2 border-[#211B8F]/10 bg-gradient-to-br from-[#F7F7FF] to-white p-5 shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="w-10 h-10 rounded-xl bg-[#211B8F] text-white flex items-center justify-center"
+                        >
+                          <i data-lucide="palette" class="w-5 h-5"></i>
+                        </div>
+
+                        <div>
+                          <p class="font-extrabold text-sm text-[#17135F]">
+                            Color Print Cost
+                          </p>
+
+                          <p class="text-[11px] text-gray-500 font-semibold">
+                            Color · Per Page
+                          </p>
+                        </div>
+                      </div>
+
+                      <span
+                        class="px-2.5 py-1 rounded-full bg-[#211B8F]/10 text-[#211B8F] text-[10px] font-black uppercase tracking-wide"
+                      >
+                        COLOR
+                      </span>
+                    </div>
+
+                    <div class="relative">
+                      <span
+                        class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-[#17135F] text-lg"
+                      >
+                        ₹
+                      </span>
+
+                      <input
+                        id="settings-color-price"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        class="manga-input w-full font-extrabold text-lg pl-10 pr-4"
+                        placeholder="10.00"
+                        value="10"
+                      />
+                    </div>
+                  </div>
                 </div>
 
+                <!-- Pricing Information -->
+                <div
+                  class="mt-5 flex items-start gap-3 rounded-2xl bg-[#17135F]/5 border border-[#17135F]/10 p-4"
+                >
+                  <i
+                    data-lucide="info"
+                    class="w-5 h-5 text-[#211B8F] shrink-0 mt-0.5"
+                  ></i>
+
+                  <p
+                    class="text-xs text-gray-600 font-semibold leading-relaxed"
+                  >
+                    B&W printing ke liye
+                    <span class="font-black text-gray-900"
+                      >Black Print Cost</span
+                    >
+                    aur color printing ke liye
+                    <span class="font-black text-[#211B8F]"
+                      >Color Print Cost</span
+                    >
+                    use hoga. Customer payment ke time selected print type ke
+                    according correct price automatically calculate hoga.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- =========================================================
+       SHOP IDENTIFICATION
+  ========================================================== -->
+            <div class="manga-card overflow-hidden">
+              <div
+                class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-[#F7F8FC] to-white"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-xl bg-gray-100 text-gray-700 flex items-center justify-center"
+                  >
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                  </div>
+
+                  <div>
+                    <h3 class="font-heading font-extrabold text-lg sm:text-xl">
+                      Shop Identification
+                    </h3>
+
+                    <p
+                      class="text-xs sm:text-sm text-gray-500 font-semibold mt-0.5"
+                    >
+                      System-generated details. Ye values manually change nahi
+                      ki ja sakti.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
                 <!-- Shop ID -->
                 <div>
                   <label
                     for="settings-shop-id"
-                    class="block font-bold mb-1.5 text-sm"
+                    class="block font-extrabold mb-2 text-sm text-[#17135F]"
                   >
                     Shop ID
                   </label>
@@ -2311,28 +2537,24 @@
                   <div class="relative">
                     <i
                       data-lucide="hash"
-                      class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                      class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
                     ></i>
 
                     <input
                       id="settings-shop-id"
                       type="text"
-                      class="manga-input w-full font-bold pl-11 bg-[#F7F8FC]"
+                      class="manga-input w-full font-bold pl-11 bg-[#F7F8FC] text-gray-500"
                       value=""
                       disabled
                     />
                   </div>
-
-                  <p class="text-xs text-[#17135F]/50 mt-1.5 font-bold">
-                    Shop ID automatically assigned hai.
-                  </p>
                 </div>
 
                 <!-- QR Token -->
                 <div>
                   <label
                     for="settings-qr-token"
-                    class="block font-bold mb-1.5 text-sm"
+                    class="block font-extrabold mb-2 text-sm text-[#17135F]"
                   >
                     QR Token
                   </label>
@@ -2340,39 +2562,51 @@
                   <div class="relative">
                     <i
                       data-lucide="qr-code"
-                      class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                      class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
                     ></i>
 
                     <input
                       id="settings-qr-token"
                       type="text"
-                      class="manga-input w-full font-bold pl-11 bg-[#F7F8FC]"
+                      class="manga-input w-full font-bold pl-11 bg-[#F7F8FC] text-gray-500"
                       value=""
                       disabled
                     />
                   </div>
-
-                  <p class="text-xs text-[#17135F]/50 mt-1.5 font-bold">
-                    QR Token ko manually change nahi kiya ja sakta.
-                  </p>
                 </div>
+              </div>
+            </div>
 
-                <!-- Save -->
-                <div class="pt-2 border-t border-gray-100">
-                  <button
-                    id="save-shop-profile-btn"
-                    type="button"
-                    class="manga-btn px-6 py-2.5 mt-2 inline-flex items-center gap-2"
-                  >
-                    <i data-lucide="save" class="w-5 h-5"></i>
-                    Save Profile
-                  </button>
+            <!-- =========================================================
+       SAVE
+  ========================================================== -->
+            <div
+              class="manga-card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+            >
+              <div>
+                <p class="font-extrabold text-sm text-[#17135F]">
+                  Save your shop settings
+                </p>
 
-                  <span
-                    id="settings-save-message"
-                    class="ml-3 text-sm font-bold hidden"
-                  ></span>
-                </div>
+                <p class="text-xs text-gray-500 font-semibold mt-1">
+                  Changes will be applied to your Quick2Print shop.
+                </p>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <span
+                  id="settings-save-message"
+                  class="text-sm font-bold hidden"
+                ></span>
+
+                <button
+                  id="save-shop-profile-btn"
+                  type="button"
+                  class="manga-btn px-6 py-3 inline-flex items-center justify-center gap-2 min-w-[160px]"
+                >
+                  <i data-lucide="save" class="w-5 h-5"></i>
+                  Save Profile
+                </button>
               </div>
             </div>
           </section>
@@ -5170,8 +5404,9 @@
         if (!saveBtn) return;
 
         /* -----------------------------------------
-     GET LOGGED-IN SHOP FROM LOCAL STORAGE
-  ----------------------------------------- */
+       GET LOGGED-IN SHOP FROM LOCAL STORAGE
+    ----------------------------------------- */
+
         let loggedInShop = null;
 
         try {
@@ -5197,24 +5432,26 @@
         console.log("Shop ID:", shopId);
 
         /* -----------------------------------------
-     LOAD SHOP DATA
-  ----------------------------------------- */
+       LOAD SHOP DATA
+    ----------------------------------------- */
+
         async function loadShopProfile() {
           try {
             const { data, error } = await supabaseClient
               .from("shops")
               .select(
                 `
-          shop_id,
-          shop_name,
-          owner_name,
-          whatsapp_number,
-          email,
-          shop_address,
-          print_price,
-          shop_status,
-          qr_token
-        `,
+              shop_id,
+              shop_name,
+              owner_name,
+              whatsapp_number,
+              email,
+              shop_address,
+              print_price,
+              color_price,
+              shop_status,
+              qr_token
+            `,
               )
               .eq("shop_id", shopId)
               .single();
@@ -5233,7 +5470,9 @@
               return;
             }
 
-            /* Fill form */
+            /* ---------------------------------------
+           FILL FORM
+        --------------------------------------- */
 
             document.getElementById("settings-shop-name").value =
               data.shop_name || "";
@@ -5249,14 +5488,25 @@
             document.getElementById("settings-address").value =
               data.shop_address || "";
 
+            /* Black / B&W price */
+
             document.getElementById("settings-print-price").value =
               data.print_price ?? 5;
+
+            /* Color price */
+
+            document.getElementById("settings-color-price").value =
+              data.color_price ?? 10;
+
+            /* System fields */
 
             document.getElementById("settings-shop-id").value =
               data.shop_id || "";
 
             document.getElementById("settings-qr-token").value =
               data.qr_token || "";
+
+            /* Shop status */
 
             updateStatus(data.shop_status);
 
@@ -5269,8 +5519,9 @@
         }
 
         /* -----------------------------------------
-     SAVE SHOP PROFILE
-  ----------------------------------------- */
+       SAVE SHOP PROFILE
+    ----------------------------------------- */
+
         saveBtn.addEventListener("click", async () => {
           const shopName = document
             .getElementById("settings-shop-name")
@@ -5286,13 +5537,21 @@
             .getElementById("settings-address")
             .value.trim();
 
+          /* Black / B&W price */
+
           const printPrice = Number(
             document.getElementById("settings-print-price").value,
           );
 
+          /* Color price */
+
+          const colorPrice = Number(
+            document.getElementById("settings-color-price").value,
+          );
+
           /* -----------------------------------------
-       VALIDATION
-    ----------------------------------------- */
+           VALIDATION
+        ----------------------------------------- */
 
           if (!shopName) {
             showMessage("Shop name enter karein.", "error");
@@ -5310,22 +5569,30 @@
           }
 
           if (!Number.isFinite(printPrice) || printPrice < 0) {
-            showMessage("Valid print price enter karein.", "error");
+            showMessage("Valid Black Print Cost enter karein.", "error");
+            return;
+          }
+
+          if (!Number.isFinite(colorPrice) || colorPrice < 0) {
+            showMessage("Valid Color Print Cost enter karein.", "error");
             return;
           }
 
           /* -----------------------------------------
-       BUTTON LOADING
-    ----------------------------------------- */
+           BUTTON LOADING
+        ----------------------------------------- */
 
           const originalHTML = saveBtn.innerHTML;
 
           saveBtn.disabled = true;
 
           saveBtn.innerHTML = `
-      <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
-      Saving...
-    `;
+          <i
+            data-lucide="loader-2"
+            class="w-5 h-5 animate-spin"
+          ></i>
+          Saving...
+        `;
 
           if (typeof lucide !== "undefined") {
             lucide.createIcons();
@@ -5333,8 +5600,8 @@
 
           try {
             /* ---------------------------------------
-         UPDATE SUPABASE
-      --------------------------------------- */
+             UPDATE SUPABASE
+          --------------------------------------- */
 
             const { data, error } = await supabaseClient
               .from("shops")
@@ -5343,22 +5610,29 @@
                 owner_name: ownerName,
                 email: email || null,
                 shop_address: address,
+
+                /* B&W */
                 print_price: printPrice,
+
+                /* Color */
+                color_price: colorPrice,
+
                 updated_at: new Date().toISOString(),
               })
               .eq("shop_id", shopId)
               .select(
                 `
-          shop_id,
-          shop_name,
-          owner_name,
-          whatsapp_number,
-          email,
-          shop_address,
-          print_price,
-          shop_status,
-          qr_token
-        `,
+                  shop_id,
+                  shop_name,
+                  owner_name,
+                  whatsapp_number,
+                  email,
+                  shop_address,
+                  print_price,
+                  color_price,
+                  shop_status,
+                  qr_token
+                `,
               )
               .single();
 
@@ -5371,22 +5645,30 @@
             }
 
             /* ---------------------------------------
-         UPDATE LOCAL STORAGE
-      --------------------------------------- */
+             UPDATE LOCAL STORAGE
+          --------------------------------------- */
 
             const updatedShop = {
               ...loggedInShop,
               ...data,
+
+              /*
+               * Explicitly preserve both prices
+               * in localStorage.
+               */
+              print_price: data.print_price,
+              color_price: data.color_price,
             };
 
             localStorage.setItem("loggedInShop", JSON.stringify(updatedShop));
 
             /* Keep local variable updated */
+
             loggedInShop = updatedShop;
 
             /* ---------------------------------------
-         SUCCESS
-      --------------------------------------- */
+             SUCCESS
+          --------------------------------------- */
 
             showMessage("Profile successfully update ho gaya.", "success");
 
@@ -5397,6 +5679,7 @@
             showMessage("Profile update nahi ho paya.", "error");
           } finally {
             saveBtn.disabled = false;
+
             saveBtn.innerHTML = originalHTML;
 
             if (typeof lucide !== "undefined") {
@@ -5406,8 +5689,9 @@
         });
 
         /* -----------------------------------------
-     STATUS DISPLAY
-  ----------------------------------------- */
+       STATUS DISPLAY
+    ----------------------------------------- */
+
         function updateStatus(status) {
           const statusBox = document.getElementById("settings-shop-status");
 
@@ -5419,48 +5703,50 @@
             return;
           }
 
-          if (status === "online") {
+          if (status === "online" || status === "active") {
             statusBox.className =
-              "flex items-center gap-2 px-3 py-1 bg-green-100 rounded-full";
+              "inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 backdrop-blur-sm";
 
-            statusDot.className = "w-2.5 h-2.5 rounded-full bg-green-500";
+            statusDot.className =
+              "w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,.7)]";
 
-            statusText.className = "font-bold text-sm text-green-700";
+            statusText.className = "font-extrabold text-sm text-green-700";
 
             statusText.textContent = "Online";
           } else if (status === "low_ink") {
             statusBox.className =
-              "flex items-center gap-2 px-3 py-1 bg-yellow-100 rounded-full";
+              "inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-yellow-100 border border-yellow-200";
 
             statusDot.className = "w-2.5 h-2.5 rounded-full bg-yellow-500";
 
-            statusText.className = "font-bold text-sm text-yellow-700";
+            statusText.className = "font-extrabold text-sm text-yellow-700";
 
             statusText.textContent = "Low Ink";
           } else if (status === "out_of_paper") {
             statusBox.className =
-              "flex items-center gap-2 px-3 py-1 bg-orange-100 rounded-full";
+              "inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-orange-100 border border-orange-200";
 
             statusDot.className = "w-2.5 h-2.5 rounded-full bg-orange-500";
 
-            statusText.className = "font-bold text-sm text-orange-700";
+            statusText.className = "font-extrabold text-sm text-orange-700";
 
             statusText.textContent = "Out of Paper";
           } else {
             statusBox.className =
-              "flex items-center gap-2 px-3 py-1 bg-red-100 rounded-full";
+              "inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-red-100 border border-red-200";
 
             statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
 
-            statusText.className = "font-bold text-sm text-red-700";
+            statusText.className = "font-extrabold text-sm text-red-700";
 
             statusText.textContent = "Offline";
           }
         }
 
         /* -----------------------------------------
-     MESSAGE
-  ----------------------------------------- */
+       MESSAGE
+    ----------------------------------------- */
+
         function showMessage(message, type) {
           if (!saveMessage) return;
 
@@ -5468,6 +5754,7 @@
             "hidden",
             "text-green-600",
             "text-red-600",
+            "text-[#211B8F]",
           );
 
           if (type === "success") {
@@ -5486,12 +5773,11 @@
         }
 
         /* -----------------------------------------
-     INITIAL LOAD
-  ----------------------------------------- */
+       INITIAL LOAD
+    ----------------------------------------- */
 
         loadShopProfile();
       });
-
       /* ============================================================
 
    QUICK2PRINT SUBSCRIPTION
