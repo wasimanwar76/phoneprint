@@ -1,1 +1,2 @@
 *.exe filter=lfs diff=lfs merge=lfs -text
+/download/Quick2Print[[:space:]]Agent[[:space:]]Setup[[:space:]]1.2.0.exe filter=lfs diff=lfs merge=lfs -text
