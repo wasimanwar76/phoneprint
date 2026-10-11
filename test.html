@@ -255,6 +255,69 @@
         margin-top: 8px;
         z-index: 20;
       }
+
+      /* ===== ID Card A4 builder (from test.html) ===== */
+      .idb-paper {
+        aspect-ratio: 210 / 297;
+      }
+      .idb-slot {
+        aspect-ratio: 85.6 / 54;
+        width: 40.76%;
+        top: 9%;
+      }
+      .idb-img {
+        position: absolute;
+        display: none;
+        max-width: none;
+        transform-origin: center;
+        user-select: none;
+        -webkit-user-drag: none;
+        touch-action: none;
+        cursor: grab;
+      }
+      .idb-img:active {
+        cursor: grabbing;
+      }
+      #idBuilder input[type="range"] {
+        accent-color: #211b8f;
+        height: 28px;
+      }
+      .idb-drop {
+        transition:
+          border-color 0.15s ease,
+          background-color 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      .idb-drop.drag-over {
+        border-color: #211b8f !important;
+        background: #eef2ff !important;
+        box-shadow: inset 0 0 0 2px #211b8f33;
+      }
+      .idb-paper.pan-mode #idb-slot-front {
+        left: 29.62% !important;
+      }
+      .idb-paper.pan-mode #idb-slot-back {
+        display: none !important;
+      }
+      .idb-paper.portrait-mode .idb-slot {
+        width: 25.6%;
+        aspect-ratio: 54 / 85.6;
+        top: 9%;
+      }
+      .idb-paper.portrait-mode #idb-slot-front {
+        left: 20% !important;
+      }
+      .idb-paper.portrait-mode #idb-slot-back {
+        right: 20% !important;
+      }
+      .idb-paper.portrait-mode.pan-mode #idb-slot-front {
+        left: 37.2% !important;
+      }
+      .idb-doc[aria-pressed="true"] {
+        border-color: #211b8f;
+        background: #eef2ff;
+        box-shadow: 0 0 0 2px #211b8f20;
+      }
     </style>
   </head>
   <body
@@ -479,52 +542,6 @@
           />
         </label>
 
-        <!-- Indian ID Upload: generated A4 PDF joins the normal order/payment pipeline -->
-        <section
-          class="mt-4 rounded-2xl border border-[#D9DDFF] bg-white p-4 shadow-sm"
-        >
-          <div class="flex items-start gap-3">
-            <div
-              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#211B8F]"
-            >
-              <svg
-                class="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.8"
-                  d="M4 6.5A2.5 2.5 0 016.5 4h11A2.5 2.5 0 0120 6.5v11a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17.5v-11zM8 9h8M8 12h5M8 15h8"
-                />
-              </svg>
-            </div>
-            <div class="min-w-0 flex-1">
-              <h3 class="font-heading text-base font-extrabold text-[#111827]">
-                Indian ID Upload
-              </h3>
-              <p class="mt-1 text-xs leading-5 text-gray-500">
-                Aadhaar, PAN, Voter ID ya kisi bhi ID card ki front/back photo
-                se A4 print banayein.
-              </p>
-              <button
-                type="button"
-                id="openIndianIdBtn"
-                class="mt-3 w-full rounded-xl bg-[#211B8F] px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#171365] focus:outline-none focus:ring-2 focus:ring-[#211B8F]/30"
-              >
-                Indian ID Photo Add Karein
-              </button>
-              <p class="mt-2 text-[11px] text-gray-400">
-                Photo A4 PDF banegi, phir normal B&W/Color rate aur payment
-                options lagenge.
-              </p>
-            </div>
-          </div>
-        </section>
-
         <!-- Bottom Info -->
         <div
           class="mt-4 flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-3"
@@ -563,6 +580,27 @@
             <p class="text-[10px] text-gray-400">Select more than one</p>
           </div>
         </div>
+
+        <!-- ID Card Print entry -->
+        <button
+          type="button"
+          onclick="openIdBuilder()"
+          class="mt-4 flex w-full items-center gap-3 rounded-2xl border-2 border-[#211B8F]/15 bg-white px-4 py-3 text-left shadow-sm transition-all hover:border-[#211B8F] hover:bg-[#EEF2FF]/60 active:translate-y-0.5"
+        >
+          <span
+            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FFB800] text-2xl"
+            >🪪</span
+          >
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-extrabold text-[#211B8F]"
+              >ID Card Print (A4)</span
+            >
+            <span class="mt-0.5 block text-[11px] text-gray-500"
+              >PAN, Aadhaar, Voter ID ki photo A4 par set karein</span
+            >
+          </span>
+          <span class="text-lg font-bold text-[#211B8F]">›</span>
+        </button>
       </div>
 
       <!-- ========================================================= -->
@@ -960,303 +998,6 @@
     <!-- PDF PAGE EDITOR -->
     <!-- ========================================================= -->
     <div
-      id="indianIdModal"
-      class="fixed inset-0 z-[120] hidden items-center justify-center bg-black/70 px-3 py-4 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="indianIdTitle"
-    >
-      <div
-        class="flex max-h-[94dvh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
-      >
-        <div
-          class="flex items-start justify-between gap-3 border-b border-gray-100 px-4 py-4"
-        >
-          <div>
-            <p
-              class="text-[10px] font-bold uppercase tracking-widest text-[#211B8F]"
-            >
-              Quick2Print
-            </p>
-            <h2
-              id="indianIdTitle"
-              class="font-heading text-xl font-extrabold text-gray-900"
-            >
-              Indian ID Upload
-            </h2>
-            <p class="mt-1 text-xs text-gray-500">
-              Front/back photo chunein, preview check karein, phir add karein.
-            </p>
-          </div>
-          <button
-            type="button"
-            id="closeIndianIdBtn"
-            class="rounded-lg bg-gray-100 px-3 py-2 font-bold text-gray-600"
-            aria-label="Close"
-          >
-            ✕
-          </button>
-        </div>
-        <div class="flex-1 space-y-4 overflow-y-auto p-4">
-          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div class="rounded-xl border border-gray-200 p-3">
-              <label
-                class="mb-2 block text-sm font-bold text-gray-800"
-                for="indianIdFront"
-                >Front / Aage ki photo</label
-              >
-              <input
-                id="indianIdFront"
-                type="file"
-                accept="image/*"
-                capture="environment"
-                class="block w-full text-xs file:mr-2 file:rounded-lg file:border-0 file:bg-[#EEF2FF] file:px-3 file:py-2 file:font-bold file:text-[#211B8F]"
-              />
-              <div
-                class="mt-3 flex h-36 items-center justify-center overflow-hidden rounded-lg border border-gray-100 bg-gray-50"
-              >
-                <img
-                  id="indianIdFrontPreview"
-                  alt="Front photo preview"
-                  class="hidden max-h-full max-w-full object-contain"
-                />
-                <span id="indianIdFrontEmpty" class="text-xs text-gray-400"
-                  >Front photo preview</span
-                >
-              </div>
-              <div class="mt-3 space-y-3" id="indianIdFrontControls">
-                <div>
-                  <label
-                    for="indianIdFrontZoom"
-                    class="flex justify-between text-xs font-bold text-gray-700"
-                    ><span>Zoom / Size</span
-                    ><span id="indianIdFrontZoomValue">100%</span></label
-                  >
-                  <input
-                    id="indianIdFrontZoom"
-                    type="range"
-                    min="100"
-                    max="250"
-                    value="100"
-                    step="5"
-                    class="mt-1 w-full accent-[#211B8F]"
-                    disabled
-                  />
-                </div>
-                <div>
-                  <label
-                    for="indianIdFrontX"
-                    class="flex justify-between text-xs font-bold text-gray-700"
-                    ><span>Left / Right</span
-                    ><span id="indianIdFrontXValue">0</span></label
-                  >
-                  <input
-                    id="indianIdFrontX"
-                    type="range"
-                    min="-50"
-                    max="50"
-                    value="0"
-                    step="1"
-                    class="mt-1 w-full accent-[#211B8F]"
-                    disabled
-                  />
-                </div>
-                <div>
-                  <label
-                    for="indianIdFrontY"
-                    class="flex justify-between text-xs font-bold text-gray-700"
-                    ><span>Up / Down</span
-                    ><span id="indianIdFrontYValue">0</span></label
-                  >
-                  <input
-                    id="indianIdFrontY"
-                    type="range"
-                    min="-50"
-                    max="50"
-                    value="0"
-                    step="1"
-                    class="mt-1 w-full accent-[#211B8F]"
-                    disabled
-                  />
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    id="indianIdFrontRotate"
-                    class="min-h-10 rounded-lg border border-gray-200 px-2 py-2 text-xs font-bold text-gray-700 disabled:opacity-40"
-                    disabled
-                  >
-                    Rotate 90°
-                  </button>
-                  <button
-                    type="button"
-                    id="indianIdFrontReset"
-                    class="min-h-10 rounded-lg border border-gray-200 px-2 py-2 text-xs font-bold text-gray-700 disabled:opacity-40"
-                    disabled
-                  >
-                    Reset crop
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="rounded-xl border border-gray-200 p-3">
-              <label
-                class="mb-2 block text-sm font-bold text-gray-800"
-                for="indianIdBack"
-                >Back / Piche ki photo</label
-              >
-              <input
-                id="indianIdBack"
-                type="file"
-                accept="image/*"
-                capture="environment"
-                class="block w-full text-xs file:mr-2 file:rounded-lg file:border-0 file:bg-[#FFF7D6] file:px-3 file:py-2 file:font-bold file:text-[#211B8F]"
-              />
-              <div
-                class="mt-3 flex h-36 items-center justify-center overflow-hidden rounded-lg border border-gray-100 bg-gray-50"
-              >
-                <img
-                  id="indianIdBackPreview"
-                  alt="Back photo preview"
-                  class="hidden max-h-full max-w-full object-contain"
-                />
-                <span id="indianIdBackEmpty" class="text-xs text-gray-400"
-                  >Back photo preview</span
-                >
-              </div>
-              <div class="mt-3 space-y-3" id="indianIdBackControls">
-                <div>
-                  <label
-                    for="indianIdBackZoom"
-                    class="flex justify-between text-xs font-bold text-gray-700"
-                    ><span>Zoom / Size</span
-                    ><span id="indianIdBackZoomValue">100%</span></label
-                  >
-                  <input
-                    id="indianIdBackZoom"
-                    type="range"
-                    min="100"
-                    max="250"
-                    value="100"
-                    step="5"
-                    class="mt-1 w-full accent-[#211B8F]"
-                    disabled
-                  />
-                </div>
-                <div>
-                  <label
-                    for="indianIdBackX"
-                    class="flex justify-between text-xs font-bold text-gray-700"
-                    ><span>Left / Right</span
-                    ><span id="indianIdBackXValue">0</span></label
-                  >
-                  <input
-                    id="indianIdBackX"
-                    type="range"
-                    min="-50"
-                    max="50"
-                    value="0"
-                    step="1"
-                    class="mt-1 w-full accent-[#211B8F]"
-                    disabled
-                  />
-                </div>
-                <div>
-                  <label
-                    for="indianIdBackY"
-                    class="flex justify-between text-xs font-bold text-gray-700"
-                    ><span>Up / Down</span
-                    ><span id="indianIdBackYValue">0</span></label
-                  >
-                  <input
-                    id="indianIdBackY"
-                    type="range"
-                    min="-50"
-                    max="50"
-                    value="0"
-                    step="1"
-                    class="mt-1 w-full accent-[#211B8F]"
-                    disabled
-                  />
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    id="indianIdBackRotate"
-                    class="min-h-10 rounded-lg border border-gray-200 px-2 py-2 text-xs font-bold text-gray-700 disabled:opacity-40"
-                    disabled
-                  >
-                    Rotate 90°
-                  </button>
-                  <button
-                    type="button"
-                    id="indianIdBackReset"
-                    class="min-h-10 rounded-lg border border-gray-200 px-2 py-2 text-xs font-bold text-gray-700 disabled:opacity-40"
-                    disabled
-                  >
-                    Reset crop
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="rounded-xl border border-[#D9DDFF] bg-[#F7F7FF] p-3 text-xs leading-5 text-gray-700"
-          >
-            <p class="font-bold text-[#211B8F]">
-              Photo ko apne hisaab se set karein
-            </p>
-            <p class="mt-1">
-              Zoom se size badlein, Left/Right aur Up/Down se photo ki jagah
-              badlein. Rotate se photo seedhi karein. Print mein wahi crop
-              lagega jo preview mein dikh raha hai.
-            </p>
-          </div>
-          <p
-            id="indianIdMessage"
-            role="status"
-            aria-live="polite"
-            class="rounded-lg bg-blue-50 px-3 py-2 text-xs leading-5 text-blue-800"
-          >
-            Front ya back photo chunein. Dono photo optional hain, lekin kam se
-            kam ek photo zaroor chahiye.
-          </p>
-          <label
-            class="flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-xs leading-5 text-amber-900"
-          >
-            <input
-              id="indianIdConsent"
-              type="checkbox"
-              class="mt-1 accent-[#211B8F]"
-            />
-            <span
-              >Main confirm karta/karti hoon ki mujhe is ID photo ko print
-              karwane ki permission hai.</span
-            >
-          </label>
-        </div>
-        <div
-          class="grid grid-cols-1 gap-2 border-t border-gray-100 p-4 sm:grid-cols-2"
-        >
-          <button
-            type="button"
-            id="cancelIndianIdBtn"
-            class="min-h-12 rounded-xl border-2 border-gray-200 px-4 py-3 text-sm font-bold text-gray-700"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            id="addIndianIdBtn"
-            class="min-h-12 rounded-xl bg-[#211B8F] px-4 py-3 text-sm font-bold text-white shadow-md"
-          >
-            A4 PDF Banayein & Add Karein
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div
       id="pdfEditorModal"
       class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm"
       role="dialog"
@@ -1335,6 +1076,234 @@
     </div>
 
     <!-- =========================================================== -->
+    <!-- ID CARD BUILDER -->
+    <div
+      id="idBuilder"
+      class="fixed inset-0 z-[110] hidden overflow-y-auto bg-slate-100"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="idbTitle"
+    >
+      <div class="mx-auto w-full max-w-md px-3 pb-8">
+        <div
+          class="sticky top-0 z-20 -mx-3 mb-3 flex items-center gap-3 border-b border-slate-200 bg-white px-3 py-3"
+        >
+          <button
+            type="button"
+            onclick="closeIdBuilder()"
+            class="rounded-lg bg-gray-100 px-3 py-2 text-sm font-bold text-gray-600 hover:bg-gray-200"
+          >
+            ← Wapas
+          </button>
+          <h2
+            id="idbTitle"
+            class="font-heading text-lg font-extrabold text-[#211B8F]"
+          >
+            ID Card Print (A4)
+          </h2>
+
+
+          <p>Use desktop Mode for Better Preview</p>
+        </div>
+
+        <!-- Document type -->
+        <section
+          class="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
+        >
+          <h3 class="text-base font-extrabold text-[#211B8F]">
+            Kaunsa document print karna hai?
+          </h3>
+          <p class="mt-1 text-xs text-slate-600">
+            Document chunein. Hum uske hisaab se photo ke boxes badal denge.
+          </p>
+          <div class="mt-3 grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              class="idb-doc rounded-xl border-2 border-slate-200 p-3 text-left"
+              data-idb-doc="pan"
+              aria-pressed="true"
+            >
+              <span class="text-2xl">💳</span
+              ><span class="mt-1 block text-sm font-extrabold text-[#211B8F]"
+                >PAN Card</span
+              ><span class="mt-1 block text-xs text-slate-600"
+                >1 photo · Sirf aage ki side</span
+              >
+            </button>
+            <button
+              type="button"
+              class="idb-doc rounded-xl border-2 border-slate-200 p-3 text-left"
+              data-idb-doc="both"
+              aria-pressed="false"
+            >
+              <span class="text-2xl">🪪</span
+              ><span class="mt-1 block text-sm font-extrabold text-[#211B8F]"
+                >Aadhaar / Voter ID</span
+              ><span class="mt-1 block text-xs text-slate-600"
+                >2 photo · Aage aur piche</span
+              >
+            </button>
+            <button
+              type="button"
+              class="idb-doc rounded-xl border-2 border-slate-200 p-3 text-left"
+              data-idb-doc="portrait"
+              aria-pressed="false"
+            >
+              <span class="text-2xl">📄</span
+              ><span class="mt-1 block text-sm font-extrabold text-[#211B8F]"
+                >Vertical Document</span
+              ><span class="mt-1 block text-xs text-slate-600"
+                >1 photo · Khada (Vertical)</span
+              >
+            </button>
+            <button
+              type="button"
+              class="idb-doc rounded-xl border-2 border-slate-200 p-3 text-left"
+              data-idb-doc="portraitBoth"
+              aria-pressed="false"
+            >
+              <span class="text-2xl">📑</span
+              ><span class="mt-1 block text-sm font-extrabold text-[#211B8F]"
+                >Vertical Front + Back</span
+              ><span class="mt-1 block text-xs text-slate-600"
+                >2 photo · Aage aur piche</span
+              >
+            </button>
+          </div>
+          <div
+            class="mt-3 flex items-start gap-2 rounded-lg bg-indigo-50 px-3 py-2 text-xs leading-5 text-indigo-900"
+          >
+            <span class="font-extrabold">Tip:</span>
+            <p id="idbTip">PAN Card ke liye sirf front photo add karein.</p>
+          </div>
+        </section>
+
+        <!-- Preview -->
+        <section
+          class="mt-3 overflow-hidden rounded-xl border border-slate-200 bg-white"
+        >
+          <div
+            class="flex items-center justify-between border-b border-slate-200 px-3 py-2"
+          >
+            <h3 class="text-sm font-bold text-[#211B8F]">
+              A4 par kaisa dikhega
+            </h3>
+            <span id="idbPageStatus" class="text-xs font-bold text-slate-600"
+              >0 / 1 photo</span
+            >
+          </div>
+          <div class="bg-slate-200 p-2">
+            <div
+              id="idb-paper"
+              class="idb-paper relative mx-auto w-full max-w-[560px] overflow-hidden border border-slate-300 bg-white shadow"
+            >
+              <div
+                id="idb-slot-front"
+                class="idb-drop idb-slot absolute left-[6.5%] touch-none overflow-hidden border border-dashed border-slate-400 bg-slate-50"
+              >
+                <span
+                  class="absolute left-1 top-1 z-10 rounded bg-[#211B8F] px-1.5 py-0.5 text-[7px] font-bold leading-none text-white"
+                  >AAGE (FRONT)</span
+                >
+                <div
+                  id="idb-prompt-front"
+                  class="absolute inset-0 flex flex-col items-center justify-center p-1 text-center text-slate-500"
+                >
+                  <span class="text-2xl font-bold leading-none text-[#211B8F]"
+                    >+</span
+                  >
+                </div>
+                <img
+                  id="idb-img-front"
+                  class="idb-img"
+                  alt="Front photo"
+                  draggable="false"
+                />
+              </div>
+
+              <div
+                id="idb-slot-back"
+                class="idb-drop idb-slot absolute right-[6.5%] touch-none overflow-hidden border border-dashed border-slate-400 bg-slate-50"
+              >
+                <span
+                  class="absolute left-1 top-1 z-10 rounded bg-[#211B8F] px-1.5 py-0.5 text-[7px] font-bold leading-none text-white"
+                  >PICHE (BACK)</span
+                >
+                <div
+                  id="idb-prompt-back"
+                  class="absolute inset-0 flex flex-col items-center justify-center p-1 text-center text-slate-500"
+                >
+                  <span class="text-2xl font-bold leading-none text-[#211B8F]"
+                    >+</span
+                  >
+                </div>
+                <img
+                  id="idb-img-back"
+                  class="idb-img"
+                  alt="Back photo"
+                  draggable="false"
+                />
+              </div>
+            </div>
+          </div>
+          <p class="px-3 py-2 text-[11px] text-slate-600">
+            Photo ko ungli se kheench kar sahi jagah laayein. Computer par image
+            file ko box par drop bhi kar sakte hain.
+          </p>
+        </section>
+
+        <!-- Controls -->
+        <div class="mt-3 space-y-3">
+          <div id="idb-ctrl-front"></div>
+          <div id="idb-ctrl-back"></div>
+
+          <div class="rounded-xl border border-slate-200 bg-white p-3">
+            <div class="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                id="idbCenterBtn"
+                class="min-h-[44px] rounded-lg border border-slate-300 px-2 py-2 text-xs font-bold hover:bg-slate-50"
+              >
+                Dono photo set karein
+              </button>
+              <button
+                type="button"
+                id="idbClearBtn"
+                class="min-h-[44px] rounded-lg border border-red-300 px-2 py-2 text-xs font-bold text-red-700 hover:bg-red-50"
+              >
+                Sab hatayein
+              </button>
+            </div>
+            <button
+              type="button"
+              id="idbAddBtn"
+              class="mt-3 min-h-[48px] w-full rounded-lg bg-[#211B8F] px-3 py-3 text-base font-bold text-white hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Print ke liye aage badhein
+            </button>
+            <p
+              id="idbMsg"
+              role="status"
+              aria-live="polite"
+              class="mt-2 min-h-[24px] text-xs font-bold text-emerald-700"
+            >
+              Shuru karne ke liye photo chunein.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-amber-200 bg-amber-50 p-3">
+            <h3 class="text-sm font-bold text-[#211B8F]">Saaf print ke liye</h3>
+            <ul class="mt-2 list-disc space-y-1 pl-5 text-xs text-slate-700">
+              <li>
+                Asli photo use karein. WhatsApp wali photo kam saaf hoti hai.
+              </li>
+              <li>Roshni mein photo lein. Camera ko hilne na dein.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- APPLICATION -->
     <!-- =========================================================== -->
     <script>
@@ -1571,18 +1540,20 @@
       async function validateShopSubscription() {
         const now = new Date();
 
-        // 1) Find the latest paid subscription for this shop.
-        const { data: subscription, error: subscriptionError } =
+        // The shop row is also maintained by the subscription/payment flow.
+        // Use a paid subscription row when available; otherwise use the shop's
+        // active subscription fields as a compatible fallback.
+        let subscription = null;
+        const { data: paidRows, error: subscriptionError } =
           await supabaseClient
             .from("shop_subscriptions")
             .select(
-              "subscription_id, plan_id, payment_status, started_at, expires_at",
+              "subscription_id, plan_id, payment_status, started_at, expires_at, created_at",
             )
             .eq("shop_id", currentShopId)
             .eq("payment_status", "PAID")
-            .order("expires_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
+            .order("created_at", { ascending: false })
+            .limit(10);
 
         if (subscriptionError) {
           console.error("Subscription validation error:", subscriptionError);
@@ -1591,19 +1562,60 @@
           );
         }
 
-        if (!subscription || !subscription.expires_at) {
+        // Select the newest PAID subscription that has a future expiry and has started.
+        subscription =
+          (paidRows || []).find((row) => {
+            if (!row.expires_at) return false;
+            const end = new Date(row.expires_at);
+            const start = row.started_at ? new Date(row.started_at) : null;
+            return (
+              !Number.isNaN(end.getTime()) &&
+              end > now &&
+              (!start || Number.isNaN(start.getTime()) || start <= now)
+            );
+          }) || null;
+
+        const shop = currentShopRow || {};
+        const shopSubStatus = String(shop.subscription_status || "")
+          .trim()
+          .toLowerCase();
+        const shopStartRaw = shop.subscription_start;
+        const shopEndRaw = shop.subscription_end || shop.plan_expires_at;
+        const shopStart = shopStartRaw ? new Date(shopStartRaw) : null;
+        const shopEnd = shopEndRaw ? new Date(shopEndRaw) : null;
+        const shopDatesValid =
+          shopSubStatus === "active" &&
+          !!shopEndRaw &&
+          !Number.isNaN(shopEnd.getTime()) &&
+          shopEnd > now &&
+          (!shopStart || Number.isNaN(shopStart.getTime()) || shopStart <= now);
+
+        // Fallback for installations where the payment flow updates `shops`
+        // subscription fields but does not create/update `shop_subscriptions`.
+        const useShopSubscription = !subscription && shopDatesValid;
+        const effectiveSubscription =
+          subscription ||
+          (useShopSubscription
+            ? {
+                plan_id: shop.plan_id,
+                payment_status: "PAID",
+                started_at: shop.subscription_start || null,
+                expires_at: shopEndRaw,
+              }
+            : null);
+
+        if (!effectiveSubscription || !effectiveSubscription.expires_at) {
           subscriptionState = {
             valid: false,
             reason: "EXPIRED",
-            planId: subscription?.plan_id || null,
+            planId: effectiveSubscription?.plan_id || shop.plan_id || null,
             planName: null,
             maxPrints: null,
             currentPrints: null,
             remainingPrints: null,
-            expiresAt: null,
-            paymentStatus: subscription?.payment_status || null,
+            expiresAt: effectiveSubscription?.expires_at || shopEndRaw || null,
+            paymentStatus: effectiveSubscription?.payment_status || null,
           };
-
           return {
             valid: false,
             reason: "EXPIRED",
@@ -1612,21 +1624,26 @@
           };
         }
 
-        const expiresAt = new Date(subscription.expires_at);
-
-        if (Number.isNaN(expiresAt.getTime()) || expiresAt <= now) {
+        const expiresAt = new Date(effectiveSubscription.expires_at);
+        const startsAt = effectiveSubscription.started_at
+          ? new Date(effectiveSubscription.started_at)
+          : null;
+        if (
+          Number.isNaN(expiresAt.getTime()) ||
+          expiresAt <= now ||
+          (startsAt && !Number.isNaN(startsAt.getTime()) && startsAt > now)
+        ) {
           subscriptionState = {
             valid: false,
             reason: "EXPIRED",
-            planId: subscription.plan_id || null,
+            planId: effectiveSubscription.plan_id || null,
             planName: null,
             maxPrints: null,
             currentPrints: null,
             remainingPrints: null,
-            expiresAt: subscription.expires_at,
-            paymentStatus: subscription.payment_status,
+            expiresAt: effectiveSubscription.expires_at,
+            paymentStatus: effectiveSubscription.payment_status,
           };
-
           return {
             valid: false,
             reason: "EXPIRED",
@@ -1635,13 +1652,11 @@
           };
         }
 
-        // 2) Read the plan selected by the subscription.
-        //    max_prints_per_year comes from the plans table.
-        //    NULL/blank means unlimited for plans such as Business/Pro.
+        const effectivePlanId = effectiveSubscription.plan_id || shop.plan_id;
         const { data: plan, error: planError } = await supabaseClient
           .from("plans")
           .select("plan_id, name, max_prints_per_year")
-          .eq("plan_id", subscription.plan_id)
+          .eq("plan_id", effectivePlanId)
           .maybeSingle();
 
         if (planError) {
@@ -1650,15 +1665,12 @@
             "Unable to verify the subscription plan. Please try again.",
           );
         }
-
         if (!plan) {
           throw new Error(
             "The active subscription plan could not be found. Please contact the shop.",
           );
         }
 
-        // 3) shops.total_prints is the CURRENT USED PRINT COUNT.
-        //    It is compared against plans.max_prints_per_year.
         const { data: shopLimitRow, error: shopLimitError } =
           await supabaseClient
             .from("shops")
@@ -1677,10 +1689,8 @@
         const currentPrints = Number.isFinite(currentPrintsRaw)
           ? Math.max(0, currentPrintsRaw)
           : 0;
-
         const maxPrintsRaw = Number(plan.max_prints_per_year);
         const hasPrintLimit = Number.isFinite(maxPrintsRaw) && maxPrintsRaw > 0;
-
         const maxPrints = hasPrintLimit ? maxPrintsRaw : null;
         const remainingPrints = hasPrintLimit
           ? Math.max(0, maxPrints - currentPrints)
@@ -1694,30 +1704,23 @@
           maxPrints,
           currentPrints,
           remainingPrints,
-          expiresAt: subscription.expires_at,
-          paymentStatus: subscription.payment_status,
+          expiresAt: effectiveSubscription.expires_at,
+          paymentStatus: effectiveSubscription.payment_status,
         };
 
-        // 4) Block ONLY when the used print count has reached the plan limit.
-        //    Do NOT treat total_prints=0 as "limit reached" because 0 means
-        //    the shop has printed zero pages so far.
         if (hasPrintLimit && currentPrints >= maxPrints) {
           subscriptionState.valid = false;
           subscriptionState.reason = "LIMIT";
           subscriptionState.remainingPrints = 0;
-
           return {
             valid: false,
             reason: "LIMIT",
-            message: `This shop has reached the print limit for its current plan. Please ask the shopkeeper to upgrade or renew the plan.`,
+            message:
+              "This shop has reached the print limit for its current plan. Please ask the shopkeeper to upgrade or renew the plan.",
           };
         }
 
-        return {
-          valid: true,
-          reason: null,
-          message: "",
-        };
+        return { valid: true, reason: null, message: "" };
       }
 
       function getRequestedPrintCount(list = filesList) {
@@ -2008,7 +2011,7 @@
           const { data: shop, error } = await supabaseClient
             .from("shops")
             .select(
-              "shop_id, shop_name, shop_status, print_price, color_price, total_prints, cashfree_app_id, cashfree_env",
+              "shop_id, shop_name, shop_status, print_price, color_price, total_prints, cashfree_app_id, cashfree_env, plan_id, plan_expires_at, subscription_status, subscription_start, subscription_end",
             )
             .eq("shop_id", currentShopId)
             .single();
@@ -2145,320 +2148,6 @@
           );
         }
       }
-
-      // ============================================================
-      // INDIAN ID PHOTO -> A4 PDF -> EXISTING SUPABASE/PAYMENT FLOW
-      // ============================================================
-      const indianIdFiles = { front: null, back: null };
-      const indianIdObjectUrls = { front: null, back: null };
-      const indianIdCrop = {
-        front: { zoom: 1, x: 0, y: 0, rotate: 0 },
-        back: { zoom: 1, x: 0, y: 0, rotate: 0 },
-      };
-      const indianIdModal = document.getElementById("indianIdModal");
-
-      function setIdControlsEnabled(side, enabled) {
-        ["Zoom", "X", "Y", "Rotate", "Reset"].forEach((part) => {
-          const el = document.getElementById(
-            `indianId${side[0].toUpperCase() + side.slice(1)}${part}`,
-          );
-          if (el) el.disabled = !enabled;
-        });
-      }
-
-      function resetIdCrop(side) {
-        indianIdCrop[side] = { zoom: 1, x: 0, y: 0, rotate: 0 };
-        const prefix = `indianId${side[0].toUpperCase() + side.slice(1)}`;
-        document.getElementById(prefix + "Zoom").value = 100;
-        document.getElementById(prefix + "X").value = 0;
-        document.getElementById(prefix + "Y").value = 0;
-        document.getElementById(prefix + "ZoomValue").textContent = "100%";
-        document.getElementById(prefix + "XValue").textContent = "0";
-        document.getElementById(prefix + "YValue").textContent = "0";
-        renderIdPreview(side);
-      }
-
-      function renderIdPreview(side) {
-        const file = indianIdFiles[side];
-        if (!file) return;
-        const img = document.getElementById(
-          side === "front" ? "indianIdFrontPreview" : "indianIdBackPreview",
-        );
-        const crop = indianIdCrop[side];
-        img.style.transform = `rotate(${crop.rotate}deg) scale(${crop.zoom}) translate(${crop.x}%, ${crop.y}%)`;
-      }
-
-      function setIndianIdMessage(message, isError = false) {
-        const el = document.getElementById("indianIdMessage");
-        el.textContent = message;
-        el.className =
-          "rounded-lg px-3 py-2 text-xs leading-5 " +
-          (isError ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-800");
-      }
-
-      function openIndianIdModal() {
-        if (!ensureUploadAllowed()) return;
-        indianIdModal.classList.remove("hidden");
-        indianIdModal.classList.add("flex");
-        document.body.classList.add("overflow-hidden");
-      }
-
-      function closeIndianIdModal() {
-        indianIdModal.classList.add("hidden");
-        indianIdModal.classList.remove("flex");
-        document.body.classList.remove("overflow-hidden");
-      }
-
-      function wireIndianIdInput(side) {
-        const input = document.getElementById(
-          side === "front" ? "indianIdFront" : "indianIdBack",
-        );
-        input.addEventListener("change", () => {
-          const file = input.files && input.files[0];
-          if (!file) return;
-          if (!file.type.startsWith("image/")) {
-            setIndianIdMessage(
-              "Kripya JPG, PNG ya phone ki image chunein.",
-              true,
-            );
-            input.value = "";
-            return;
-          }
-          if (file.size > 10 * 1024 * 1024) {
-            setIndianIdMessage("Photo 10 MB se chhoti honi chahiye.", true);
-            input.value = "";
-            return;
-          }
-          indianIdFiles[side] = file;
-          const preview = document.getElementById(
-            side === "front" ? "indianIdFrontPreview" : "indianIdBackPreview",
-          );
-          const empty = document.getElementById(
-            side === "front" ? "indianIdFrontEmpty" : "indianIdBackEmpty",
-          );
-          if (indianIdObjectUrls[side])
-            URL.revokeObjectURL(indianIdObjectUrls[side]);
-          indianIdObjectUrls[side] = URL.createObjectURL(file);
-          preview.src = indianIdObjectUrls[side];
-          preview.classList.remove("hidden");
-          empty.classList.add("hidden");
-          setIdControlsEnabled(side, true);
-          resetIdCrop(side);
-          setIndianIdMessage(
-            "Photo select ho gayi. Ab zoom, position ya rotation set kar sakte hain.",
-          );
-        });
-      }
-
-      function loadImageForId(file) {
-        return new Promise((resolve, reject) => {
-          const url = URL.createObjectURL(file);
-          const img = new Image();
-          img.onload = () => {
-            URL.revokeObjectURL(url);
-            resolve(img);
-          };
-          img.onerror = () => {
-            URL.revokeObjectURL(url);
-            reject(new Error("Photo open nahi hui. Dusri photo try karein."));
-          };
-          img.src = url;
-        });
-      }
-
-      async function buildIndianIdPdf() {
-        if (!indianIdFiles.front && !indianIdFiles.back) {
-          throw new Error("Kam se kam front ya back ki ek photo chunein.");
-        }
-        if (!document.getElementById("indianIdConsent").checked) {
-          throw new Error(
-            "Aage badhne ke liye permission confirmation tick karein.",
-          );
-        }
-        for (const side of ["front", "back"]) {
-          const file = indianIdFiles[side];
-          if (file && (!file.type.startsWith("image/") || file.size === 0)) {
-            throw new Error(
-              (side === "front" ? "Front" : "Back") +
-                " photo valid nahi hai. Dobara photo chunein.",
-            );
-          }
-        }
-        if (typeof PDFLib === "undefined") {
-          throw new Error(
-            "PDF tool load nahi hua. Internet check karke dobara try karein.",
-          );
-        }
-
-        const { PDFDocument } = PDFLib;
-        const pdf = await PDFDocument.create();
-        const page = pdf.addPage([595.28, 841.89]); // A4 portrait in points
-        const pageW = 595.28,
-          pageH = 841.89;
-        const cardW = 242.5,
-          cardH = cardW * (54 / 85.6);
-        const positions = [
-          { side: "front", x: 42, y: pageH - 90 - cardH },
-          { side: "back", x: pageW - 42 - cardW, y: pageH - 90 - cardH },
-        ];
-
-        for (const slot of positions) {
-          const file = indianIdFiles[slot.side];
-          if (!file) continue;
-          const img = await loadImageForId(file);
-          // High-resolution, user-customized crop for the A4 PDF.
-          const crop = indianIdCrop[slot.side];
-          const scale = 4;
-          const canvas = document.createElement("canvas");
-          canvas.width = Math.round(cardW * scale);
-          canvas.height = Math.round(cardH * scale);
-          const ctx = canvas.getContext("2d", { alpha: false });
-          ctx.fillStyle = "#ffffff";
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          const cw = canvas.width,
-            ch = canvas.height;
-          ctx.save();
-          ctx.translate(cw / 2, ch / 2);
-          ctx.rotate((crop.rotate * Math.PI) / 180);
-          const quarterTurn = Math.abs(crop.rotate % 180) === 90;
-          const sourceW = quarterTurn ? img.naturalHeight : img.naturalWidth;
-          const sourceH = quarterTurn ? img.naturalWidth : img.naturalHeight;
-          const cover = Math.max(cw / sourceW, ch / sourceH) * crop.zoom;
-          const drawW = img.naturalWidth * cover;
-          const drawH = img.naturalHeight * cover;
-          const shiftX = (crop.x / 100) * cw;
-          const shiftY = (crop.y / 100) * ch;
-          ctx.drawImage(
-            img,
-            -drawW / 2 + shiftX,
-            -drawH / 2 + shiftY,
-            drawW,
-            drawH,
-          );
-          ctx.restore();
-          const pngBytes = await new Promise((resolve, reject) => {
-            canvas.toBlob(async (blob) => {
-              if (!blob)
-                return reject(new Error("Photo convert nahi ho payi."));
-              resolve(new Uint8Array(await blob.arrayBuffer()));
-            }, "image/png");
-          });
-          const embedded = await pdf.embedPng(pngBytes);
-          page.drawImage(embedded, {
-            x: slot.x,
-            y: slot.y,
-            width: cardW,
-            height: cardH,
-          });
-        }
-
-        const bytes = await pdf.save();
-        return new File([bytes], `Indian-ID-${Date.now()}.pdf`, {
-          type: "application/pdf",
-        });
-      }
-
-      async function addIndianIdToOrder() {
-        const btn = document.getElementById("addIndianIdBtn");
-        btn.disabled = true;
-        btn.textContent = "A4 PDF ban raha hai...";
-        try {
-          if (!ensureUploadAllowed()) return;
-          const file = await buildIndianIdPdf();
-          if (file.size > MAX_FILE_SIZE_BYTES) {
-            throw new Error(
-              "Banaya gaya PDF 10 MB se bada hai. Chhoti photo use karein.",
-            );
-          }
-          const item = {
-            file,
-            pages: 1,
-            copies: 1,
-            removedPages: [],
-            uploaded: false,
-            storagePath: null,
-            jobId: null,
-          };
-          const candidate = [...filesList, item];
-          const requestedCheck = checkRequestedPrintLimit(candidate);
-          if (!requestedCheck.allowed) throw new Error(requestedCheck.message);
-          filesList.push(item);
-          renderFiles();
-          updateTotal();
-          closeIndianIdModal();
-          showUploadError(
-            "Indian ID A4 PDF order mein add ho gaya. B&W ya Color choose karke payment karein.",
-          );
-          document
-            .getElementById("uploadErrorBanner")
-            .classList.remove("border-red-200", "bg-red-50", "text-red-700");
-          document
-            .getElementById("uploadErrorBanner")
-            .classList.add("border-green-200", "bg-green-50", "text-green-800");
-          showConfigStep();
-        } catch (error) {
-          setIndianIdMessage(error.message || "PDF add nahi ho paya.", true);
-        } finally {
-          btn.disabled = false;
-          btn.textContent = "A4 PDF Banayein & Add Karein";
-        }
-      }
-
-      for (const side of ["front", "back"]) {
-        const prefix = `indianId${side[0].toUpperCase() + side.slice(1)}`;
-        document
-          .getElementById(prefix + "Zoom")
-          .addEventListener("input", (event) => {
-            indianIdCrop[side].zoom = Number(event.target.value) / 100;
-            document.getElementById(prefix + "ZoomValue").textContent =
-              event.target.value + "%";
-            renderIdPreview(side);
-          });
-        document
-          .getElementById(prefix + "X")
-          .addEventListener("input", (event) => {
-            indianIdCrop[side].x = Number(event.target.value);
-            document.getElementById(prefix + "XValue").textContent =
-              event.target.value;
-            renderIdPreview(side);
-          });
-        document
-          .getElementById(prefix + "Y")
-          .addEventListener("input", (event) => {
-            indianIdCrop[side].y = Number(event.target.value);
-            document.getElementById(prefix + "YValue").textContent =
-              event.target.value;
-            renderIdPreview(side);
-          });
-        document
-          .getElementById(prefix + "Rotate")
-          .addEventListener("click", () => {
-            if (!indianIdFiles[side]) return;
-            indianIdCrop[side].rotate = (indianIdCrop[side].rotate + 90) % 360;
-            renderIdPreview(side);
-          });
-        document
-          .getElementById(prefix + "Reset")
-          .addEventListener("click", () => resetIdCrop(side));
-      }
-
-      document
-        .getElementById("openIndianIdBtn")
-        .addEventListener("click", openIndianIdModal);
-      document
-        .getElementById("closeIndianIdBtn")
-        .addEventListener("click", closeIndianIdModal);
-      document
-        .getElementById("cancelIndianIdBtn")
-        .addEventListener("click", closeIndianIdModal);
-      document
-        .getElementById("addIndianIdBtn")
-        .addEventListener("click", addIndianIdToOrder);
-      wireIndianIdInput("front");
-      wireIndianIdInput("back");
-      indianIdModal.addEventListener("click", (event) => {
-        if (event.target === indianIdModal) closeIndianIdModal();
-      });
 
       // ============================================================
       // FILE INPUT
@@ -3521,6 +3210,546 @@
 
         init();
       });
+    </script>
+
+    <!-- =========================================================== -->
+    <!-- ID CARD A4 BUILDER (logic) -->
+    <!-- Builds an A4 PDF from the placed photos and adds it to the  -->
+    <!-- normal file list, so pricing/payment stay exactly the same. -->
+    <!-- =========================================================== -->
+    <script>
+      (function () {
+        "use strict";
+
+        const $ = (id) => document.getElementById(id);
+        const SIDES = {
+          front: "Aage ki photo (Front)",
+          back: "Piche ki photo (Back)",
+        };
+        const TIPS = {
+          pan: "PAN Card ke liye sirf front photo add karein.",
+          both: "Aadhaar/Voter ID ke liye front aur back dono photo add karein.",
+          portrait:
+            "Vertical document ke liye sirf ek photo add karein. Preview mein photo seedhi khadi dikhegi.",
+          portraitBoth:
+            "Vertical document ke front aur back dono photo add karein.",
+        };
+        const FILE_NAMES = {
+          pan: "PAN_Card_A4",
+          both: "ID_Card_Front_Back_A4",
+          portrait: "Vertical_Document_A4",
+          portraitBoth: "Vertical_Front_Back_A4",
+        };
+
+        let mode = "pan";
+        let CARD = 85.6 / 54; // slot width / height
+        const fresh = () => ({
+          x: 0,
+          y: 0,
+          scale: 1,
+          rotate: 0,
+          ratio: 1,
+          loaded: false,
+          url: null,
+        });
+        const st = { front: fresh(), back: fresh() };
+
+        const isTwoSided = () => mode === "both" || mode === "portraitBoth";
+        const activeSides = () =>
+          isTwoSided() ? ["front", "back"] : ["front"];
+
+        /* ---------- Controls ---------- */
+        function controlsHTML(side) {
+          const btn =
+            "rounded-lg border border-slate-300 hover:bg-slate-50 text-[11px] font-bold px-1 py-2 min-h-[44px] leading-tight";
+          return `
+          <div class="rounded-xl bg-white border border-slate-200 p-3">
+            <div class="flex items-center justify-between gap-1">
+              <h3 class="text-sm font-bold text-[#211B8F] leading-tight">${SIDES[side]}</h3>
+              <span id="idb-status-${side}" class="text-[10px] font-bold rounded-full bg-slate-100 text-slate-600 px-2 py-0.5">Photo abhi nahi hai</span>
+            </div>
+
+            <div class="mt-2 grid grid-cols-2 gap-2">
+              <label class="cursor-pointer min-h-[48px] rounded-lg bg-[#211B8F] hover:opacity-95 text-white text-xs font-bold px-2 py-2 leading-tight text-center flex items-center justify-center">
+                Gallery se photo chunein
+                <input type="file" accept="image/*" class="sr-only" id="idb-file-${side}" />
+              </label>
+              <label class="cursor-pointer min-h-[48px] rounded-lg bg-[#FFB800] hover:brightness-95 text-[#211B8F] text-xs font-bold px-2 py-2 leading-tight text-center flex items-center justify-center">
+                Camera se photo lein
+                <input type="file" accept="image/*" capture="environment" class="sr-only" id="idb-cam-${side}" />
+              </label>
+            </div>
+
+            <div class="mt-3">
+              <label for="idb-zoom-${side}" class="flex justify-between text-xs font-bold">
+                <span>Photo ka size</span><span id="idb-zoomVal-${side}">100%</span>
+              </label>
+              <input id="idb-zoom-${side}" type="range" min="50" max="300" value="100" class="w-full mt-1" />
+            </div>
+
+            <div class="mt-2 grid grid-cols-2 gap-1.5">
+              <button type="button" class="${btn}" data-move="${side}" data-dx="-2" data-dy="0">Baayein karein</button>
+              <button type="button" class="${btn}" data-move="${side}" data-dx="2" data-dy="0">Daayein karein</button>
+              <button type="button" class="${btn}" data-move="${side}" data-dx="0" data-dy="-2">Upar karein</button>
+              <button type="button" class="${btn}" data-move="${side}" data-dx="0" data-dy="2">Neeche karein</button>
+              <button type="button" class="${btn}" data-rot="${side}" data-deg="-90">Baayein ghumayein</button>
+              <button type="button" class="${btn}" data-rot="${side}" data-deg="90">Daayein ghumayein</button>
+            </div>
+
+            <div class="mt-1.5 grid grid-cols-2 gap-1.5">
+              <button type="button" class="rounded-lg bg-amber-100 border border-amber-300 text-amber-900 text-[11px] font-bold px-1 py-2 min-h-[44px] leading-tight" data-fit="${side}">Photo fit karein</button>
+              <button type="button" class="rounded-lg border border-red-300 text-red-700 hover:bg-red-50 text-[11px] font-bold px-1 py-2 min-h-[44px] leading-tight" data-remove="${side}">Photo hataayein</button>
+            </div>
+          </div>`;
+        }
+        for (const side of Object.keys(SIDES))
+          $("idb-ctrl-" + side).innerHTML = controlsHTML(side);
+
+        /* ---------- Messages / status ---------- */
+        function say(text, ok = true) {
+          const el = $("idbMsg");
+          el.textContent = text;
+          el.className =
+            "mt-2 min-h-[24px] text-xs font-bold " +
+            (ok ? "text-emerald-700" : "text-red-700");
+        }
+
+        function updateStatus() {
+          const two = isTwoSided();
+          const n = two
+            ? Object.values(st).filter((s) => s.loaded).length
+            : st.front.loaded
+              ? 1
+              : 0;
+          $("idbPageStatus").textContent =
+            n + (two ? " / 2 photo" : " / 1 photo");
+          for (const side of Object.keys(SIDES)) {
+            const el = $("idb-status-" + side);
+            const on = st[side].loaded;
+            el.textContent = on ? "Photo lag gayi" : "Photo abhi nahi hai";
+            el.className =
+              "text-[10px] font-bold rounded-full px-2 py-0.5 " +
+              (on
+                ? "bg-emerald-100 text-emerald-800"
+                : "bg-slate-100 text-slate-600");
+          }
+        }
+
+        /* ---------- Layout (percent based) ---------- */
+        // Returns the geometry of the image relative to its slot:
+        // width/height as fractions of the slot's width/height.
+        function geometry(s) {
+          const quarter = Math.abs(s.rotate / 90) % 2 === 1;
+          const r = quarter ? 1 / s.ratio : s.ratio;
+          let we, he;
+          if (r >= CARD) {
+            he = 1;
+            we = r;
+          } else {
+            we = CARD;
+            he = CARD / r;
+          }
+          const ew = quarter ? he : we;
+          const eh = quarter ? we : he;
+          return { wFrac: ew / CARD, hFrac: eh };
+        }
+
+        function layout(side) {
+          const s = st[side];
+          const img = $("idb-img-" + side);
+          if (!s.loaded) return;
+          const g = geometry(s);
+          img.style.width = g.wFrac * 100 + "%";
+          img.style.height = g.hFrac * 100 + "%";
+          img.style.left = 50 + s.x + "%";
+          img.style.top = 50 + s.y + "%";
+          img.style.transform = `translate(-50%, -50%) rotate(${s.rotate}deg) scale(${s.scale})`;
+        }
+
+        function fit(side, quiet) {
+          Object.assign(st[side], { x: 0, y: 0, scale: 1, rotate: 0 });
+          $("idb-zoom-" + side).value = 100;
+          $("idb-zoomVal-" + side).textContent = "100%";
+          layout(side);
+          if (!quiet)
+            say(
+              (side === "front" ? "Aage" : "Piche") + " ki photo set ho gayi.",
+            );
+        }
+
+        /* ---------- Load / remove ---------- */
+        function loadFile(side, file) {
+          if (!file) return;
+          if (!file.type.startsWith("image/")) {
+            say("Kripya photo (JPG ya PNG) chunein.", false);
+            return;
+          }
+          if (file.size > 30 * 1024 * 1024) {
+            say("Photo bahut badi hai. 30 MB se chhoti photo chunein.", false);
+            return;
+          }
+          const s = st[side];
+          if (s.url) URL.revokeObjectURL(s.url);
+          s.url = URL.createObjectURL(file);
+
+          const img = $("idb-img-" + side);
+          img.onload = () => {
+            s.ratio = img.naturalWidth / img.naturalHeight;
+            s.loaded = true;
+            img.style.display = "block";
+            $("idb-prompt-" + side).style.display = "none";
+            fit(side, true);
+            updateStatus();
+            say(
+              (side === "front" ? "Aage" : "Piche") +
+                " ki photo lag gayi. Ab size theek karein.",
+            );
+          };
+          img.onerror = () =>
+            say("Yeh photo khul nahi paayi. Dusri photo chunein.", false);
+          img.src = s.url;
+        }
+
+        function removePhoto(side, quiet) {
+          const s = st[side];
+          const img = $("idb-img-" + side);
+          if (s.url) URL.revokeObjectURL(s.url);
+          s.url = null;
+          s.loaded = false;
+          img.removeAttribute("src");
+          img.style.display = "none";
+          $("idb-prompt-" + side).style.display = "flex";
+          $("idb-file-" + side).value = "";
+          $("idb-cam-" + side).value = "";
+          fit(side, true);
+          updateStatus();
+          if (!quiet)
+            say(
+              (side === "front" ? "Aage" : "Piche") + " ki photo hata di gayi.",
+            );
+        }
+
+        /* ---------- Per-side events ---------- */
+        for (const side of Object.keys(SIDES)) {
+          $("idb-file-" + side).addEventListener("change", (e) =>
+            loadFile(side, e.target.files[0]),
+          );
+          $("idb-cam-" + side).addEventListener("change", (e) =>
+            loadFile(side, e.target.files[0]),
+          );
+          $("idb-zoom-" + side).addEventListener("input", (e) => {
+            st[side].scale = Number(e.target.value) / 100;
+            $("idb-zoomVal-" + side).textContent = e.target.value + "%";
+            layout(side);
+          });
+          $("idb-prompt-" + side).addEventListener("click", () =>
+            $("idb-file-" + side).click(),
+          );
+
+          // Drag to move
+          const img = $("idb-img-" + side);
+          const slot = $("idb-slot-" + side);
+          let drag = null;
+          img.addEventListener("pointerdown", (e) => {
+            if (!st[side].loaded) return;
+            img.setPointerCapture(e.pointerId);
+            drag = { x: e.clientX, y: e.clientY };
+          });
+          img.addEventListener("pointermove", (e) => {
+            if (!drag) return;
+            const r = slot.getBoundingClientRect();
+            st[side].x += ((e.clientX - drag.x) / r.width) * 100;
+            st[side].y += ((e.clientY - drag.y) / r.height) * 100;
+            drag = { x: e.clientX, y: e.clientY };
+            layout(side);
+          });
+          const stop = () => {
+            drag = null;
+          };
+          img.addEventListener("pointerup", stop);
+          img.addEventListener("pointercancel", stop);
+
+          // Drag-and-drop a file onto the slot
+          slot.addEventListener("dragenter", (e) => {
+            e.preventDefault();
+            if (!isTwoSided() && side === "back") return;
+            slot.classList.add("drag-over");
+          });
+          slot.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            if (!isTwoSided() && side === "back") return;
+            if (e.dataTransfer) e.dataTransfer.dropEffect = "copy";
+            slot.classList.add("drag-over");
+          });
+          slot.addEventListener("dragleave", (e) => {
+            if (!slot.contains(e.relatedTarget))
+              slot.classList.remove("drag-over");
+          });
+          slot.addEventListener("drop", (e) => {
+            e.preventDefault();
+            slot.classList.remove("drag-over");
+            if (!isTwoSided() && side === "back") {
+              say("Is document ke liye sirf front photo use karein.", false);
+              return;
+            }
+            const f = Array.from(e.dataTransfer?.files || []).find((x) =>
+              x.type.startsWith("image/"),
+            );
+            if (!f) {
+              say("Kripya JPG, PNG ya image file drop karein.", false);
+              return;
+            }
+            loadFile(side, f);
+          });
+        }
+
+        // Buttons inside the builder
+        $("idBuilder").addEventListener("click", (e) => {
+          const t = e.target.closest("button");
+          if (!t) return;
+          if (t.dataset.move) {
+            const side = t.dataset.move;
+            if (!st[side].loaded) return say("Pehle photo chunein.", false);
+            st[side].x += Number(t.dataset.dx);
+            st[side].y += Number(t.dataset.dy);
+            layout(side);
+          } else if (t.dataset.rot) {
+            const side = t.dataset.rot;
+            if (!st[side].loaded) return say("Pehle photo chunein.", false);
+            st[side].rotate = (st[side].rotate + Number(t.dataset.deg)) % 360;
+            layout(side);
+          } else if (t.dataset.fit) {
+            if (!st[t.dataset.fit].loaded)
+              return say("Pehle photo chunein.", false);
+            fit(t.dataset.fit);
+          } else if (t.dataset.remove) {
+            removePhoto(t.dataset.remove);
+          } else if (t.dataset.idbDoc) {
+            setMode(t.dataset.idbDoc);
+          }
+        });
+
+        /* ---------- Document mode ---------- */
+        function setMode(m) {
+          mode = m;
+          const portrait = m === "portrait" || m === "portraitBoth";
+          const two = isTwoSided();
+          CARD = portrait ? 54 / 85.6 : 85.6 / 54;
+          const paper = $("idb-paper");
+          paper.classList.toggle("pan-mode", !two);
+          paper.classList.toggle("portrait-mode", portrait);
+          $("idb-ctrl-back").classList.toggle("hidden", !two);
+          $("idb-slot-back").classList.toggle("hidden", !two);
+          document
+            .querySelectorAll("[data-idb-doc]")
+            .forEach((b) =>
+              b.setAttribute("aria-pressed", String(b.dataset.idbDoc === m)),
+            );
+          $("idbTip").textContent = TIPS[m];
+          // Re-fit already loaded photos to the new box shape
+          for (const side of Object.keys(SIDES)) {
+            if (st[side].loaded) fit(side, true);
+          }
+          updateStatus();
+          say(TIPS[m]);
+        }
+
+        $("idbCenterBtn").addEventListener("click", () => {
+          fit("front", true);
+          if (isTwoSided()) fit("back", true);
+          say(
+            isTwoSided()
+              ? "Dono photo sahi jagah par set ho gayi."
+              : "Photo center kar di gayi.",
+          );
+        });
+
+        function resetBuilder() {
+          removePhoto("front", true);
+          removePhoto("back", true);
+          setMode("pan");
+          say("Shuru karne ke liye photo chunein.");
+        }
+
+        $("idbClearBtn").addEventListener("click", () => {
+          removePhoto("front", true);
+          removePhoto("back", true);
+          say("Sab photo hata di gayi. Dobara shuru kar sakte hain.");
+        });
+
+        /* ---------- Open / close ---------- */
+        window.openIdBuilder = function () {
+          if (
+            typeof ensureUploadAllowed === "function" &&
+            !ensureUploadAllowed()
+          )
+            return;
+          $("idBuilder").classList.remove("hidden");
+          $("idBuilder").scrollTop = 0;
+          // Re-layout in case the screen size changed while hidden
+          for (const side of Object.keys(SIDES)) layout(side);
+        };
+        window.closeIdBuilder = function () {
+          $("idBuilder").classList.add("hidden");
+        };
+        document.addEventListener("keydown", (e) => {
+          if (
+            e.key === "Escape" &&
+            !$("idBuilder").classList.contains("hidden")
+          )
+            window.closeIdBuilder();
+        });
+
+        /* ---------- Build the A4 PDF and hand it to the normal flow ---------- */
+        function drawSide(ctx, side, paper, kx, ky, ox, oy) {
+          const s = st[side];
+          const slot = $("idb-slot-" + side);
+          const img = $("idb-img-" + side);
+          const r = slot.getBoundingClientRect();
+          // inner box of the slot (inside its border), same box the image is positioned in
+          const sx = (r.left + slot.clientLeft - ox) * kx;
+          const sy = (r.top + slot.clientTop - oy) * ky;
+          const sw = slot.clientWidth * kx;
+          const sh = slot.clientHeight * ky;
+
+          const g = geometry(s);
+          const w = sw * g.wFrac;
+          const h = sh * g.hFrac;
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(sx, sy, sw, sh);
+          ctx.clip();
+          ctx.translate(
+            sx + sw * (0.5 + s.x / 100),
+            sy + sh * (0.5 + s.y / 100),
+          );
+          ctx.rotate((s.rotate * Math.PI) / 180);
+          ctx.scale(s.scale, s.scale);
+          ctx.drawImage(img, -w / 2, -h / 2, w, h);
+          ctx.restore();
+        }
+
+        async function addToPrint() {
+          if (!st.front.loaded) {
+            say("Pehle aage ki photo chunein.", false);
+            return;
+          }
+          if (isTwoSided() && !st.back.loaded) {
+            say(
+              "Is document ke liye aage aur piche dono photo zaroori hain.",
+              false,
+            );
+            return;
+          }
+          if (
+            typeof ensureUploadAllowed === "function" &&
+            !ensureUploadAllowed()
+          ) {
+            window.closeIdBuilder();
+            return;
+          }
+          if (typeof PDFLib === "undefined") {
+            say(
+              "PDF tool load nahi hua. Page refresh karke dobara try karein.",
+              false,
+            );
+            return;
+          }
+
+          const btn = $("idbAddBtn");
+          btn.disabled = true;
+          say("A4 page ban raha hai, thoda rukein...");
+
+          try {
+            // A4 @ 300 DPI
+            const W = 2480;
+            const H = 3508;
+            const canvas = document.createElement("canvas");
+            canvas.width = W;
+            canvas.height = H;
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, W, H);
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = "high";
+
+            const paper = $("idb-paper");
+            const pr = paper.getBoundingClientRect();
+            const ox = pr.left + paper.clientLeft;
+            const oy = pr.top + paper.clientTop;
+            const kx = W / paper.clientWidth;
+            const ky = H / paper.clientHeight;
+
+            for (const side of activeSides())
+              drawSide(ctx, side, paper, kx, ky, ox, oy);
+
+            const toBlob = (q) =>
+              new Promise((res) => canvas.toBlob(res, "image/jpeg", q));
+            let blob = await toBlob(0.95);
+            if (blob && blob.size > 9 * 1024 * 1024) blob = await toBlob(0.8);
+            if (!blob) throw new Error("Image ban nahi paayi.");
+
+            const bytes = new Uint8Array(await blob.arrayBuffer());
+            const pdf = await PDFLib.PDFDocument.create();
+            const PW = 595.28;
+            const PH = 841.89;
+            const page = pdf.addPage([PW, PH]);
+            const embedded = await pdf.embedJpg(bytes);
+            page.drawImage(embedded, { x: 0, y: 0, width: PW, height: PH });
+            const out = await pdf.save();
+
+            const file = new File([out], FILE_NAMES[mode] + ".pdf", {
+              type: "application/pdf",
+            });
+
+            if (file.size > MAX_FILE_SIZE_BYTES) {
+              throw new Error("Photo bahut badi hai. Chhoti photo use karein.");
+            }
+
+            // Same checks as normal uploads
+            hideUploadError();
+            const previousFiles = [...filesList];
+            filesList.push({
+              file,
+              pages: 1,
+              copies: 1,
+              removedPages: [],
+              uploaded: false,
+              storagePath: null,
+              jobId: null,
+            });
+
+            const check = checkRequestedPrintLimit(filesList);
+            if (!check.allowed) {
+              filesList = previousFiles;
+              say(check.message, false);
+              return;
+            }
+
+            // A4 is the right paper for this sheet
+            const paperSelect = document.getElementById("paperSizeSelect");
+            if (paperSelect) paperSelect.value = "A4";
+
+            window.closeIdBuilder();
+            resetBuilder();
+            showConfigStep();
+          } catch (err) {
+            console.error("ID card PDF failed:", err);
+            say(
+              err?.message || "A4 page nahi ban paaya. Dobara try karein.",
+              false,
+            );
+          } finally {
+            btn.disabled = false;
+          }
+        }
+        $("idbAddBtn").addEventListener("click", addToPrint);
+
+        setMode("pan");
+        updateStatus();
+        say("Shuru karne ke liye photo chunein.");
+      })();
     </script>
   </body>
 </html>

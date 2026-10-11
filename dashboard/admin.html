@@ -1,0 +1,1814 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#0f172a" />
+    <title>Quick2Print · Admin Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: #f6f7fb;
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 11px 13px;
+        border-radius: 12px;
+        color: #aeb8ca;
+        font-size: 14px;
+        font-weight: 650;
+        text-align: left;
+        width: 100%;
+      }
+      .nav:hover {
+        background: #ffffff10;
+        color: white;
+      }
+      .nav.active {
+        background: #4f46e5;
+        color: white;
+      }
+      .nav svg {
+        width: 18px;
+        height: 18px;
+      }
+      .panel {
+        background: white;
+        border: 1px solid #e7eaf1;
+        border-radius: 17px;
+        box-shadow: 0 4px 18px #0f172a05;
+      }
+      .field {
+        width: 100%;
+        border: 1px solid #d8deea;
+        border-radius: 10px;
+        padding: 10px 12px;
+        background: white;
+        font-size: 14px;
+        outline: none;
+      }
+      .field:focus {
+        border-color: #818cf8;
+        box-shadow: 0 0 0 3px #6366f11a;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 13px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 750;
+        transition: 0.15s;
+      }
+      .primary {
+        background: #4f46e5;
+        color: white;
+      }
+      .primary:hover {
+        background: #4338ca;
+      }
+      .secondary {
+        border: 1px solid #dbe1ec;
+        background: white;
+        color: #334155;
+      }
+      .secondary:hover {
+        background: #f8fafc;
+      }
+      .danger {
+        border: 1px solid #fecaca;
+        background: #fff;
+        color: #b91c1c;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 800;
+      }
+      .green {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .amber {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .red {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .gray {
+        background: #f1f5f9;
+        color: #475569;
+      }
+      .table-wrap {
+        overflow: auto;
+      }
+      .table-wrap table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: collapse;
+      }
+      .table-wrap th {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        text-align: left;
+        padding: 13px 15px;
+        white-space: nowrap;
+      }
+      .table-wrap td {
+        padding: 13px 15px;
+        border-top: 1px solid #eef0f5;
+        font-size: 13px;
+        vertical-align: middle;
+      }
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+      .toast {
+        animation: up 0.18s ease-out;
+      }
+      @keyframes up {
+        from {
+          opacity: 0;
+          transform: translateY(-6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      #sidebar {
+        transition: transform 0.2s;
+      }
+      @media (max-width: 767px) {
+        #sidebar {
+          transform: translateX(-100%);
+          position: fixed;
+          z-index: 50;
+        }
+        #sidebar.open {
+          transform: translateX(0);
+        }
+        #scrim.show {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body class="text-slate-800">
+    <div
+      id="toastHost"
+      class="fixed right-4 top-4 z-[100] flex w-[min(92vw,400px)] flex-col gap-2"
+      aria-live="polite"
+    ></div>
+    <div
+      id="scrim"
+      class="fixed inset-0 z-40 hidden bg-slate-950/50 md:hidden"
+      onclick="toggleMenu(false)"
+    ></div>
+
+    <!-- Authentication screen -->
+    <section
+      id="loginScreen"
+      class="min-h-screen flex items-center justify-center p-5"
+    >
+      <div class="w-full max-w-md">
+        <div class="mb-7 flex items-center justify-center gap-3">
+          <div
+            class="grid h-12 w-12 place-items-center rounded-2xl bg-indigo-600 text-white"
+          >
+            <i data-lucide="printer"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-black">
+              Quick<span class="text-indigo-600">2</span>Print
+            </div>
+            <div
+              class="text-xs font-bold uppercase tracking-[.2em] text-slate-500"
+            >
+              Admin console
+            </div>
+          </div>
+        </div>
+        <div class="panel p-7 sm:p-8">
+          <h1 class="text-2xl font-black">Sign in to admin</h1>
+          <p class="mt-2 text-sm leading-6 text-slate-500">
+            Use an existing Supabase Auth account with the admin role assigned
+            in trusted app metadata.
+          </p>
+          <form id="loginForm" class="mt-6 space-y-4">
+            <div>
+              <label for="loginEmail" class="mb-1.5 block text-xs font-bold"
+                >Admin email</label
+              ><input
+                id="loginEmail"
+                class="field"
+                type="email"
+                autocomplete="username"
+                required
+                placeholder="admin@example.com"
+              />
+            </div>
+            <div>
+              <label for="loginPassword" class="mb-1.5 block text-xs font-bold"
+                >Password</label
+              ><input
+                id="loginPassword"
+                class="field"
+                type="password"
+                autocomplete="current-password"
+                required
+                placeholder="Enter password"
+              />
+            </div>
+            <button
+              id="loginButton"
+              class="btn primary w-full py-3"
+              type="submit"
+            >
+              <i data-lucide="lock-keyhole" class="h-4 w-4"></i> Sign in
+              securely
+            </button>
+            <div
+              id="loginError"
+              class="hidden rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800"
+              role="alert"
+            ></div>
+          </form>
+          <div
+            class="mt-5 rounded-xl bg-amber-50 p-3 text-xs leading-5 text-amber-900"
+          >
+            <b>Setup required:</b> create the admin user in Supabase Auth and
+            securely assign <code>app_metadata.role = admin</code>. Never use a
+            service-role key in this HTML file.
+          </div>
+        </div>
+        <p class="mt-5 text-center text-xs text-slate-400">
+          Quick2Print · Secure partner operations
+        </p>
+      </div>
+    </section>
+
+    <div id="appShell" class="hidden min-h-screen">
+      <aside
+        id="sidebar"
+        class="fixed inset-y-0 left-0 flex w-[258px] flex-col bg-slate-950 px-4 py-5 text-white"
+      >
+        <div class="mb-8 flex items-center gap-3 px-2">
+          <div
+            class="grid h-10 w-10 place-items-center rounded-xl bg-indigo-600"
+          >
+            <i data-lucide="printer"></i>
+          </div>
+          <div>
+            <div class="text-lg font-black">
+              Quick<span class="text-indigo-400">2</span>Print
+            </div>
+            <div
+              class="text-[10px] font-bold uppercase tracking-[.18em] text-slate-400"
+            >
+              Admin console
+            </div>
+          </div>
+          <button
+            class="ml-auto md:hidden"
+            onclick="toggleMenu(false)"
+            aria-label="Close navigation"
+          >
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div
+          class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[.2em] text-slate-500"
+        >
+          Management
+        </div>
+        <nav class="space-y-1">
+          <button class="nav active" data-view="overview">
+            <i data-lucide="layout-dashboard"></i>Overview
+          </button>
+          <button class="nav" data-view="partners">
+            <i data-lucide="users"></i>Partner IDs
+          </button>
+          <button class="nav" data-view="performance">
+            <i data-lucide="chart-no-axes-combined"></i>Performance
+          </button>
+          <button class="nav" data-view="subscriptions">
+            <i data-lucide="store"></i>Shop subscriptions
+          </button>
+          <button class="nav" data-view="commissions">
+            <i data-lucide="wallet"></i>Commission ledger
+          </button>
+          <button class="nav" data-view="rules">
+            <i data-lucide="sliders-horizontal"></i>Commission rules
+          </button>
+          <button class="nav" data-view="settings">
+            <i data-lucide="settings"></i>Connection & setup
+          </button>
+        </nav>
+        <div
+          class="mt-auto rounded-2xl border border-white/10 bg-white/[.04] p-4"
+        >
+          <div class="flex items-center gap-2 text-sm font-bold">
+            <span class="h-2 w-2 rounded-full bg-emerald-400"></span
+            ><span id="connectionLabel">Checking connection</span>
+          </div>
+          <p class="mt-2 text-xs leading-5 text-slate-400">
+            Live records are fetched from Supabase. Access is controlled by your
+            database RLS policies.
+          </p>
+          <button
+            onclick="signOut()"
+            class="btn mt-3 w-full border border-white/10 text-slate-200 hover:bg-white/5"
+          >
+            <i data-lucide="log-out" class="h-4 w-4"></i> Sign out
+          </button>
+        </div>
+      </aside>
+      <div class="min-h-screen md:pl-[258px]">
+        <header
+          class="sticky top-0 z-30 flex h-[72px] items-center justify-between border-b border-slate-200 bg-white/90 px-4 backdrop-blur md:px-8"
+        >
+          <div class="flex items-center gap-3">
+            <button
+              class="rounded-lg border p-2 md:hidden"
+              onclick="toggleMenu(true)"
+              aria-label="Open navigation"
+            >
+              <i data-lucide="menu"></i>
+            </button>
+            <div>
+              <div
+                class="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600"
+              >
+                Operations workspace
+              </div>
+              <h1 id="pageTitle" class="text-lg font-black">Overview</h1>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span
+              id="adminEmail"
+              class="hidden max-w-48 truncate text-xs font-semibold text-slate-500 sm:inline"
+            ></span
+            ><button class="btn secondary" onclick="loadAll()">
+              <i data-lucide="refresh-cw" class="h-4 w-4"></i
+              ><span class="hidden sm:inline">Refresh data</span>
+            </button>
+          </div>
+        </header>
+        <main class="mx-auto max-w-[1600px] space-y-6 p-4 md:p-8">
+          <div
+            id="globalNotice"
+            class="hidden rounded-xl border p-3 text-sm"
+            role="status"
+          ></div>
+          <section id="view-overview" class="view active space-y-6">
+            <div
+              class="flex flex-col justify-between gap-3 sm:flex-row sm:items-end"
+            >
+              <div>
+                <h2 class="text-2xl font-black tracking-tight">
+                  Admin overview
+                </h2>
+                <p class="mt-1 text-sm text-slate-500">
+                  Live partner, shop and subscription data from your Supabase
+                  project.
+                </p>
+              </div>
+              <button class="btn primary" onclick="openPartnerModal()">
+                <i data-lucide="user-plus" class="h-4 w-4"></i>Create partner ID
+              </button>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <div class="panel p-5">
+                <div class="flex justify-between">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-500">
+                      Total partners
+                    </p>
+                    <p id="mPartners" class="mt-2 text-3xl font-black">—</p>
+                  </div>
+                  <div class="rounded-xl bg-indigo-50 p-3 text-indigo-600">
+                    <i data-lucide="users"></i>
+                  </div>
+                </div>
+                <p id="mPartnerSub" class="mt-3 text-xs text-slate-500">
+                  Awaiting data
+                </p>
+              </div>
+              <div class="panel p-5">
+                <div class="flex justify-between">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-500">
+                      Total shops
+                    </p>
+                    <p id="mShops" class="mt-2 text-3xl font-black">—</p>
+                  </div>
+                  <div class="rounded-xl bg-sky-50 p-3 text-sky-600">
+                    <i data-lucide="store"></i>
+                  </div>
+                </div>
+                <p class="mt-3 text-xs text-slate-500">
+                  Records in public.shops
+                </p>
+              </div>
+              <div class="panel p-5">
+                <div class="flex justify-between">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-500">
+                      Paid subscription value
+                    </p>
+                    <p id="mRevenue" class="mt-2 text-3xl font-black">—</p>
+                  </div>
+                  <div class="rounded-xl bg-emerald-50 p-3 text-emerald-600">
+                    <i data-lucide="indian-rupee"></i>
+                  </div>
+                </div>
+                <p class="mt-3 text-xs text-slate-500">
+                  Sum of PAID subscription records
+                </p>
+              </div>
+              <div class="panel p-5">
+                <div class="flex justify-between">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-500">
+                      Unpaid commissions
+                    </p>
+                    <p id="mUnpaid" class="mt-2 text-3xl font-black">—</p>
+                  </div>
+                  <div class="rounded-xl bg-amber-50 p-3 text-amber-600">
+                    <i data-lucide="wallet"></i>
+                  </div>
+                </div>
+                <p class="mt-3 text-xs text-slate-500">
+                  Pending + approved ledger entries
+                </p>
+              </div>
+            </div>
+            <div class="grid gap-6 xl:grid-cols-[1.25fr_1fr]">
+              <div class="panel overflow-hidden">
+                <div class="flex items-center justify-between border-b p-5">
+                  <div>
+                    <h3 class="font-extrabold">Recently created partners</h3>
+                    <p class="mt-1 text-xs text-slate-500">
+                      Fetched from q2p_partners
+                    </p>
+                  </div>
+                  <button
+                    class="text-sm font-bold text-indigo-600"
+                    onclick="navigate('partners')"
+                  >
+                    Manage partners
+                  </button>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Partner</th>
+                        <th>Partner code</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="recentPartners">
+                      <tr>
+                        <td colspan="4">Loading…</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="panel p-5">
+                <h3 class="font-extrabold">Subscription status</h3>
+                <p class="mt-1 text-xs text-slate-500">
+                  Based on public.shop_subscriptions
+                </p>
+                <div id="subscriptionMix" class="mt-6 space-y-4"></div>
+                <div
+                  class="mt-6 rounded-xl bg-indigo-50 p-4 text-xs leading-5 text-indigo-900"
+                >
+                  Commission entries are not created automatically by this
+                  dashboard. Add a trusted backend payment webhook that verifies
+                  Cashfree and writes the commission ledger idempotently.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="view-partners" class="view space-y-5">
+            <div
+              class="flex flex-col justify-between gap-3 sm:flex-row sm:items-end"
+            >
+              <div>
+                <h2 class="text-2xl font-black">Partner IDs</h2>
+                <p class="mt-1 text-sm text-slate-500">
+                  Create, approve and review distributors and onboarding
+                  partners.
+                </p>
+              </div>
+              <button class="btn primary" onclick="openPartnerModal()">
+                <i data-lucide="user-plus" class="h-4 w-4"></i>Create partner
+              </button>
+            </div>
+            <div class="panel p-4">
+              <div class="grid gap-3 md:grid-cols-[1fr_190px_170px_auto]">
+                <input
+                  id="partnerSearch"
+                  class="field"
+                  placeholder="Search name, code, mobile…"
+                  oninput="renderPartners()"
+                /><select
+                  id="partnerTypeFilter"
+                  class="field"
+                  onchange="renderPartners()"
+                >
+                  <option value="">All types</option>
+                  <option value="distributor">Distributor</option>
+                  <option value="onboarding_partner">
+                    Onboarding partner
+                  </option></select
+                ><select
+                  id="partnerStatusFilter"
+                  class="field"
+                  onchange="renderPartners()"
+                >
+                  <option value="">All statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="suspended">Suspended</option></select
+                ><button class="btn secondary" onclick="exportPartners()">
+                  <i data-lucide="download" class="h-4 w-4"></i>Export CSV
+                </button>
+              </div>
+            </div>
+            <div class="panel overflow-hidden">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name / email</th>
+                      <th>Partner code</th>
+                      <th>Type</th>
+                      <th>Parent distributor</th>
+                      <th>Mobile</th>
+                      <th>Created</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="partnersTable"></tbody>
+                </table>
+              </div>
+              <div
+                id="partnersEmpty"
+                class="hidden p-10 text-center text-sm text-slate-500"
+              >
+                No partner records match this filter.
+              </div>
+            </div>
+          </section>
+
+          <section id="view-performance" class="view space-y-5">
+            <div>
+              <h2 class="text-2xl font-black">Performance analytics</h2>
+              <p class="mt-1 text-sm text-slate-500">
+                Attributed shops, PAID subscriptions and ledger totals by
+                partner.
+              </p>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-3">
+              <div class="panel p-5">
+                <p class="text-sm text-slate-500">Attributed shops</p>
+                <p id="pShops" class="mt-2 text-3xl font-black">—</p>
+              </div>
+              <div class="panel p-5">
+                <p class="text-sm text-slate-500">Paid subscription records</p>
+                <p id="pPaid" class="mt-2 text-3xl font-black">—</p>
+              </div>
+              <div class="panel p-5">
+                <p class="text-sm text-slate-500">Paid subscription value</p>
+                <p id="pRevenue" class="mt-2 text-3xl font-black">—</p>
+              </div>
+            </div>
+            <div class="panel overflow-hidden">
+              <div class="border-b p-5">
+                <h3 class="font-extrabold">Partner performance scorecard</h3>
+                <p class="mt-1 text-xs text-slate-500">
+                  Only shop records linked in q2p_partner_attributions are
+                  attributed to partners.
+                </p>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Partner</th>
+                      <th>Type</th>
+                      <th>Attributed shops</th>
+                      <th>Paid subscriptions</th>
+                      <th>Paid value</th>
+                      <th>Commission ledger</th>
+                    </tr>
+                  </thead>
+                  <tbody id="performanceTable"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="panel overflow-hidden">
+              <div class="border-b p-5">
+                <h3 class="font-extrabold">Plan-wise subscriptions</h3>
+                <p class="mt-1 text-xs text-slate-500">
+                  Plan labels are resolved from public.plans where available.
+                </p>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Plan</th>
+                      <th>Paid subscriptions</th>
+                      <th>Paid value</th>
+                    </tr>
+                  </thead>
+                  <tbody id="planTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section id="view-subscriptions" class="view space-y-5">
+            <div>
+              <h2 class="text-2xl font-black">Shop subscriptions</h2>
+              <p class="mt-1 text-sm text-slate-500">
+                Live records from public.shop_subscriptions.
+              </p>
+            </div>
+            <div class="panel p-4">
+              <div class="grid gap-3 md:grid-cols-[1fr_190px_180px]">
+                <input
+                  id="subscriptionSearch"
+                  class="field"
+                  placeholder="Search shop ID, order ID, payment ID…"
+                  oninput="renderSubscriptions()"
+                /><select
+                  id="subscriptionStatusFilter"
+                  class="field"
+                  onchange="renderSubscriptions()"
+                >
+                  <option value="">All payment statuses</option>
+                  <option>PAID</option>
+                  <option>PENDING</option>
+                  <option>FAILED</option>
+                  <option>EXPIRED</option></select
+                ><select
+                  id="subscriptionEnvironmentFilter"
+                  class="field"
+                  onchange="renderSubscriptions()"
+                >
+                  <option value="">All environments</option>
+                  <option>SANDBOX</option>
+                  <option>PRODUCTION</option>
+                </select>
+              </div>
+            </div>
+            <div class="panel overflow-hidden">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Shop ID</th>
+                      <th>Plan</th>
+                      <th>Amount</th>
+                      <th>Duration</th>
+                      <th>Payment status</th>
+                      <th>Environment</th>
+                      <th>Cashfree order</th>
+                      <th>Created</th>
+                    </tr>
+                  </thead>
+                  <tbody id="subscriptionsTable"></tbody>
+                </table>
+              </div>
+              <div
+                id="subscriptionsEmpty"
+                class="hidden p-10 text-center text-sm text-slate-500"
+              >
+                No subscription records match this filter.
+              </div>
+            </div>
+          </section>
+
+          <section id="view-commissions" class="view space-y-5">
+            <div>
+              <h2 class="text-2xl font-black">Commission ledger</h2>
+              <p class="mt-1 text-sm text-slate-500">
+                Review earning records and change their internal approval state.
+              </p>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-3">
+              <div class="panel p-5">
+                <p class="text-sm text-slate-500">Total ledger earnings</p>
+                <p id="cTotal" class="mt-2 text-2xl font-black">—</p>
+              </div>
+              <div class="panel p-5">
+                <p class="text-sm text-slate-500">Approved</p>
+                <p id="cApproved" class="mt-2 text-2xl font-black">—</p>
+              </div>
+              <div class="panel p-5">
+                <p class="text-sm text-slate-500">Marked paid</p>
+                <p id="cPaid" class="mt-2 text-2xl font-black">—</p>
+              </div>
+            </div>
+            <div class="panel overflow-hidden">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Partner</th>
+                      <th>Shop ID</th>
+                      <th>Payment reference</th>
+                      <th>Commission</th>
+                      <th>Bonus</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ledgerTable"></tbody>
+                </table>
+              </div>
+            </div>
+            <div
+              class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900"
+            >
+              <b>Payment safety:</b> “Mark paid” only updates the ledger status;
+              it does not transfer money. Reconcile the payout externally and
+              record its reference in your payout workflow.
+            </div>
+          </section>
+
+          <section id="view-rules" class="view space-y-5">
+            <div>
+              <h2 class="text-2xl font-black">Commission rules</h2>
+              <p class="mt-1 text-sm text-slate-500">
+                Read-only view of rules currently stored in
+                q2p_commission_rules.
+              </p>
+            </div>
+            <div
+              class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900"
+            >
+              <b>Before production:</b> resolve gaps/overlaps in the workbook
+              slabs, and confirm milestone bonus eligibility. This page does not
+              invent or auto-correct rules.
+            </div>
+            <div class="panel overflow-hidden">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Partner type</th>
+                      <th>Plan price</th>
+                      <th>Plan name</th>
+                      <th>QR minimum</th>
+                      <th>QR maximum</th>
+                      <th>Commission</th>
+                      <th>Bonus</th>
+                      <th>Bonus per QR</th>
+                      <th>Active</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rulesTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section id="view-settings" class="view space-y-5">
+            <div>
+              <h2 class="text-2xl font-black">Connection & setup</h2>
+              <p class="mt-1 text-sm text-slate-500">
+                Configured project and table readiness.
+              </p>
+            </div>
+            <div class="panel p-5">
+              <h3 class="font-extrabold">Supabase project</h3>
+              <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <div class="text-xs font-bold text-slate-500">
+                    Project URL
+                  </div>
+                  <div
+                    id="projectUrl"
+                    class="mt-1 break-all text-sm font-semibold"
+                  >
+                    —
+                  </div>
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-slate-500">Client key</div>
+                  <div class="mt-1 text-sm font-semibold">
+                    Publishable / anon key configured in HTML
+                  </div>
+                </div>
+              </div>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <button class="btn secondary" onclick="loadAll()">
+                  <i data-lucide="refresh-cw" class="h-4 w-4"></i>Test and
+                  refresh tables</button
+                ><button class="btn danger" onclick="signOut()">
+                  Sign out
+                </button>
+              </div>
+              <div
+                id="tableHealth"
+                class="mt-5 grid gap-2 sm:grid-cols-2"
+              ></div>
+            </div>
+            <div class="panel p-5">
+              <h3 class="font-extrabold">Production checklist</h3>
+              <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                <li>
+                  • Use Supabase Auth; admin authorization comes from trusted
+                  <code>app_metadata.role</code>.
+                </li>
+                <li>
+                  • Enable RLS on all partner tables. Do not expose KYC
+                  documents through public URLs.
+                </li>
+                <li>
+                  • Create partner login users via a secure server/Edge Function
+                  using the service-role key server-side only.
+                </li>
+                <li>
+                  • Use a backend Cashfree webhook to verify paid status and
+                  insert commission entries exactly once.
+                </li>
+                <li>
+                  • Partner codes are referral identifiers, not passwords or
+                  authentication credentials.
+                </li>
+              </ul>
+            </div>
+          </section>
+          <footer class="border-t border-slate-200 pt-5 text-xs text-slate-400">
+            Quick2Print Admin · Live Supabase data · Access and write operations
+            are subject to database policies
+          </footer>
+        </main>
+      </div>
+    </div>
+
+    <!-- Partner create modal -->
+    <div
+      id="partnerModal"
+      class="fixed inset-0 z-[80] hidden items-center justify-center overflow-y-auto bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="partnerModalTitle"
+    >
+      <div class="my-auto w-full max-w-4xl rounded-2xl bg-white shadow-2xl">
+        <div class="flex items-start justify-between border-b p-5 sm:p-6">
+          <div>
+            <h2 id="partnerModalTitle" class="text-xl font-black">
+              Create partner ID
+            </h2>
+            <p class="mt-1 text-sm text-slate-500">
+              This creates a partner profile record in Supabase; it does not
+              create an Auth login.
+            </p>
+          </div>
+          <button
+            onclick="closePartnerModal()"
+            class="rounded-lg p-2 hover:bg-slate-100"
+            aria-label="Close"
+          >
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <form id="partnerForm" class="p-5 sm:p-6">
+          <div
+            id="partnerFormError"
+            class="mb-4 hidden rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800"
+            role="alert"
+          ></div>
+          <div class="grid gap-4 md:grid-cols-3">
+            <div>
+              <label class="mb-1.5 block text-xs font-bold" for="fType"
+                >Partner type *</label
+              ><select id="fType" class="field" required>
+                <option value="onboarding_partner">Onboarding partner</option>
+                <option value="distributor">Distributor</option>
+              </select>
+            </div>
+            <div id="parentField">
+              <label class="mb-1.5 block text-xs font-bold" for="fParent"
+                >Parent distributor *</label
+              ><select id="fParent" class="field">
+                <option value="">Select approved distributor</option>
+              </select>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold" for="fStatus"
+                >Initial status</label
+              ><select id="fStatus" class="field">
+                <option value="pending">Pending verification</option>
+                <option value="approved">Approved</option>
+              </select>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold" for="fName"
+                >Full name *</label
+              ><input
+                id="fName"
+                class="field"
+                required
+                minlength="2"
+                maxlength="100"
+              />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold" for="fFather"
+                >Father's name</label
+              ><input id="fFather" class="field" maxlength="100" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold" for="fMother"
+                >Mother's name</label
+              ><input id="fMother" class="field" maxlength="100" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold" for="fDob"
+                >Date of birth</label
+              ><input id="fDob" type="date" class="field" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold" for="fMobile"
+                >Mobile number *</label
+              ><input
+                id="fMobile"
+                class="field"
+                type="tel"
+                inputmode="numeric"
+                pattern="[6-9][0-9]{9}"
+                maxlength="10"
+                required
+                placeholder="10-digit Indian mobile"
+              />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold" for="fEmail"
+                >Email</label
+              ><input id="fEmail" class="field" type="email" maxlength="254" />
+            </div>
+            <div class="md:col-span-3">
+              <label class="mb-1.5 block text-xs font-bold" for="fAddress"
+                >Address</label
+              ><input id="fAddress" class="field" maxlength="250" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold" for="fCity"
+                >City</label
+              ><input id="fCity" class="field" maxlength="80" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold" for="fDistrict"
+                >District</label
+              ><input id="fDistrict" class="field" maxlength="80" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-xs font-bold" for="fState"
+                >State</label
+              ><input id="fState" class="field" maxlength="80" />
+            </div>
+          </div>
+          <p
+            class="mt-4 rounded-xl bg-amber-50 p-3 text-xs leading-5 text-amber-900"
+          >
+            KYC uploads are intentionally not included until a private Storage
+            bucket and authorized upload flow are configured. Do not store
+            Aadhaar/PAN/bank documents in public storage.
+          </p>
+          <div
+            class="mt-6 flex flex-col-reverse justify-end gap-2 border-t pt-5 sm:flex-row"
+          >
+            <button
+              type="button"
+              class="btn secondary"
+              onclick="closePartnerModal()"
+            >
+              Cancel</button
+            ><button id="createPartnerBtn" type="submit" class="btn primary">
+              <i data-lucide="user-plus" class="h-4 w-4"></i>Create partner in
+              Supabase
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+      // Public publishable/anon key is intended for client-side use.
+      // Database security MUST be enforced by Supabase Auth + RLS.
+      const SUPABASE_URL = "https://gepkipszweqhftwaejbu.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "sb_publishable_forPZqB40NrPCFGQsdqeZw_4QTxOgBH";
+      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const TABLES = [
+        "q2p_partners",
+        "q2p_partner_attributions",
+        "q2p_commission_rules",
+        "q2p_commission_ledger",
+        "q2p_partner_targets",
+        "q2p_partner_payouts",
+        "shops",
+        "plans",
+        "shop_subscriptions",
+      ];
+      const TITLES = {
+        overview: "Overview",
+        partners: "Partner IDs",
+        performance: "Performance",
+        subscriptions: "Shop subscriptions",
+        commissions: "Commission ledger",
+        rules: "Commission rules",
+        settings: "Connection & setup",
+      };
+      let state = {
+        user: null,
+        partners: [],
+        attributions: [],
+        rules: [],
+        ledger: [],
+        targets: [],
+        payouts: [],
+        shops: [],
+        plans: [],
+        subscriptions: [],
+        health: {},
+        loading: false,
+      };
+      const $ = (id) => document.getElementById(id);
+      const money = (n) =>
+        new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 2,
+        }).format(Number(n) || 0);
+      const esc = (v) =>
+        String(v ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      const niceType = (t) =>
+        t === "distributor" ? "Distributor" : "Onboarding partner";
+      const statusBadge = (s) => {
+        const k = String(s || "unknown").toLowerCase();
+        const cl = ["approved", "paid", "active"].includes(k)
+          ? "green"
+          : ["pending", "processing"].includes(k)
+            ? "amber"
+            : [
+                  "failed",
+                  "expired",
+                  "rejected",
+                  "suspended",
+                  "reversed",
+                ].includes(k)
+              ? "red"
+              : k === "production"
+                ? "blue"
+                : "gray";
+        return `<span class="badge ${cl}">${esc(k.toUpperCase())}</span>`;
+      };
+      function icons() {
+        if (window.lucide) lucide.createIcons();
+      }
+      function toast(msg, type = "ok") {
+        const host = $("toastHost"),
+          el = document.createElement("div");
+        const cls =
+          type === "ok"
+            ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+            : type === "warn"
+              ? "border-amber-200 bg-amber-50 text-amber-900"
+              : "border-rose-200 bg-rose-50 text-rose-900";
+        el.className = `toast flex items-start gap-3 rounded-xl border ${cls} p-4 shadow-lg`;
+        el.innerHTML = `<span class="font-black">${type === "ok" ? "✓" : type === "warn" ? "!" : "×"}</span><div class="flex-1 text-sm font-semibold">${esc(msg)}</div><button aria-label="Dismiss">✕</button>`;
+        el.querySelector("button").onclick = () => el.remove();
+        host.append(el);
+        setTimeout(() => el.remove(), 6000);
+      }
+      function notice(msg, type = "warn") {
+        const n = $("globalNotice");
+        n.className =
+          "rounded-xl border p-3 text-sm " +
+          (type === "error"
+            ? "border-rose-200 bg-rose-50 text-rose-800"
+            : "border-amber-200 bg-amber-50 text-amber-900");
+        n.textContent = msg;
+        n.classList.remove("hidden");
+      }
+      function clearNotice() {
+        $("globalNotice").classList.add("hidden");
+      }
+      function toggleMenu(open) {
+        $("sidebar").classList.toggle("open", open);
+        $("scrim").classList.toggle("show", open);
+      }
+      function navigate(view) {
+        document
+          .querySelectorAll(".view")
+          .forEach((x) =>
+            x.classList.toggle("active", x.id === "view-" + view),
+          );
+        document
+          .querySelectorAll(".nav")
+          .forEach((x) =>
+            x.classList.toggle("active", x.dataset.view === view),
+          );
+        $("pageTitle").textContent = TITLES[view] || "Overview";
+        toggleMenu(false);
+        icons();
+      }
+      document
+        .querySelectorAll(".nav")
+        .forEach((b) =>
+          b.addEventListener("click", () => navigate(b.dataset.view)),
+        );
+      function friendlyError(e) {
+        const m = e?.message || String(e || "Unknown error");
+        if (/row-level security|permission denied|not allowed/i.test(m))
+          return "Permission denied by Supabase. Check admin app_metadata and RLS policies.";
+        if (/does not exist|schema cache/i.test(m))
+          return "A required table or column is missing. Run the supplied SQL setup script and verify table names.";
+        if (/JWT|token|auth/i.test(m))
+          return "Authentication/session problem. Sign in again and verify your admin role.";
+        return m;
+      }
+      async function runQuery(name, query) {
+        try {
+          const { data, error } = await query;
+          if (error) throw error;
+          state.health[name] = {
+            ok: true,
+            message: "Connected",
+            count: Array.isArray(data) ? data.length : null,
+          };
+          return data || [];
+        } catch (e) {
+          state.health[name] = {
+            ok: false,
+            message: friendlyError(e),
+            count: null,
+          };
+          console.warn("Supabase query failed:", name, e);
+          return null;
+        }
+      }
+      async function checkAdmin(user) {
+        const role = user?.app_metadata?.role;
+        if (role !== "admin") {
+          await sb.auth.signOut();
+          throw new Error(
+            "This account does not have the trusted app_metadata.role = admin claim. Ask your Supabase administrator to assign it securely.",
+          );
+        }
+        return true;
+      }
+      async function showApp(user) {
+        state.user = user;
+        $("loginScreen").classList.add("hidden");
+        $("appShell").classList.remove("hidden");
+        $("adminEmail").textContent = user.email || user.id;
+        $("projectUrl").textContent = SUPABASE_URL;
+        $("connectionLabel").textContent = "Authenticated";
+        clearNotice();
+        await loadAll();
+      }
+      function showLogin() {
+        state.user = null;
+        $("appShell").classList.add("hidden");
+        $("loginScreen").classList.remove("hidden");
+      }
+      $("loginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = $("loginButton"),
+          err = $("loginError");
+        btn.disabled = true;
+        btn.textContent = "Signing in…";
+        err.classList.add("hidden");
+        try {
+          const { data, error } = await sb.auth.signInWithPassword({
+            email: $("loginEmail").value.trim(),
+            password: $("loginPassword").value,
+          });
+          if (error) throw error;
+          await checkAdmin(data.user);
+          await showApp(data.user);
+          toast("Signed in successfully. Live data is loading.");
+        } catch (ex) {
+          err.textContent = friendlyError(ex);
+          err.classList.remove("hidden");
+          if (sb.auth.getUser) await sb.auth.signOut().catch(() => {});
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML =
+            '<i data-lucide="lock-keyhole" class="h-4 w-4"></i> Sign in securely';
+          icons();
+        }
+      });
+      async function signOut() {
+        await sb.auth.signOut();
+        showLogin();
+        toast("You have signed out.");
+      }
+      sb.auth.onAuthStateChange(async (event, session) => {
+        if (event === "SIGNED_OUT") {
+          showLogin();
+        }
+      });
+      async function loadAll() {
+        if (!state.user) {
+          return;
+        }
+        clearNotice();
+        $("connectionLabel").textContent = "Loading…";
+        const specs = [
+          [
+            "partners",
+            () =>
+              sb
+                .from("q2p_partners")
+                .select("*")
+                .order("created_at", { ascending: false })
+                .limit(1000),
+          ],
+          [
+            "attributions",
+            () => sb.from("q2p_partner_attributions").select("*").limit(5000),
+          ],
+          [
+            "rules",
+            () =>
+              sb
+                .from("q2p_commission_rules")
+                .select("*")
+                .order("created_at", { ascending: false })
+                .limit(1000),
+          ],
+          [
+            "ledger",
+            () =>
+              sb
+                .from("q2p_commission_ledger")
+                .select("*")
+                .order("created_at", { ascending: false })
+                .limit(5000),
+          ],
+          [
+            "targets",
+            () => sb.from("q2p_partner_targets").select("*").limit(2000),
+          ],
+          [
+            "payouts",
+            () =>
+              sb
+                .from("q2p_partner_payouts")
+                .select("*")
+                .order("created_at", { ascending: false })
+                .limit(2000),
+          ],
+          ["shops", () => sb.from("shops").select("*").limit(5000)],
+          ["plans", () => sb.from("plans").select("*").limit(500)],
+          [
+            "subscriptions",
+            () =>
+              sb
+                .from("shop_subscriptions")
+                .select("*")
+                .order("created_at", { ascending: false })
+                .limit(5000),
+          ],
+        ];
+        const results = await Promise.all(
+          specs.map(async ([key, fn]) => [key, await runQuery(key, fn())]),
+        );
+        for (const [key, data] of results) state[key] = data || [];
+        const requiredMissing = [
+          "partners",
+          "attributions",
+          "rules",
+          "ledger",
+          "shops",
+          "plans",
+          "subscriptions",
+        ].filter((k) => state.health[k]?.ok === false);
+        $("connectionLabel").textContent = requiredMissing.length
+          ? "Some tables unavailable"
+          : "Live data connected";
+        if (requiredMissing.length)
+          notice(
+            "Some live tables could not be read: " +
+              requiredMissing.join(", ") +
+              ". " +
+              requiredMissing
+                .map((k) => state.health[k]?.message)
+                .filter(Boolean)
+                .join(" "),
+            "warn",
+          );
+        renderAll();
+        renderHealth();
+        icons();
+      }
+      function partnerName(id) {
+        return (
+          state.partners.find((p) => p.id === id)?.full_name ||
+          "Unknown partner"
+        );
+      }
+      function parentName(p) {
+        return p.parent_distributor_id
+          ? partnerName(p.parent_distributor_id)
+          : "—";
+      }
+      function shopName(shopId) {
+        const s = state.shops.find((x) => String(x.shop_id) === String(shopId));
+        return s?.shop_name || s?.name || String(shopId || "—");
+      }
+      function planName(planId) {
+        const p = state.plans.find((x) => String(x.plan_id) === String(planId));
+        return (
+          p?.plan_name ||
+          p?.name ||
+          p?.title ||
+          String(planId || "Unknown plan")
+        );
+      }
+      function ledgerTotal(l) {
+        return Number(
+          l.total_earning ??
+            Number(l.commission_amount || 0) + Number(l.bonus_amount || 0),
+        );
+      }
+      function renderAll() {
+        renderOverview();
+        renderPartners();
+        renderSubscriptions();
+        renderPerformance();
+        renderLedger();
+        renderRules();
+      }
+      function renderOverview() {
+        $("mPartners").textContent = state.partners.length;
+        $("mPartnerSub").textContent =
+          `${state.partners.filter((p) => p.status === "approved").length} approved · ${state.partners.filter((p) => p.status === "pending").length} pending`;
+        $("mShops").textContent = state.shops.length;
+        const paid = state.subscriptions.filter(
+          (s) => s.payment_status === "PAID",
+        );
+        $("mRevenue").textContent = money(
+          paid.reduce((n, s) => n + Number(s.amount || 0), 0),
+        );
+        $("mUnpaid").textContent = money(
+          state.ledger
+            .filter((l) => ["pending", "approved"].includes(l.status))
+            .reduce((n, l) => n + ledgerTotal(l), 0),
+        );
+        const rows = state.partners.slice(0, 6);
+        $("recentPartners").innerHTML = rows.length
+          ? rows
+              .map(
+                (p) =>
+                  `<tr><td><div class="font-bold">${esc(p.full_name)}</div><div class="mt-1 text-xs text-slate-500">${esc(p.email || p.mobile || "")}</div></td><td class="font-mono text-xs">${esc(p.partner_code)}</td><td>${esc(niceType(p.partner_type))}</td><td>${statusBadge(p.status)}</td></tr>`,
+              )
+              .join("")
+          : '<tr><td colspan="4" class="py-8 text-center text-slate-500">No partner records found.</td></tr>';
+        const statuses = ["PAID", "PENDING", "FAILED", "EXPIRED"];
+        const total = state.subscriptions.length || 1;
+        $("subscriptionMix").innerHTML = statuses
+          .map((s) => {
+            const c = state.subscriptions.filter(
+              (x) => x.payment_status === s,
+            ).length;
+            const color =
+              s === "PAID"
+                ? "bg-emerald-500"
+                : s === "PENDING"
+                  ? "bg-amber-500"
+                  : "bg-rose-500";
+            return `<div><div class="mb-2 flex justify-between text-sm"><span class="font-semibold">${s}</span><span class="font-bold">${c}</span></div><div class="h-2 rounded-full bg-slate-100"><div class="${color} h-2 rounded-full" style="width:${(c / total) * 100}%"></div></div></div>`;
+          })
+          .join("");
+      }
+      function renderPartners() {
+        const q = ($("partnerSearch")?.value || "").toLowerCase(),
+          type = $("partnerTypeFilter")?.value || "",
+          status = $("partnerStatusFilter")?.value || "";
+        const rows = state.partners.filter(
+          (p) =>
+            (!q ||
+              [p.full_name, p.partner_code, p.mobile, p.email].some((v) =>
+                String(v || "")
+                  .toLowerCase()
+                  .includes(q),
+              )) &&
+            (!type || p.partner_type === type) &&
+            (!status || p.status === status),
+        );
+        $("partnersTable").innerHTML = rows
+          .map(
+            (p) =>
+              `<tr><td><div class="font-bold">${esc(p.full_name)}</div><div class="mt-1 text-xs text-slate-500">${esc(p.email || "No email")}</div></td><td class="font-mono text-xs font-bold">${esc(p.partner_code)}</td><td>${esc(niceType(p.partner_type))}</td><td>${esc(parentName(p))}</td><td>${esc(p.mobile)}</td><td>${esc(p.created_at ? new Date(p.created_at).toLocaleDateString("en-IN") : "—")}</td><td>${statusBadge(p.status)}</td><td><div class="flex gap-1">${p.status === "pending" ? `<button class="btn secondary !px-2 !py-1.5" onclick="updatePartnerStatus('${p.id}','approved')">Approve</button>` : ""}${p.status !== "suspended" ? `<button class="btn secondary !px-2 !py-1.5" onclick="viewPartner('${p.id}')">Details</button>` : `<button class="btn secondary !px-2 !py-1.5" onclick="updatePartnerStatus('${p.id}','pending')">Reactivate</button>`}</div></td></tr>`,
+          )
+          .join("");
+        $("partnersEmpty").classList.toggle("hidden", rows.length > 0);
+      }
+      function renderSubscriptions() {
+        const q = ($("subscriptionSearch")?.value || "").toLowerCase(),
+          status = $("subscriptionStatusFilter")?.value || "",
+          env = $("subscriptionEnvironmentFilter")?.value || "";
+        const rows = state.subscriptions.filter(
+          (s) =>
+            (!q ||
+              [
+                s.shop_id,
+                s.cashfree_order_id,
+                s.cashfree_payment_id,
+                s.plan_id,
+              ].some((v) =>
+                String(v || "")
+                  .toLowerCase()
+                  .includes(q),
+              )) &&
+            (!status || s.payment_status === status) &&
+            (!env || s.payment_environment === env),
+        );
+        $("subscriptionsTable").innerHTML = rows
+          .map(
+            (s) =>
+              `<tr><td><div class="font-bold">${esc(shopName(s.shop_id))}</div><div class="mt-1 text-xs text-slate-500">${esc(s.shop_id)}</div></td><td>${esc(planName(s.plan_id))}</td><td class="font-bold">${money(s.amount)} <span class="text-xs font-normal text-slate-400">${esc(s.currency || "INR")}</span></td><td>${esc(s.duration_months)} months</td><td>${statusBadge(s.payment_status)}</td><td>${statusBadge(s.payment_environment)}</td><td class="font-mono text-xs">${esc(s.cashfree_order_id || "—")}</td><td>${esc(s.created_at ? new Date(s.created_at).toLocaleString("en-IN") : "—")}</td></tr>`,
+          )
+          .join("");
+        $("subscriptionsEmpty").classList.toggle("hidden", rows.length > 0);
+      }
+      function renderPerformance() {
+        const paid = state.subscriptions.filter(
+          (s) => s.payment_status === "PAID",
+        );
+        $("pShops").textContent = state.attributions.length;
+        $("pPaid").textContent = paid.length;
+        $("pRevenue").textContent = money(
+          paid.reduce((n, s) => n + Number(s.amount || 0), 0),
+        );
+        $("performanceTable").innerHTML =
+          state.partners
+            .map((p) => {
+              const ats = state.attributions.filter(
+                (a) =>
+                  a.onboarding_partner_id === p.id || a.distributor_id === p.id,
+              );
+              const ids = new Set(ats.map((a) => String(a.shop_id)));
+              const subs = paid.filter((s) => ids.has(String(s.shop_id)));
+              const led = state.ledger
+                .filter((l) => l.partner_id === p.id)
+                .reduce((n, l) => n + ledgerTotal(l), 0);
+              return `<tr><td><div class="font-bold">${esc(p.full_name)}</div><div class="mt-1 text-xs text-slate-500">${esc(p.partner_code)}</div></td><td>${esc(niceType(p.partner_type))}</td><td>${ids.size}</td><td>${subs.length}</td><td>${money(subs.reduce((n, s) => n + Number(s.amount || 0), 0))}</td><td>${money(led)}</td></tr>`;
+            })
+            .join("") ||
+          '<tr><td colspan="6" class="py-8 text-center text-slate-500">No partner data available.</td></tr>';
+        const groups = {};
+        paid.forEach((s) => {
+          const key = String(s.plan_id || "Unknown");
+          groups[key] ??= { count: 0, value: 0 };
+          groups[key].count++;
+          groups[key].value += Number(s.amount || 0);
+        });
+        $("planTable").innerHTML =
+          Object.entries(groups)
+            .map(
+              ([id, v]) =>
+                `<tr><td>${esc(planName(id))}</td><td>${v.count}</td><td>${money(v.value)}</td></tr>`,
+            )
+            .join("") ||
+          '<tr><td colspan="3" class="py-8 text-center text-slate-500">No PAID subscriptions found.</td></tr>';
+      }
+      function renderLedger() {
+        const sum = (filter) =>
+          state.ledger.filter(filter).reduce((n, l) => n + ledgerTotal(l), 0);
+        $("cTotal").textContent = money(sum(() => true));
+        $("cApproved").textContent = money(sum((l) => l.status === "approved"));
+        $("cPaid").textContent = money(sum((l) => l.status === "paid"));
+        $("ledgerTable").innerHTML =
+          state.ledger
+            .map(
+              (l) =>
+                `<tr><td><div class="font-bold">${esc(partnerName(l.partner_id))}</div></td><td>${esc(l.shop_id)}</td><td class="font-mono text-xs">${esc(l.payment_reference)}</td><td>${money(l.commission_amount)}</td><td>${money(l.bonus_amount)}</td><td class="font-bold">${money(ledgerTotal(l))}</td><td>${statusBadge(l.status)}</td><td>${l.status === "pending" ? `<button class="btn secondary !px-2 !py-1.5" onclick="changeLedgerStatus('${l.id}','approved')">Approve</button>` : l.status === "approved" ? `<button class="btn primary !px-2 !py-1.5" onclick="changeLedgerStatus('${l.id}','paid')">Mark paid</button>` : "—"}</td></tr>`,
+            )
+            .join("") ||
+          '<tr><td colspan="8" class="py-8 text-center text-slate-500">No commission ledger records found.</td></tr>';
+      }
+      function renderRules() {
+        $("rulesTable").innerHTML =
+          state.rules
+            .map(
+              (r) =>
+                `<tr><td>${esc(niceType(r.partner_type))}</td><td>${money(r.plan_price)}</td><td>${esc(r.plan_name || "—")}</td><td>${esc(r.slab_min)}</td><td>${r.slab_max == null ? "No upper limit" : esc(r.slab_max)}</td><td>${money(r.commission_amount)}</td><td>${money(r.bonus_amount)}${r.bonus_per_qr ? " / QR" : ""}</td><td>${r.bonus_per_qr ? "Yes" : "No"}</td><td>${statusBadge(r.active ? "active" : "inactive")}</td></tr>`,
+            )
+            .join("") ||
+          '<tr><td colspan="9" class="py-8 text-center text-slate-500">No commission rules available. Add finalized rules in Supabase.</td></tr>';
+      }
+      function renderHealth() {
+        $("tableHealth").innerHTML = TABLES.map((t) => {
+          const h = state.health[t] || { ok: false, message: "Not checked" };
+          return `<div class="flex items-start justify-between gap-3 rounded-xl border p-3 ${h.ok ? "border-emerald-100 bg-emerald-50/60" : "border-rose-100 bg-rose-50/60"}"><div><div class="text-sm font-bold">${esc(t)}</div><div class="mt-1 text-xs ${h.ok ? "text-emerald-800" : "text-rose-800"}">${esc(h.message)}</div></div><span class="badge ${h.ok ? "green" : "red"}">${h.ok ? "OK" : "ERROR"}</span></div>`;
+        }).join("");
+      }
+      function renderParentOptions() {
+        const sel = $("fParent"),
+          old = sel.value;
+        const ds = state.partners.filter(
+          (p) => p.partner_type === "distributor" && p.status === "approved",
+        );
+        sel.innerHTML =
+          '<option value="">Select approved distributor</option>' +
+          ds
+            .map(
+              (p) =>
+                `<option value="${esc(p.id)}">${esc(p.full_name)} · ${esc(p.partner_code)}</option>`,
+            )
+            .join("");
+        if (ds.some((p) => p.id === old)) sel.value = old;
+        syncPartnerType();
+      }
+      function syncPartnerType() {
+        const d = $("fType").value === "distributor";
+        $("parentField").classList.toggle("hidden", d);
+        $("fParent").required = !d;
+      }
+      $("fType").addEventListener("change", syncPartnerType);
+      function openPartnerModal() {
+        $("partnerForm").reset();
+        $("partnerFormError").classList.add("hidden");
+        $("fStatus").value = "pending";
+        renderParentOptions();
+        const m = $("partnerModal");
+        m.classList.remove("hidden");
+        m.classList.add("flex");
+        document.body.style.overflow = "hidden";
+      }
+      function closePartnerModal() {
+        const m = $("partnerModal");
+        m.classList.add("hidden");
+        m.classList.remove("flex");
+        document.body.style.overflow = "";
+      }
+      function formError(msg) {
+        $("partnerFormError").textContent = msg;
+        $("partnerFormError").classList.remove("hidden");
+      }
+      function makeCode(type) {
+        const prefix = type === "distributor" ? "Q2P-D" : "Q2P-OP";
+        return `${prefix}-${crypto.getRandomValues(new Uint32Array(1))[0].toString().slice(0, 6).padStart(6, "0")}`;
+      }
+      $("partnerForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = $("createPartnerBtn");
+        const type = $("fType").value,
+          name = $("fName").value.trim(),
+          mobile = $("fMobile").value.trim(),
+          email = $("fEmail").value.trim(),
+          parent = $("fParent").value;
+        $("partnerFormError").classList.add("hidden");
+        if (!e.currentTarget.reportValidity()) return;
+        if (!/^[6-9]\d{9}$/.test(mobile))
+          return formError("Enter a valid 10-digit Indian mobile number.");
+        if (
+          type === "onboarding_partner" &&
+          !state.partners.some(
+            (p) =>
+              p.id === parent &&
+              p.partner_type === "distributor" &&
+              p.status === "approved",
+          )
+        )
+          return formError("Select an approved distributor.");
+        const dob = $("fDob").value;
+        if (dob && new Date(dob) > new Date())
+          return formError("Date of birth cannot be in the future.");
+        btn.disabled = true;
+        btn.textContent = "Creating partner…";
+        try {
+          let code = makeCode(type),
+            attempt = 0;
+          while (
+            state.partners.some((p) => p.partner_code === code) &&
+            attempt++ < 5
+          )
+            code = makeCode(type);
+          const payload = {
+            partner_code: code,
+            partner_type: type,
+            parent_distributor_id: type === "distributor" ? null : parent,
+            full_name: name,
+            father_name: $("fFather").value.trim() || null,
+            mother_name: $("fMother").value.trim() || null,
+            date_of_birth: dob || null,
+            mobile,
+            email: email || null,
+            address: $("fAddress").value.trim() || null,
+            city: $("fCity").value.trim() || null,
+            district: $("fDistrict").value.trim() || null,
+            state: $("fState").value.trim() || null,
+            status: $("fStatus").value,
+            created_by: state.user.id,
+            ...($("fStatus").value === "approved"
+              ? {
+                  approved_by: state.user.id,
+                  approved_at: new Date().toISOString(),
+                }
+              : {}),
+          };
+          const { data, error } = await sb
+            .from("q2p_partners")
+            .insert(payload)
+            .select()
+            .single();
+          if (error) throw error;
+          state.partners.unshift(data);
+          closePartnerModal();
+          renderAll();
+          renderParentOptions();
+          navigate("partners");
+          toast(`Partner created successfully: ${code}`);
+          await loadAll();
+        } catch (ex) {
+          formError(friendlyError(ex));
+          toast(
+            "Partner could not be created. Check the error in the form.",
+            "error",
+          );
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML =
+            '<i data-lucide="user-plus" class="h-4 w-4"></i>Create partner in Supabase';
+          icons();
+        }
+      });
+      async function updatePartnerStatus(id, status) {
+        const patch = { status };
+        if (status === "approved") {
+          patch.approved_by = state.user.id;
+          patch.approved_at = new Date().toISOString();
+        }
+        try {
+          const { data, error } = await sb
+            .from("q2p_partners")
+            .update(patch)
+            .eq("id", id)
+            .select()
+            .single();
+          if (error) throw error;
+          state.partners = state.partners.map((p) => (p.id === id ? data : p));
+          renderAll();
+          renderParentOptions();
+          toast(`Partner status updated to ${status}.`);
+        } catch (e) {
+          toast(friendlyError(e), "error");
+        }
+      }
+      function viewPartner(id) {
+        const p = state.partners.find((x) => x.id === id);
+        if (!p) return;
+        alert(
+          `PARTNER RECORD\n\nName: ${p.full_name}\nCode: ${p.partner_code}\nType: ${niceType(p.partner_type)}\nParent distributor: ${parentName(p)}\nMobile: ${p.mobile}\nEmail: ${p.email || "—"}\nAddress: ${[p.address, p.city, p.district, p.state].filter(Boolean).join(", ") || "—"}\nStatus: ${p.status}\nCreated: ${p.created_at || "—"}\n\nThis profile record is not itself an authentication login.`,
+        );
+      }
+      async function changeLedgerStatus(id, status) {
+        const l = state.ledger.find((x) => x.id === id);
+        if (!l) return toast("Ledger record not found.", "error");
+        if (status === "paid" && l.status !== "approved")
+          return toast("Only approved entries can be marked paid.", "error");
+        const msg =
+          status === "paid"
+            ? "Mark this ledger entry as paid? This only changes the database status; it does not transfer funds."
+            : "Approve this commission ledger entry?";
+        if (!confirm(msg)) return;
+        const patch = { status };
+        if (status === "paid") patch.paid_at = new Date().toISOString();
+        try {
+          const { data, error } = await sb
+            .from("q2p_commission_ledger")
+            .update(patch)
+            .eq("id", id)
+            .select()
+            .single();
+          if (error) throw error;
+          state.ledger = state.ledger.map((x) => (x.id === id ? data : x));
+          renderAll();
+          toast("Ledger status updated successfully.");
+        } catch (e) {
+          toast(friendlyError(e), "error");
+        }
+      }
+      function exportPartners() {
+        const rows = [
+          [
+            "Partner ID",
+            "Name",
+            "Type",
+            "Parent Distributor",
+            "Mobile",
+            "Email",
+            "Status",
+            "Created",
+          ],
+          ...state.partners.map((p) => [
+            p.partner_code,
+            p.full_name,
+            niceType(p.partner_type),
+            parentName(p),
+            p.mobile,
+            p.email,
+            p.status,
+            p.created_at,
+          ]),
+        ];
+        const csv = rows
+          .map((r) =>
+            r
+              .map((v) => '"' + String(v ?? "").replace(/"/g, '""') + '"')
+              .join(","),
+          )
+          .join("\r\n");
+        const url = URL.createObjectURL(
+          new Blob([csv], { type: "text/csv;charset=utf-8" }),
+        );
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "quick2print-partners.csv";
+        a.click();
+        URL.revokeObjectURL(url);
+        toast("Partner CSV exported.");
+      }
+      (async function init() {
+        icons();
+        $("projectUrl").textContent = SUPABASE_URL;
+        try {
+          const {
+            data: { session },
+          } = await sb.auth.getSession();
+          if (session) {
+            try {
+              await checkAdmin(session.user);
+              await showApp(session.user);
+            } catch (e) {
+              showLogin();
+              $("loginError").textContent = friendlyError(e);
+              $("loginError").classList.remove("hidden");
+            }
+          } else showLogin();
+        } catch (e) {
+          showLogin();
+          $("loginError").textContent = friendlyError(e);
+          $("loginError").classList.remove("hidden");
+        }
+      })();
+    </script>
+  </body>
+</html>
