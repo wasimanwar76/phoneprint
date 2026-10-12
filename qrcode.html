@@ -1943,6 +1943,54 @@
 
       async function validateShopSubscription() {
         const now = new Date();
+        const shop = currentShopRow || {};
+        const planIdFromShop = String(shop.plan_id || "").trim().toLowerCase();
+
+        // Free plan rules: QR/upload is active for 24 hours from shop creation
+        // (or subscription_start when available), and only while total_prints <= 10.
+        // The print limit check is intentionally first so it gets the requested message.
+        if (planIdFromShop === "free") {
+          const printsRaw = Number(shop.total_prints);
+          const currentPrints = Number.isFinite(printsRaw) ? Math.max(0, printsRaw) : 0;
+
+          if (currentPrints > 10) {
+            subscriptionState = {
+              valid: false, reason: "LIMIT", planId: shop.plan_id,
+              currentPrints, maxPrints: 10, remainingPrints: 0,
+              expiresAt: null, paymentStatus: null
+            };
+            return {
+              valid: false, reason: "LIMIT",
+              message: "This shop's free subscription has been deactivated because it exceeded 10 prints. Please ask the shopkeeper to buy another subscription plan."
+            };
+          }
+
+          const trialStartRaw = shop.subscription_start || shop.created_at;
+          const trialStart = trialStartRaw ? new Date(trialStartRaw) : null;
+          const trialEnd = trialStart && !Number.isNaN(trialStart.getTime())
+            ? new Date(trialStart.getTime() + 24 * 60 * 60 * 1000)
+            : null;
+
+          if (!trialEnd || now >= trialEnd) {
+            subscriptionState = {
+              valid: false, reason: "EXPIRED", planId: shop.plan_id,
+              currentPrints, maxPrints: 10, remainingPrints: Math.max(0, 10-currentPrints),
+              expiresAt: trialEnd?.toISOString() || null, paymentStatus: null
+            };
+            return {
+              valid: false, reason: "EXPIRED",
+              message: "Subscription expired: this shop's free QR access expired after 24 hours. Please ask the shopkeeper to buy another subscription plan."
+            };
+          }
+
+          subscriptionState = {
+            valid: true, reason: null, planId: shop.plan_id,
+            planName: "Free", maxPrints: 10, currentPrints,
+            remainingPrints: 10-currentPrints,
+            expiresAt: trialEnd.toISOString(), paymentStatus: "FREE"
+          };
+          return { valid: true, reason: null, message: null };
+        }
 
         // The shop row is also maintained by the subscription/payment flow.
         // Use a paid subscription row when available; otherwise use the shop's
@@ -1979,7 +2027,6 @@
             );
           }) || null;
 
-        const shop = currentShopRow || {};
         const shopSubStatus = String(shop.subscription_status || "")
           .trim()
           .toLowerCase();
@@ -2415,7 +2462,7 @@
           const { data: shop, error } = await supabaseClient
             .from("shops")
             .select(
-              "shop_id, shop_name, shop_status, print_price, color_price, total_prints, cashfree_app_id, cashfree_env, plan_id, plan_expires_at, subscription_status, subscription_start, subscription_end",
+              "shop_id, shop_name, created_at, shop_status, print_price, color_price, total_prints, cashfree_app_id, cashfree_env, plan_id, plan_expires_at, subscription_status, subscription_start, subscription_end",
             )
             .eq("shop_id", currentShopId)
             .single();
@@ -2516,7 +2563,7 @@
             showUploadBlockedState(
               subscriptionCheck.message,
               subscriptionCheck.reason === "LIMIT"
-                ? "Print Limit Reached"
+                ? "Free Plan Deactivated"
                 : "Subscription Expired",
             );
             return;
