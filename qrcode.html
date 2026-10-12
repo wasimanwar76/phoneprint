@@ -3737,11 +3737,11 @@
 
             <div class="mt-2 grid grid-cols-2 gap-2">
               <label class="cursor-pointer min-h-[48px] rounded-lg bg-[#211B8F] hover:opacity-95 text-white text-xs font-bold px-2 py-2 leading-tight text-center flex items-center justify-center">
-                Gallery se photo chunein
+                Gallery
                 <input type="file" accept="image/*" class="sr-only" id="idb-file-${side}" />
               </label>
               <label class="cursor-pointer min-h-[48px] rounded-lg bg-[#FFB800] hover:brightness-95 text-[#211B8F] text-xs font-bold px-2 py-2 leading-tight text-center flex items-center justify-center">
-                Camera se photo lein
+                Camera
                 <input type="file" accept="image/*" capture="environment" class="sr-only" id="idb-cam-${side}" />
               </label>
             </div>
@@ -3792,7 +3792,7 @@
           for (const side of Object.keys(SIDES)) {
             const el = $("idb-status-" + side);
             const on = st[side].loaded;
-            el.textContent = on ? "Photo lag gayi" : "Photo abhi nahi hai";
+            el.textContent = on ? "Photo lag gayi" : "No Photo";
             el.className =
               "text-[10px] font-bold rounded-full px-2 py-0.5 " +
               (on
