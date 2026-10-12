@@ -478,6 +478,51 @@
           color: #211b8f;
         }
       }
+      /* Compact document-type picker on phones so the split panes get the room */
+      @media (max-width: 767px) {
+        #idBuilder section[aria-label="Document type"] {
+          padding: 6px !important;
+          margin-bottom: 6px !important;
+        }
+        #idBuilder section[aria-label="Document type"] > h3,
+        #idBuilder section[aria-label="Document type"] > p {
+          display: none;
+        }
+        #idBuilder section[aria-label="Document type"] > div.grid {
+          margin-top: 0 !important;
+          display: flex;
+          gap: 6px;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        #idBuilder .idb-doc {
+          flex: 0 0 auto;
+          min-height: 0 !important;
+          padding: 6px 10px !important;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        #idBuilder .idb-doc span:nth-child(3) {
+          display: none;
+        }
+        #idBuilder .idb-doc span.block {
+          margin-top: 0 !important;
+          white-space: nowrap;
+          font-size: 11px;
+        }
+        #idBuilder section[aria-label="Document type"] > div.mt-3.flex {
+          display: none;
+        }
+        /* Make both panes fill the remaining height and scroll on their own */
+        #idBuilder .idb-mobile-panes {
+          align-items: stretch !important;
+          grid-template-rows: minmax(0, 1fr);
+        }
+        #idBuilder .idb-mobile-pane > section {
+          border-radius: 10px;
+        }
+      }
       @media (max-width: 380px) {
         #idBuilder .idb-doc {
           padding: 6px !important;
@@ -1499,84 +1544,95 @@
         </section>
 
         <div
-          class="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(380px,0.9fr)] xl:gap-6"
+          class="idb-mobile-panes grid grid-cols-2 items-start gap-2 md:gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(380px,0.9fr)] xl:gap-6"
         >
-          <!-- Preview -->
-          <section
-            class="overflow-hidden rounded-xl border border-slate-200 bg-white lg:sticky lg:top-[76px]"
-          >
-            <div
-              class="flex items-center justify-between border-b border-slate-200 px-3 py-2"
+          <!-- Preview pane (left) -->
+          <div class="idb-mobile-pane min-w-0 lg:contents">
+            <section
+              class="overflow-hidden rounded-xl border border-slate-200 bg-white lg:sticky lg:top-[76px]"
             >
-              <h3 class="text-sm font-bold text-[#211B8F]">
-                A4 par kaisa dikhega
-              </h3>
-              <span id="idbPageStatus" class="text-xs font-bold text-slate-600"
-                >0 / 1 photo</span
-              >
-            </div>
-            <div class="bg-slate-200 p-2 sm:p-3">
               <div
-                id="idb-paper"
-                class="idb-paper relative mx-auto w-full max-w-[560px] overflow-hidden border border-slate-300 bg-white shadow"
+                class="flex items-center justify-between border-b border-slate-200 px-3 py-2"
               >
-                <div
-                  id="idb-slot-front"
-                  class="idb-drop idb-slot absolute left-[6.5%] touch-none overflow-hidden border border-dashed border-slate-400 bg-slate-50"
+                <h3 class="text-sm font-bold text-[#211B8F]">
+                  A4 par kaisa dikhega
+                </h3>
+                <span
+                  id="idbPageStatus"
+                  class="text-xs font-bold text-slate-600"
+                  >0 / 1 photo</span
                 >
-                  <span
-                    class="absolute left-1 top-1 z-10 rounded bg-[#211B8F] px-1.5 py-0.5 text-[7px] font-bold leading-none text-white"
-                    >AAGE (FRONT)</span
-                  >
+              </div>
+              <div class="bg-slate-200 p-2 sm:p-3">
+                <div
+                  id="idb-paper"
+                  class="idb-paper relative mx-auto w-full max-w-[560px] overflow-hidden border border-slate-300 bg-white shadow"
+                >
                   <div
-                    id="idb-prompt-front"
-                    class="absolute inset-0 flex flex-col items-center justify-center p-1 text-center text-slate-500"
+                    id="idb-slot-front"
+                    class="idb-drop idb-slot absolute left-[6.5%] touch-none overflow-hidden border border-dashed border-slate-400 bg-slate-50"
                   >
-                    <span class="text-2xl font-bold leading-none text-[#211B8F]"
-                      >+</span
+                    <span
+                      class="absolute left-1 top-1 z-10 rounded bg-[#211B8F] px-1.5 py-0.5 text-[7px] font-bold leading-none text-white"
+                      >AAGE (FRONT)</span
                     >
+                    <div
+                      id="idb-prompt-front"
+                      class="absolute inset-0 flex flex-col items-center justify-center p-1 text-center text-slate-500"
+                    >
+                      <span
+                        class="text-2xl font-bold leading-none text-[#211B8F]"
+                        >+</span
+                      >
+                    </div>
+                    <img
+                      id="idb-img-front"
+                      class="idb-img"
+                      alt="Front photo"
+                      draggable="false"
+                    />
                   </div>
-                  <img
-                    id="idb-img-front"
-                    class="idb-img"
-                    alt="Front photo"
-                    draggable="false"
-                  />
-                </div>
 
-                <div
-                  id="idb-slot-back"
-                  class="idb-drop idb-slot absolute right-[6.5%] touch-none overflow-hidden border border-dashed border-slate-400 bg-slate-50"
-                >
-                  <span
-                    class="absolute left-1 top-1 z-10 rounded bg-[#211B8F] px-1.5 py-0.5 text-[7px] font-bold leading-none text-white"
-                    >PICHE (BACK)</span
-                  >
                   <div
-                    id="idb-prompt-back"
-                    class="absolute inset-0 flex flex-col items-center justify-center p-1 text-center text-slate-500"
+                    id="idb-slot-back"
+                    class="idb-drop idb-slot absolute right-[6.5%] touch-none overflow-hidden border border-dashed border-slate-400 bg-slate-50"
                   >
-                    <span class="text-2xl font-bold leading-none text-[#211B8F]"
-                      >+</span
+                    <span
+                      class="absolute left-1 top-1 z-10 rounded bg-[#211B8F] px-1.5 py-0.5 text-[7px] font-bold leading-none text-white"
+                      >PICHE (BACK)</span
                     >
+                    <div
+                      id="idb-prompt-back"
+                      class="absolute inset-0 flex flex-col items-center justify-center p-1 text-center text-slate-500"
+                    >
+                      <span
+                        class="text-2xl font-bold leading-none text-[#211B8F]"
+                        >+</span
+                      >
+                    </div>
+                    <img
+                      id="idb-img-back"
+                      class="idb-img"
+                      alt="Back photo"
+                      draggable="false"
+                    />
                   </div>
-                  <img
-                    id="idb-img-back"
-                    class="idb-img"
-                    alt="Back photo"
-                    draggable="false"
-                  />
                 </div>
               </div>
-            </div>
-            <p class="px-3 py-2 text-[11px] text-slate-600">
-              Photo ko ungli se kheench kar sahi jagah laayein. Computer par
-              image file ko box par drop bhi kar sakte hain.
-            </p>
-          </section>
+              <p class="px-3 py-2 text-[11px] text-slate-600">
+                Photo ko ungli se kheench kar sahi jagah laayein. Computer par
+                image file ko box par drop bhi kar sakte hain.
+              </p>
+            </section>
+          </div>
 
-          <!-- Settings -->
-          <div class="min-w-0 space-y-3">
+          <!-- Settings pane (right) -->
+          <div class="idb-mobile-pane min-w-0 space-y-3">
+            <div
+              class="idb-settings-heading rounded-xl border border-slate-200 text-sm font-bold text-[#211B8F] md:hidden"
+            >
+              Settings
+            </div>
             <div id="idb-ctrl-front"></div>
             <div id="idb-ctrl-back"></div>
 
