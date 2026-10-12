@@ -110,10 +110,159 @@
           opacity: 0.35;
         }
       }
+
+      /* Quick2Print premium loading overlay (same as the order page) */
+      #q2pLoader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: rgba(15, 18, 40, 0.68);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      #q2pLoader.is-visible {
+        display: flex;
+      }
+      #q2pLoader .q2p-loader-card {
+        width: min(320px, 100%);
+        padding: 28px 24px 24px;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        border-radius: 24px;
+        background: linear-gradient(145deg, #fff 0%, #f5f6ff 100%);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+        text-align: center;
+        animation: q2pLoaderIn 0.24s ease-out both;
+      }
+      #q2pLoader .q2p-orbit {
+        position: relative;
+        width: 76px;
+        height: 76px;
+        margin: 0 auto 18px;
+        border: 4px solid #e0e7ff;
+        border-top-color: #211b8f;
+        border-right-color: #ffb800;
+        border-radius: 50%;
+        animation: q2pSpin 0.9s linear infinite;
+      }
+      #q2pLoader .q2p-orbit::before,
+      #q2pLoader .q2p-orbit::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+      }
+      #q2pLoader .q2p-orbit::before {
+        inset: 10px;
+        border: 3px dashed #a5b4fc;
+        animation: q2pSpin 4s linear infinite reverse;
+      }
+      #q2pLoader .q2p-orbit::after {
+        width: 12px;
+        height: 12px;
+        top: -5px;
+        left: 9px;
+        background: #ffb800;
+        box-shadow: 0 0 0 5px rgba(255, 184, 0, 0.18);
+      }
+      #q2pLoader .q2p-loader-brand {
+        color: #211b8f;
+        font:
+          800 11px/1.2 "Space Mono",
+          monospace;
+        letter-spacing: 0.16em;
+      }
+      #q2pLoader .q2p-loader-title {
+        margin-top: 9px;
+        color: #111827;
+        font:
+          800 21px/1.2 "Outfit",
+          sans-serif;
+      }
+      #q2pLoader .q2p-loader-message {
+        margin-top: 8px;
+        color: #64748b;
+        font:
+          500 12px/1.5 "Inter",
+          sans-serif;
+      }
+      #q2pLoader .q2p-loader-order {
+        display: none;
+        margin-top: 12px;
+        font:
+          700 12px/1.2 "Space Mono",
+          monospace;
+        color: #211b8f;
+        background: #eef2ff;
+        border-radius: 8px;
+        padding: 6px 10px;
+      }
+      #q2pLoader .q2p-loader-track {
+        height: 5px;
+        margin-top: 20px;
+        overflow: hidden;
+        border-radius: 99px;
+        background: #e5e7eb;
+      }
+      #q2pLoader .q2p-loader-track span {
+        display: block;
+        width: 42%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #211b8f, #818cf8, #ffb800);
+        animation: q2pProgress 1.35s ease-in-out infinite;
+      }
+      @keyframes q2pSpin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes q2pProgress {
+        0% {
+          transform: translateX(-110%);
+        }
+        100% {
+          transform: translateX(250%);
+        }
+      }
+      @keyframes q2pLoaderIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #q2pLoader *,
+        #q2pLoader *::before,
+        #q2pLoader *::after {
+          animation-duration: 2.5s !important;
+        }
+      }
     </style>
   </head>
 
   <body>
+    <div id="q2pLoader" role="status" aria-live="polite" aria-hidden="true">
+      <div class="q2p-loader-card">
+        <div class="q2p-orbit" aria-hidden="true"></div>
+        <div class="q2p-loader-brand">QUICK2PRINT</div>
+        <div id="q2pLoaderTitle" class="q2p-loader-title">
+          Verifying payment
+        </div>
+        <p id="q2pLoaderMessage" class="q2p-loader-message">
+          Please wait, we are confirming your payment…
+        </p>
+        <div id="q2pLoaderOrder" class="q2p-loader-order"></div>
+        <div class="q2p-loader-track" aria-hidden="true"><span></span></div>
+      </div>
+    </div>
+
     <main class="min-h-screen flex items-center justify-center px-4 py-8">
       <div class="w-full max-w-md">
         <!-- =====================================================
@@ -134,9 +283,12 @@
            MAIN CARD
       ====================================================== -->
 
-        <div class="bg-white rounded-2xl soft-shadow overflow-hidden">
+        <div
+          id="statusCard"
+          class="bg-white rounded-2xl soft-shadow overflow-hidden"
+        >
           <!-- ===================================================
-             LOADING
+             LOADING (inline fallback; the branded overlay is shown instead)
         ==================================================== -->
 
           <section id="paymentLoadingBox" class="px-6 py-10 text-center">
@@ -582,7 +734,42 @@
        * ============================================================
        */
 
+      // Short order ID, e.g. 3a3396de (same style as the order page receipt)
+      function shortOrderId(id) {
+        const value = String(id || "").trim();
+        return value ? value.slice(0, 8) : "—";
+      }
+
+      function showQ2PLoader(title, message) {
+        const overlay = document.getElementById("q2pLoader");
+        if (!overlay) return;
+        if (title)
+          document.getElementById("q2pLoaderTitle").textContent = title;
+        if (message)
+          document.getElementById("q2pLoaderMessage").textContent = message;
+        const orderEl = document.getElementById("q2pLoaderOrder");
+        if (orderEl && orderId) {
+          orderEl.textContent = `Order ID: ${shortOrderId(orderId)}`;
+          orderEl.style.display = "inline-block";
+        }
+        overlay.classList.add("is-visible");
+        overlay.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+      }
+
+      function hideQ2PLoader() {
+        const overlay = document.getElementById("q2pLoader");
+        if (!overlay) return;
+        overlay.classList.remove("is-visible");
+        overlay.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+
       function hideAllStates() {
+        hideQ2PLoader();
+
+        document.getElementById("statusCard").classList.remove("hidden");
+
         document.getElementById("paymentLoadingBox").classList.add("hidden");
 
         document.getElementById("paymentSuccess").classList.add("hidden");
@@ -595,10 +782,13 @@
       function showLoading(message) {
         hideAllStates();
 
-        document.getElementById("paymentLoadingBox").classList.remove("hidden");
+        // Branded overlay replaces the inline spinner; hide the empty card.
+        document.getElementById("statusCard").classList.add("hidden");
 
-        document.getElementById("paymentLoading").textContent =
-          message || "Please wait...";
+        showQ2PLoader(
+          "Verifying payment",
+          message || "Please wait, we are confirming your payment…",
+        );
       }
 
       function formatAmount(value) {
@@ -611,8 +801,9 @@
 
         document.getElementById("paymentSuccess").classList.remove("hidden");
 
-        document.getElementById("successOrderId").textContent =
-          data.orderId || orderId || "—";
+        document.getElementById("successOrderId").textContent = shortOrderId(
+          data.orderId || orderId,
+        );
 
         document.getElementById("successShopId").textContent =
           data.shopId || shopId || "—";
@@ -636,8 +827,9 @@
         document.getElementById("paymentError").textContent =
           message || "Payment verification failed.";
 
-        document.getElementById("failedOrderId").textContent =
-          details.orderId || orderId || "—";
+        document.getElementById("failedOrderId").textContent = shortOrderId(
+          details.orderId || orderId,
+        );
 
         document.getElementById("failedShopId").textContent =
           details.shopId || shopId || "—";
@@ -655,8 +847,9 @@
 
         document.getElementById("paymentPending").classList.remove("hidden");
 
-        document.getElementById("pendingOrderId").textContent =
-          details.orderId || orderId || "—";
+        document.getElementById("pendingOrderId").textContent = shortOrderId(
+          details.orderId || orderId,
+        );
 
         document.getElementById("pendingShopId").textContent =
           details.shopId || shopId || "—";

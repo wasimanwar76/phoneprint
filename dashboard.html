@@ -432,7 +432,7 @@
             <button
               class="manga-btn w-full py-2 text-sm flex items-center justify-center gap-2"
             >
-              <i data-lucide="headphones" class="w-4 h-4" ></i> +91 9128554664
+              <i data-lucide="headphones" class="w-4 h-4"></i> +91 9128554664
             </button>
           </div>
 
@@ -941,7 +941,7 @@
                     id="subscription-payment-status"
                     class="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700"
                   >
-                    PAID
+                    Checking…
                   </span>
                 </div>
 
@@ -1091,50 +1091,44 @@
             </section>
 
             <!-- QUICK2PRINT RENEW PLAN MODAL -->
-            <!-- ==================== RENEW PLAN MODAL ==================== -->
             <div
               id="renew-plan-modal"
               class="fixed inset-0 z-[9999] hidden"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="renew-plan-title"
               aria-hidden="true"
             >
               <!-- Backdrop -->
               <div
-                class="absolute inset-0 bg-[#09083A]/70 backdrop-blur-md transition-opacity"
+                class="absolute inset-0 bg-[#09083A]/60 backdrop-blur-sm transition-opacity"
                 onclick="closeRenewPlanModal()"
               ></div>
 
               <!-- Modal Wrapper -->
               <div
-                class="relative flex min-h-full items-center justify-center p-3 sm:p-5"
+                class="relative flex min-h-full items-center justify-center p-3 sm:p-6"
               >
                 <div
-                  class="relative flex w-full max-w-5xl flex-col overflow-hidden rounded-[28px] border border-white/70 bg-[#F8FAFC] shadow-[0_30px_100px_rgba(23,19,95,0.30)]"
+                  class="relative flex w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_24px_80px_rgba(9,8,58,0.28)]"
                 >
-                  <!-- Decorative Glow -->
-                  <div
-                    class="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[#00B8D9]/10 blur-3xl"
-                  ></div>
-
-                  <div
-                    class="pointer-events-none absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-[#211B8F]/10 blur-3xl"
-                  ></div>
-
                   <!-- ================= HEADER ================= -->
                   <div
-                    class="relative border-b border-slate-200/80 bg-white/95 px-5 py-5 sm:px-8 sm:py-6"
+                    class="border-b border-slate-200 px-5 py-5 sm:px-8 sm:py-6"
                   >
                     <div class="flex items-start justify-between gap-4">
                       <div class="flex items-start gap-4">
                         <!-- Icon -->
                         <div
-                          class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#211B8F] to-[#17135F] shadow-lg shadow-[#211B8F]/20"
+                          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#211B8F]/[0.07] text-[#211B8F] ring-1 ring-inset ring-[#211B8F]/10"
                         >
                           <svg
-                            class="h-6 w-6 text-white"
+                            class="h-5 w-5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="2"
+                            stroke-width="1.75"
+                            aria-hidden="true"
                           >
                             <path
                               stroke-linecap="round"
@@ -1145,31 +1139,23 @@
                         </div>
 
                         <div>
-                          <div class="flex items-center gap-2">
-                            <span
-                              class="text-[10px] font-black uppercase tracking-[0.2em] text-[#00A9C7]"
-                            >
-                              Quick2Print
-                            </span>
-
-                            <span
-                              class="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-600"
-                            >
-                              Secure
-                            </span>
-                          </div>
+                          <p class="text-sm font-semibold text-[#00A9C7]">
+                            Quick2Print
+                          </p>
 
                           <h3
-                            class="mt-1 text-xl font-black tracking-tight text-[#17135F] sm:text-2xl"
+                            id="renew-plan-title"
+                            class="mt-0.5 text-xl font-semibold tracking-tight text-[#17135F] sm:text-2xl"
                           >
                             Renew your subscription
                           </h3>
 
                           <p
-                            class="mt-1 max-w-xl text-xs leading-5 text-slate-500 sm:text-sm"
+                            class="mt-1.5 max-w-xl text-sm leading-6 text-slate-600"
                           >
-                            Choose the plan that works best for your shop and
-                            continue to secure payment.
+                            Pick a plan to keep your shop running without
+                            interruption. You'll choose how to pay on the next
+                            step.
                           </p>
                         </div>
                       </div>
@@ -1178,15 +1164,16 @@
                       <button
                         type="button"
                         onclick="closeRenewPlanModal()"
-                        class="group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-400 transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#211B8F] focus-visible:ring-offset-2"
                         aria-label="Close"
                       >
                         <svg
-                          class="h-5 w-5 transition-transform group-hover:rotate-90"
+                          class="h-5 w-5"
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
-                          stroke-width="2"
+                          stroke-width="1.75"
+                          aria-hidden="true"
                         >
                           <path
                             stroke-linecap="round"
@@ -1200,85 +1187,45 @@
 
                   <!-- ================= CONTENT ================= -->
                   <div
-                    class="relative max-h-[72vh] overflow-y-auto px-4 py-5 sm:px-7 sm:py-7"
+                    class="max-h-[72vh] overflow-y-auto bg-slate-50/70 px-4 py-5 sm:px-8 sm:py-7"
                   >
                     <!-- Loading State -->
                     <div
                       id="renew-plan-loading"
-                      class="flex min-h-[300px] flex-col items-center justify-center"
+                      class="flex min-h-[300px] flex-col items-center justify-center text-center"
+                      role="status"
+                      aria-live="polite"
                     >
-                      <!-- Loader -->
                       <div
-                        class="relative flex h-20 w-20 items-center justify-center"
-                      >
-                        <!-- Outer ring -->
-                        <div
-                          class="absolute inset-0 animate-spin rounded-full border-[3px] border-slate-200 border-t-[#211B8F]"
-                        ></div>
+                        class="h-10 w-10 animate-spin rounded-full border-[3px] border-slate-200 border-t-[#211B8F] motion-reduce:animate-none"
+                      ></div>
 
-                        <!-- Inner ring -->
-                        <div
-                          class="absolute inset-2 animate-[spin_1.5s_linear_infinite_reverse] rounded-full border-2 border-transparent border-b-[#00B8D9]"
-                        ></div>
-
-                        <!-- Center icon -->
-                        <div
-                          class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#211B8F] to-[#17135F] shadow-md"
-                        >
-                          <svg
-                            class="h-5 w-5 animate-pulse text-white"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="M12 8v4l3 2"
-                            />
-                            <circle cx="12" cy="12" r="9" />
-                          </svg>
-                        </div>
-                      </div>
-
-                      <p class="mt-6 text-sm font-bold text-[#17135F]">
+                      <p class="mt-5 text-sm font-semibold text-[#17135F]">
                         Loading subscription plans
                       </p>
 
-                      <p class="mt-1 text-xs text-slate-400">
-                        Please wait while we fetch the latest plans...
+                      <p class="mt-1 text-sm text-slate-500">
+                        This will only take a moment.
                       </p>
-
-                      <!-- Loading dots -->
-                      <div class="mt-4 flex items-center gap-1.5">
-                        <span
-                          class="h-1.5 w-1.5 animate-bounce rounded-full bg-[#211B8F]"
-                        ></span>
-                        <span
-                          class="h-1.5 w-1.5 animate-bounce rounded-full bg-[#00B8D9] [animation-delay:150ms]"
-                        ></span>
-                        <span
-                          class="h-1.5 w-1.5 animate-bounce rounded-full bg-[#211B8F] [animation-delay:300ms]"
-                        ></span>
-                      </div>
                     </div>
 
                     <!-- Error State -->
                     <div
                       id="renew-plan-error"
-                      class="hidden rounded-2xl border border-red-200 bg-gradient-to-br from-red-50 to-white p-5"
+                      class="hidden rounded-xl border border-red-200 bg-white p-5"
+                      role="alert"
                     >
                       <div class="flex items-start gap-4">
                         <div
-                          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-600"
+                          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600"
                         >
                           <svg
                             class="h-5 w-5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="2"
+                            stroke-width="1.75"
+                            aria-hidden="true"
                           >
                             <circle cx="12" cy="12" r="9"></circle>
                             <path
@@ -1289,14 +1236,19 @@
                         </div>
 
                         <div>
-                          <p class="font-bold text-red-700">
-                            Unable to load plans
+                          <p class="font-semibold text-red-700">
+                            Couldn't load plans
                           </p>
 
                           <p
                             id="renew-plan-error-message"
-                            class="mt-1 text-sm leading-5 text-red-600"
+                            class="mt-1 text-sm leading-6 text-slate-600"
                           ></p>
+
+                          <p class="mt-2 text-sm leading-6 text-slate-500">
+                            Check your internet connection, then close this
+                            window and try again.
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -1310,57 +1262,45 @@
 
                   <!-- ================= FOOTER ================= -->
                   <div
-                    class="relative border-t border-slate-200/80 bg-white px-5 py-4 sm:px-7"
+                    class="border-t border-slate-200 bg-white px-5 py-4 sm:px-8"
                   >
                     <div
-                      class="flex flex-col items-center justify-between gap-3 sm:flex-row"
+                      class="flex flex-col items-center justify-between gap-2 sm:flex-row"
                     >
                       <!-- Security -->
-                      <div class="flex items-center gap-3">
-                        <div
-                          class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50"
+                      <div class="flex items-center gap-2.5">
+                        <svg
+                          class="h-4 w-4 shrink-0 text-emerald-600"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.75"
+                          aria-hidden="true"
                         >
-                          <svg
-                            class="h-4 w-4 text-emerald-600"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4z"
+                          />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="m9 12 2 2 4-4"
+                          />
+                        </svg>
+
+                        <p class="text-xs text-slate-600">
+                          <span class="font-semibold text-slate-800"
+                            >Secure payment</span
                           >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4z"
-                            />
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="m9 12 2 2 4-4"
-                            />
-                          </svg>
-                        </div>
-
-                        <div>
-                          <p class="text-xs font-bold text-slate-700">
-                            Secure payment
-                          </p>
-
-                          <p class="text-[10px] text-slate-400">
-                            Protected by Cashfree
-                          </p>
-                        </div>
+                          processed by Cashfree
+                        </p>
                       </div>
 
                       <!-- Payment Methods -->
-                      <div
-                        class="flex items-center gap-2 text-[10px] font-semibold text-slate-400"
-                      >
-                        <span>UPI</span>
-                        <span class="text-slate-200">•</span>
-                        <span>Cards</span>
-                        <span class="text-slate-200">•</span>
-                        <span>Net Banking</span>
-                      </div>
+                      <p class="text-xs text-slate-500">
+                        Pay with UPI, cards or net banking
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -6070,33 +6010,41 @@
         document.getElementById("detail-support").textContent =
           plan?.support_level || "—";
 
-        document.getElementById("detail-payment-method").textContent =
-          payment?.payment_method || "—";
-
-        document.getElementById("detail-payment-amount").textContent = payment
-          ? q2pFormatINR(payment.amount)
-          : "—";
-
-        document.getElementById("detail-payment-date").textContent = payment
-          ? q2pFormatDateTime(payment.created_at)
-          : "—";
-
-        document.getElementById("detail-cashfree-order").textContent =
-          payment?.cashfree_order_id || "—";
-
-        document.getElementById("detail-payment-id").textContent =
-          payment?.cashfree_payment_id || "—";
-
         const paymentStatus = String(
           payment?.payment_status || "",
         ).toUpperCase();
+        const confirmedPaid = paymentStatus === "PAID";
+
+        document.getElementById("detail-payment-method").textContent =
+          confirmedPaid
+            ? payment?.payment_method || "Cashfree (method not returned)"
+            : "Not paid yet";
+
+        document.getElementById("detail-payment-amount").textContent =
+          confirmedPaid ? q2pFormatINR(payment.amount) : "—";
+
+        // The schema has no paid_at column. updated_at is the closest available
+        // timestamp, but it can also change for non-payment updates. Prefer it
+        // only for confirmed payments and fall back to created_at.
+        document.getElementById("detail-payment-date").textContent =
+          confirmedPaid
+            ? q2pFormatDateTime(payment.updated_at || payment.created_at)
+            : "—";
+
+        document.getElementById("detail-cashfree-order").textContent =
+          confirmedPaid ? payment?.cashfree_order_id || "—" : "—";
+
+        document.getElementById("detail-payment-id").textContent =
+          confirmedPaid ? payment?.cashfree_payment_id || "—" : "—";
 
         const paymentBadge = document.getElementById(
           "subscription-payment-status",
         );
 
         if (paymentBadge) {
-          paymentBadge.textContent = paymentStatus || "—";
+          paymentBadge.textContent = paymentStatus
+            ? (paymentStatus === "PAID" ? "PAID · VERIFIED" : `PAYMENT ${paymentStatus}`)
+            : (active ? "ACTIVE · NO PAYMENT RECORD" : "NO PAYMENT RECORD");
 
           if (paymentStatus === "PAID") {
             paymentBadge.className =
@@ -6111,6 +6059,16 @@
             paymentBadge.className =
               "rounded-full bg-yellow-100 px-3 py-1 text-xs font-bold text-yellow-800";
           }
+        }
+
+        if (payment && paymentStatus !== "PAID") {
+          console.warn("Quick2Print subscription payment is not confirmed", {
+            shopId: shop.shop_id,
+            subscriptionId: payment.subscription_id,
+            paymentStatus,
+            paymentErrorMessage: payment.payment_error_message || null,
+            cashfreeOrderId: payment.cashfree_order_id || null,
+          });
         }
 
         q2pRenderPrintUsage();
@@ -6242,68 +6200,52 @@
 
           subscriptionPlan = plan;
 
-          const { data: payment, error: paymentError } = await supabaseClient
+          // Prefer the latest confirmed payment. A newer PENDING/FAILED
+          // attempt must not hide the details of the last successful payment.
+          const paymentColumns =
+            "subscription_id,amount,currency,cashfree_order_id,cashfree_payment_id,cashfree_payment_session_id,payment_status,payment_method,payment_environment,payment_error_message,created_at,updated_at,started_at,expires_at,plan_id";
 
-            .from("shop_subscriptions")
+          const { data: paidPayment, error: paidPaymentError } =
+            await supabaseClient
+              .from("shop_subscriptions")
+              .select(paymentColumns)
+              .eq("shop_id", shopId)
+              .eq("payment_status", "PAID")
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .maybeSingle();
 
-            .select(
-              `
-
-
-
-        subscription_id,
-
-
-
-        amount,
-
-
-
-        cashfree_order_id,
-
-
-
-        cashfree_payment_id,
-
-
-
-        payment_status,
-
-
-
-        payment_method,
-
-
-
-        created_at
-
-
-
-      `,
-            )
-
-            .eq("shop_id", shopId)
-
-            .order("created_at", {
-              ascending: false,
-            })
-
-            .limit(1)
-
-            .maybeSingle();
-
-          if (paymentError) {
+          if (paidPaymentError) {
             console.warn(
-              "Subscription payment history unavailable:",
-
-              paymentError,
+              "Paid subscription history unavailable. Check Supabase RLS or use a server-side subscription endpoint:",
+              paidPaymentError,
             );
-
-            subscriptionRecord = null;
-          } else {
-            subscriptionRecord = payment;
           }
 
+          if (paidPayment) {
+            subscriptionRecord = paidPayment;
+          } else {
+            // Show the latest attempt's real status instead of a misleading
+            // blank/PAID-looking card when no successful payment exists.
+            const { data: latestAttempt, error: latestAttemptError } =
+              await supabaseClient
+                .from("shop_subscriptions")
+                .select(paymentColumns)
+                .eq("shop_id", shopId)
+                .order("created_at", { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if (latestAttemptError) {
+              console.warn("Subscription attempt history unavailable:", latestAttemptError);
+              subscriptionRecord = null;
+            } else {
+              subscriptionRecord = latestAttempt || null;
+            }
+          }
+
+          // paidPayment/latestAttempt above is the authoritative history lookup.
+          // Do not reference the removed `paymentError` / `payment` variables.
           q2pRenderSubscription();
         } catch (error) {
           console.error("Subscription load failed:", error);
@@ -6550,13 +6492,30 @@
         loadRenewPlans();
       }
 
-      function showSubscriptionRedirectLoader() {
+      // Shows a loader during navigation, with a manual fallback if the browser
+      // does not leave this page. Diagnostic logs are intentionally retained.
+      function showSubscriptionRedirectLoader(targetUrl) {
         let el = document.getElementById("q2p-subscription-redirect-loader");
-        if (el) return;
+        if (el) el.remove();
         el = document.createElement("div");
         el.id = "q2p-subscription-redirect-loader";
-        el.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.72);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px"><div style="width:min(420px,100%);background:#fff;border-radius:24px;padding:32px;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.25)"><div style="width:58px;height:58px;margin:0 auto 18px;border-radius:18px;background:#211B8F;display:grid;place-items:center"><div style="width:26px;height:26px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:q2pSpin .7s linear infinite"></div></div><h3 style="margin:0;color:#17135F;font:800 20px Inter,Arial,sans-serif">Preparing Secure Checkout</h3><p style="margin:8px 0 0;color:#64748b;font:500 14px Inter,Arial,sans-serif">Please wait while we open the Cashfree payment page.</p></div></div><style>@keyframes q2pSpin{to{transform:rotate(360deg)}}</style>`;
+        el.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.72);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px"><div style="width:min(440px,100%);background:#fff;border-radius:24px;padding:32px;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.25)"><div style="width:58px;height:58px;margin:0 auto 18px;border-radius:18px;background:#211B8F;display:grid;place-items:center"><div style="width:26px;height:26px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:q2pSpin .7s linear infinite"></div></div><h3 style="margin:0;color:#17135F;font:800 20px Inter,Arial,sans-serif">Preparing Secure Checkout</h3><p style="margin:8px 0 0;color:#64748b;font:500 14px/1.6 Inter,Arial,sans-serif">Please wait while we open the Cashfree payment page.</p><p id="q2p-redirect-debug" style="margin:10px 0 0;color:#94a3b8;font:12px/1.5 monospace;overflow-wrap:anywhere">Starting redirect…</p><a id="q2p-manual-payment-link" href="#" style="display:none;margin-top:18px;padding:12px 16px;background:#211B8F;color:white;border-radius:12px;text-decoration:none;font:700 14px Inter,Arial,sans-serif">Continue to payment</a><button id="q2p-retry-payment-redirect" type="button" style="display:none;margin:10px auto 0;padding:9px 14px;border:1px solid #dbe2f0;border-radius:10px;color:#211B8F;background:white;font:600 13px Inter,Arial,sans-serif">Retry redirect</button></div></div><style>@keyframes q2pSpin{to{transform:rotate(360deg)}}</style>`;
         document.body.appendChild(el);
+        const link = document.getElementById("q2p-manual-payment-link");
+        const retry = document.getElementById("q2p-retry-payment-redirect");
+        const debug = document.getElementById("q2p-redirect-debug");
+        link.href = targetUrl;
+        retry.onclick = () => { console.info("[Q2P subscription] Manual redirect retry", targetUrl); window.location.assign(targetUrl); };
+        // If navigation fails/gets interrupted, expose a direct link instead of
+        // leaving the user stuck on an infinite loader.
+        window.setTimeout(() => {
+          if (window.location.href.includes("dashboard.html") || window.location.href.includes("localhost") || window.location.href.includes("127.0.0.1")) {
+            console.error("[Q2P subscription] Redirect did not complete after 6 seconds.", { targetUrl, currentUrl: window.location.href });
+            if (debug) debug.textContent = "Redirect has not completed. Use the button below or check the browser console.";
+            link.style.display = "inline-block";
+            retry.style.display = "block";
+          }
+        }, 6000);
       }
 
       async function startQuick2PrintRenewal(planId) {
@@ -6605,7 +6564,7 @@
 
               body: JSON.stringify({
                 shopId,
-
+                planId: plan.plan_id,
                 planName: plan.name,
               }),
             },
@@ -6634,10 +6593,21 @@
             shop_id: shopId,
           });
 
-          closeRenewPlanModal();
+          const targetUrl = `${SUBSCRIPTION_PAYMENT_PAGE}?${params.toString()}`;
+          console.info("[Q2P subscription] Payment session created", {
+            shopId,
+            planId: plan.plan_id,
+            subscriptionId: data.subscription_id,
+            apiStatus: response.status,
+            targetUrl,
+          });
 
-          showSubscriptionRedirectLoader();
-          window.location.href = `${SUBSCRIPTION_PAYMENT_PAGE}?${params.toString()}`;
+          closeRenewPlanModal();
+          showSubscriptionRedirectLoader(targetUrl);
+
+          // Use assign() so browser history and navigation behavior are explicit.
+          console.info("[Q2P subscription] Navigating to checkout", targetUrl);
+          window.location.assign(targetUrl);
         } catch (error) {
           console.error("Renewal payment creation failed:", error);
 

@@ -633,9 +633,17 @@
           );
         }
 
-        const response = await fetch(
-          `${PAYMENT_API}/api/subscription/${encodeURIComponent(subscriptionId)}`,
+        const subscriptionUrl = new URL(
+          `${PAYMENT_API}/api/subscription/${encodeURIComponent(subscriptionId)}`
         );
+        subscriptionUrl.searchParams.set("shop_id", shopId);
+        console.info("[Q2P checkout] Loading subscription", {
+          subscriptionId,
+          shopId,
+          endpoint: subscriptionUrl.origin + subscriptionUrl.pathname
+        });
+        const response = await fetch(subscriptionUrl.toString());
+        console.info("[Q2P checkout] Subscription API response", { status: response.status, ok: response.ok });
 
         let result;
 
@@ -742,15 +750,45 @@
             );
           }
 
-          const cashfree = Cashfree({
+          console.info("[Q2P checkout] Starting Cashfree checkout", {
             mode,
+            subscriptionId: subscription.subscription_id,
+            shopId: subscription.shop_id,
+            orderId: subscription.cashfree_order_id,
+            sessionPresent: Boolean(subscription.cashfree_payment_session_id),
+            currentUrl: window.location.href,
           });
 
-          await cashfree.checkout({
+          const cashfree = Cashfree({ mode });
+          const checkoutOptions = {
             paymentSessionId: subscription.cashfree_payment_session_id,
-
             redirectTarget: "_self",
+          };
+
+          // Do not await forever without feedback: Cashfree can keep this promise
+          // pending while navigation is being initiated. Log any returned result.
+          const checkoutPromise = Promise.resolve(cashfree.checkout(checkoutOptions));
+          const timeoutPromise = new Promise((resolve) => {
+            window.setTimeout(() => resolve({ __q2pTimeout: true }), 20000);
           });
+          const checkoutResult = await Promise.race([checkoutPromise, timeoutPromise]);
+          if (checkoutResult && checkoutResult.__q2pTimeout) {
+            console.error("[Q2P checkout] No redirect/result after 20 seconds", {
+              mode,
+              subscriptionId: subscription.subscription_id,
+              orderId: subscription.cashfree_order_id,
+              currentUrl: window.location.href,
+            });
+            throw new Error("Cashfree did not open within 20 seconds. Check the browser console, verify the Cashfree environment and payment session, then retry.");
+          }
+          console.info("[Q2P checkout] Cashfree checkout returned", checkoutResult);
+          if (checkoutResult?.error) {
+            console.error("[Q2P checkout] Cashfree returned an error", checkoutResult.error);
+            throw new Error(checkoutResult.error.message || "Cashfree could not open the payment page.");
+          }
+          if (checkoutResult?.redirect) {
+            console.info("[Q2P checkout] Cashfree reports redirect initiated", checkoutResult.redirect);
+          }
         } catch (e) {
           hideOverlay();
 
