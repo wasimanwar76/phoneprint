@@ -22,6 +22,8 @@
       };
     </script>
 
+    <script src="./block.js"></script>
+
     <style>
       body {
         font-family:
@@ -510,10 +512,15 @@
         return result;
       }
 
-      async function apiGetSubscription(subscriptionId) {
-        const response = await fetch(
+      async function apiGetSubscription(subscriptionId, shopId) {
+        if (!subscriptionId || !shopId) {
+          throw new Error("Subscription ID and Shop ID are required to load the receipt.");
+        }
+        const url = new URL(
           `${PAYMENT_API}/api/subscription/${encodeURIComponent(subscriptionId)}`,
         );
+        url.searchParams.set("shop_id", shopId);
+        const response = await fetch(url.toString());
 
         const result = await response.json().catch(() => ({}));
 
@@ -595,7 +602,7 @@
          * Fetch canonical DB data AFTER verification. This prevents
          * the success page from trusting browser/Cashfree query values.
          */
-        const subscription = await apiGetSubscription(subscriptionId);
+        const subscription = await apiGetSubscription(subscriptionId, shopId);
 
         if (String(subscription.shop_id) !== String(shopId)) {
           throw new Error(

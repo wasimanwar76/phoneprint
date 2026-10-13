@@ -17,6 +17,8 @@
     <!-- Supabase client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <script src="./block.js"></script>
+
     <script>
       tailwind.config = {
         theme: {
@@ -73,7 +75,8 @@
           ),
           radial-gradient(
             circle at 85% 15%,
-            rgba(232, 62, 140, 0.08) transparent 20%
+            rgba(232, 62, 140, 0.08),
+            transparent 20%
           ),
           linear-gradient(
             135deg,
@@ -1246,9 +1249,16 @@
                           ></p>
 
                           <p class="mt-2 text-sm leading-6 text-slate-500">
-                            Check your internet connection, then close this
-                            window and try again.
+                            Check your connection and Supabase table
+                            permissions, then retry.
                           </p>
+                          <button
+                            type="button"
+                            onclick="loadRenewPlans()"
+                            class="mt-4 inline-flex items-center justify-center rounded-xl bg-[#211B8F] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#17135F] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00B8D9] focus-visible:ring-offset-2"
+                          >
+                            Retry loading plans
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -1380,9 +1390,6 @@
           </section>
 
           <!-- ============ TAB: QR CODE ============ -->
-          <!-- =========================================================
-     TAB: QR CODE
-========================================================= -->
           <section id="tab-qr" class="tab-content hidden max-w-4xl mx-auto">
             <!-- Page Header -->
             <div class="mb-6">
@@ -5725,21 +5732,7 @@
 
    QUICK2PRINT SUBSCRIPTION
 
-   Supabase is the source of truth
-
- /* ============================================================
-
-
-
-   QUICK2PRINT SUBSCRIPTION
-
-
-
-   Supabase is the source of truth
-
-
-
-   ============================================================ */
+   Supabase is the source of truth */
 
       let subscriptionShop = null;
 
@@ -5826,13 +5819,32 @@
       function q2pIsActiveSubscription(shop) {
         if (!shop) return false;
 
-        const status = String(shop.subscription_status || "").toLowerCase();
+        const planId = String(shop.plan_id || "")
+          .trim()
+          .toLowerCase();
+        const now = new Date();
 
+        // Free plan is a 24-hour trial starting when the shop was created
+        // (or subscription_start when explicitly populated), with a 10-print cap.
+        if (planId === "free") {
+          const used = Math.max(0, Number(shop.total_prints) || 0);
+          const anchorRaw = shop.subscription_start || shop.created_at;
+          const anchor = anchorRaw ? new Date(anchorRaw) : null;
+          const within24Hours =
+            anchor &&
+            !Number.isNaN(anchor.getTime()) &&
+            now.getTime() < anchor.getTime() + 24 * 60 * 60 * 1000;
+          return Boolean(within24Hours && used <= 10);
+        }
+
+        const status = String(shop.subscription_status || "").toLowerCase();
         if (status !== "active") return false;
 
-        if (!shop.plan_expires_at) return false;
+        const expiryRaw = shop.plan_expires_at || shop.subscription_end;
+        if (!expiryRaw) return false;
 
-        return new Date(shop.plan_expires_at) > new Date();
+        const expiry = new Date(expiryRaw);
+        return !Number.isNaN(expiry.getTime()) && expiry > now;
       }
 
       function q2pGetPrintLimit(plan) {
@@ -5914,8 +5926,43 @@
         const planBadge = document.getElementById("subscription-plan-badge");
 
         const status = String(shop.subscription_status || "").toUpperCase();
+        const isFreePlan =
+          String(shop.plan_id || "")
+            .trim()
+            .toLowerCase() === "free";
+        const freePrintCount = Math.max(0, Number(shop.total_prints) || 0);
+        const freeAnchorRaw = shop.subscription_start || shop.created_at;
+        const freeAnchor = freeAnchorRaw ? new Date(freeAnchorRaw) : null;
+        const freeExpired =
+          isFreePlan &&
+          (!freeAnchor ||
+            Number.isNaN(freeAnchor.getTime()) ||
+            Date.now() >= freeAnchor.getTime() + 24 * 60 * 60 * 1000);
+        const freeLimitReached = isFreePlan && freePrintCount > 10;
 
-        if (active) {
+        if (isFreePlan && freeLimitReached) {
+          if (icon) icon.textContent = "⚠";
+          if (title) title.textContent = "Free Plan Deactivated";
+          if (description)
+            description.textContent =
+              "Your free plan allows up to 10 prints. Please buy another subscription plan to continue.";
+          if (badge) {
+            badge.textContent = "PRINT LIMIT REACHED";
+            badge.className =
+              "rounded-full bg-red-400/20 px-3 py-1 text-xs font-extrabold text-red-300";
+          }
+        } else if (isFreePlan && freeExpired) {
+          if (icon) icon.textContent = "⚠";
+          if (title) title.textContent = "Free Trial Expired";
+          if (description)
+            description.textContent =
+              "Your free QR access expired after 24 hours. Please buy a subscription plan to continue.";
+          if (badge) {
+            badge.textContent = "EXPIRED";
+            badge.className =
+              "rounded-full bg-red-400/20 px-3 py-1 text-xs font-extrabold text-red-300";
+          }
+        } else if (active) {
           if (icon) icon.textContent = "✓";
 
           if (title) title.textContent = "Subscription Is Running";
@@ -6034,8 +6081,9 @@
         document.getElementById("detail-cashfree-order").textContent =
           confirmedPaid ? payment?.cashfree_order_id || "—" : "—";
 
-        document.getElementById("detail-payment-id").textContent =
-          confirmedPaid ? payment?.cashfree_payment_id || "—" : "—";
+        document.getElementById("detail-payment-id").textContent = confirmedPaid
+          ? payment?.cashfree_payment_id || "—"
+          : "—";
 
         const paymentBadge = document.getElementById(
           "subscription-payment-status",
@@ -6043,8 +6091,12 @@
 
         if (paymentBadge) {
           paymentBadge.textContent = paymentStatus
-            ? (paymentStatus === "PAID" ? "PAID · VERIFIED" : `PAYMENT ${paymentStatus}`)
-            : (active ? "ACTIVE · NO PAYMENT RECORD" : "NO PAYMENT RECORD");
+            ? paymentStatus === "PAID"
+              ? "PAID · VERIFIED"
+              : `PAYMENT ${paymentStatus}`
+            : active
+              ? "ACTIVE · NO PAYMENT RECORD"
+              : "NO PAYMENT RECORD";
 
           if (paymentStatus === "PAID") {
             paymentBadge.className =
@@ -6085,170 +6137,123 @@
 
         if (!shopId) {
           console.error("Quick2Print: Shop ID not found.");
+          return;
+        }
 
+        if (typeof supabaseClient === "undefined" || !supabaseClient) {
+          console.error("Quick2Print: Supabase client is not initialized.");
           return;
         }
 
         try {
+          // 1. Load shop data. Keep this select limited to the shop columns used here.
           const { data: shop, error: shopError } = await supabaseClient
-
             .from("shops")
-
             .select(
-              `
-
-
-
-        shop_id,
-
-
-
-        shop_name,
-
-
-
-        created_at,
-
-
-
-        plan_id,
-
-
-
-        plan_expires_at,
-
-
-
-        subscription_status,
-
-
-
-        subscription_start,
-
-
-
-        subscription_end,
-
-
-
-        total_prints
-
-
-
-      `,
+              "shop_id,shop_name,created_at,plan_id,plan_expires_at,subscription_status,subscription_start,subscription_end,total_prints",
             )
-
-            .eq("shop_id", shopId)
-
+            .eq("shop_id", String(shopId).trim())
             .maybeSingle();
 
-          if (shopError) throw shopError;
-
-          if (!shop) return;
-
-          subscriptionShop = shop;
-
-          const { data: plan, error: planError } = await supabaseClient
-
-            .from("plans")
-
-            .select(
-              `
-
-
-
-        plan_id,
-
-
-
-        name,
-
-
-
-        price_inr,
-
-
-
-        max_printers,
-
-
-
-        max_prints_per_year,
-
-
-
-        support_level,
-
-
-
-        duration_months,
-
-
-
-        duration_label
-
-
-
-      `,
-            )
-
-            .eq("plan_id", shop.plan_id)
-
-            .maybeSingle();
-
-          if (planError) throw planError;
-
-          subscriptionPlan = plan;
-
-          // Prefer the latest confirmed payment. A newer PENDING/FAILED
-          // attempt must not hide the details of the last successful payment.
-          const paymentColumns =
-            "subscription_id,amount,currency,cashfree_order_id,cashfree_payment_id,cashfree_payment_session_id,payment_status,payment_method,payment_environment,payment_error_message,created_at,updated_at,started_at,expires_at,plan_id";
-
-          const { data: paidPayment, error: paidPaymentError } =
-            await supabaseClient
-              .from("shop_subscriptions")
-              .select(paymentColumns)
-              .eq("shop_id", shopId)
-              .eq("payment_status", "PAID")
-              .order("created_at", { ascending: false })
-              .limit(1)
-              .maybeSingle();
-
-          if (paidPaymentError) {
-            console.warn(
-              "Paid subscription history unavailable. Check Supabase RLS or use a server-side subscription endpoint:",
-              paidPaymentError,
+          if (shopError) {
+            throw new Error(
+              `Could not load shop details: ${shopError.message}`,
             );
           }
 
-          if (paidPayment) {
-            subscriptionRecord = paidPayment;
-          } else {
-            // Show the latest attempt's real status instead of a misleading
-            // blank/PAID-looking card when no successful payment exists.
-            const { data: latestAttempt, error: latestAttemptError } =
-              await supabaseClient
-                .from("shop_subscriptions")
-                .select(paymentColumns)
-                .eq("shop_id", shopId)
-                .order("created_at", { ascending: false })
-                .limit(1)
-                .maybeSingle();
+          if (!shop) {
+            subscriptionShop = null;
+            subscriptionPlan = null;
+            subscriptionRecord = null;
+            console.error(
+              "Quick2Print: No shop row found for shop_id:",
+              shopId,
+            );
+            return;
+          }
 
-            if (latestAttemptError) {
-              console.warn("Subscription attempt history unavailable:", latestAttemptError);
-              subscriptionRecord = null;
+          subscriptionShop = shop;
+
+          // 2. Load the plan separately. A plan lookup failure should not prevent
+          // the rest of the subscription panel from rendering.
+          subscriptionPlan = null;
+          const planId = String(shop.plan_id || "").trim();
+
+          if (planId) {
+            const { data: plan, error: planError } = await supabaseClient
+              .from("plans")
+              .select(
+                "plan_id,name,price_inr,max_printers,max_prints_per_year,support_level,duration_months,duration_label",
+              )
+              .eq("plan_id", planId)
+              .maybeSingle();
+
+            if (planError) {
+              console.error("Quick2Print: Plan lookup failed:", planError);
             } else {
-              subscriptionRecord = latestAttempt || null;
+              subscriptionPlan = plan || null;
+            }
+
+            if (!subscriptionPlan) {
+              console.warn(
+                `Quick2Print: No row in public.plans matched plan_id "${planId}". Check plans.plan_id and the SELECT RLS policy.`,
+              );
             }
           }
 
-          // paidPayment/latestAttempt above is the authoritative history lookup.
-          // Do not reference the removed `paymentError` / `payment` variables.
+          // 3. Load payment attempts. select("*") avoids the entire query failing
+          // because one optional column is absent from a particular schema version.
+          subscriptionRecord = null;
+
+          const { data: attempts, error: attemptsError } = await supabaseClient
+            .from("shop_subscriptions")
+            .select("*")
+            .eq("shop_id", String(shopId).trim())
+            .order("created_at", { ascending: false })
+            .limit(50);
+
+          if (attemptsError) {
+            // The plan/shop information can still render if payment history is
+            // restricted by RLS. Do not treat an unreadable payment as PAID.
+            console.warn(
+              "Quick2Print: Could not read subscription payment history:",
+              attemptsError,
+            );
+          } else {
+            const rows = Array.isArray(attempts) ? attempts : [];
+            subscriptionRecord =
+              rows.find(
+                (row) =>
+                  String(row.payment_status || "").toUpperCase() === "PAID",
+              ) ||
+              rows[0] ||
+              null;
+          }
+
+          console.info("[Quick2Print] Subscription details loaded", {
+            shopId: shop.shop_id,
+            planId: shop.plan_id,
+            planFound: Boolean(subscriptionPlan),
+            paymentStatus: subscriptionRecord?.payment_status || "NO RECORD",
+          });
+
+          // Render even when the plan or payment query has no result.
           q2pRenderSubscription();
         } catch (error) {
-          console.error("Subscription load failed:", error);
+          console.error("Quick2Print: Subscription load failed:", error);
+
+          // If shop data was already retrieved, render the available data instead
+          // of leaving all fields stuck on their initial em dashes.
+          if (subscriptionShop) {
+            try {
+              q2pRenderSubscription();
+            } catch (renderError) {
+              console.error(
+                "Quick2Print: Subscription render failed:",
+                renderError,
+              );
+            }
+          }
         }
       }
 
@@ -6276,12 +6281,29 @@
       function q2pIsExpiredSubscription(shop) {
         if (!shop) return false;
 
+        const planId = String(shop.plan_id || "")
+          .trim()
+          .toLowerCase();
+        const now = new Date();
+
+        if (planId === "free") {
+          const anchorRaw = shop.subscription_start || shop.created_at;
+          const anchor = anchorRaw ? new Date(anchorRaw) : null;
+          if (!anchor || Number.isNaN(anchor.getTime())) return true;
+          return now.getTime() >= anchor.getTime() + 24 * 60 * 60 * 1000;
+        }
+
         const expiry = shop.plan_expires_at || shop.subscription_end;
+        if (!expiry) {
+          return (
+            String(shop.subscription_status || "").toLowerCase() === "expired"
+          );
+        }
 
-        if (!expiry) return false;
-
+        const parsedExpiry = new Date(expiry);
         return (
-          new Date(expiry) <= new Date() ||
+          Number.isNaN(parsedExpiry.getTime()) ||
+          parsedExpiry <= now ||
           String(shop.subscription_status || "").toLowerCase() === "expired"
         );
       }
@@ -6311,10 +6333,13 @@
 
       function closeRenewPlanModal() {
         const modal = document.getElementById("renew-plan-modal");
-
-        if (modal) modal.classList.add("hidden");
-
+        if (modal) {
+          modal.classList.add("hidden");
+          modal.setAttribute("aria-hidden", "true");
+        }
         document.body.classList.remove("overflow-hidden");
+        const trigger = document.getElementById("subscription-renew-button");
+        trigger?.focus({ preventScroll: true });
       }
 
       function q2pRenderRenewPlans() {
@@ -6437,58 +6462,78 @@
         errorBox?.classList.add("hidden");
 
         try {
+          if (!window.supabase || typeof supabaseClient === "undefined") {
+            throw new Error(
+              "Supabase client did not initialize. Refresh the dashboard and try again.",
+            );
+          }
+
           const { data, error } = await supabaseClient
-
             .from("plans")
-
             .select(
               "plan_id,name,price_inr,max_printers,max_prints_per_year,support_level,duration_months,duration_label",
             )
-
             .order("price_inr", { ascending: true });
 
-          if (error) throw error; // Free plans are not sent to Cashfree; paid plans only.
+          if (error) {
+            const friendly = new Error(
+              error.message || "Could not read the plans table.",
+            );
+            friendly.code = error.code;
+            throw friendly;
+          }
 
-          renewPlans = (data || []).filter(
-            (plan) => Number(plan.price_inr) > 0,
-          );
+          renewPlans = (Array.isArray(data) ? data : [])
+            .filter((plan) => Number(plan.price_inr) > 0)
+            .map((plan) => ({
+              ...plan,
+              plan_id: String(plan.plan_id || ""),
+              name: String(plan.name || "Quick2Print Plan"),
+              price_inr: Number(plan.price_inr || 0),
+            }))
+            .filter((plan) => plan.plan_id);
 
           q2pRenderRenewPlans();
         } catch (error) {
           console.error("Renew plan load failed:", error);
-
           loading?.classList.add("hidden");
+          grid?.classList.add("hidden");
 
+          const message = document.getElementById("renew-plan-error-message");
           if (errorBox) {
-            errorBox.textContent =
-              "We couldn't load plans right now. Please close this window and try again.";
-
+            if (message) {
+              const isRls =
+                /row.level security|permission denied|not allowed|rls/i.test(
+                  String(error.message || ""),
+                );
+              message.textContent = isRls
+                ? "Supabase blocked reading public.plans. Add a SELECT policy for plans in the Supabase SQL Editor, then tap Retry."
+                : error.message ||
+                  "We couldn't load plans. Check your connection and retry.";
+            }
             errorBox.classList.remove("hidden");
           }
         }
       }
 
       function quick2PrintRenewPlan() {
-        const isFreePlan =
-          String(subscriptionShop?.plan_id || "").toLowerCase() === "free";
-
-        const expired = q2pIsExpiredSubscription(subscriptionShop);
-
-        const active = q2pIsActiveSubscription(subscriptionShop); // Free shops can choose a paid plan even when their free plan is active.
-        // Active paid shops must wait until expiry before renewing.
-
-        if (!isFreePlan && active && !expired) return;
-
-        if (!isFreePlan && !expired) return;
-
+        // Open the plan chooser every time the shop owner clicks the subscription
+        // action. Previously, a missing/not-yet-loaded subscriptionShop made the
+        // guard treat the shop as a paid active plan and silently return.
         const modal = document.getElementById("renew-plan-modal");
-
-        if (!modal) return;
+        if (!modal) {
+          console.error(
+            "Quick2Print: #renew-plan-modal was not found in the page.",
+          );
+          return;
+        }
 
         modal.classList.remove("hidden");
-
+        modal.setAttribute("aria-hidden", "false");
         document.body.classList.add("overflow-hidden");
 
+        const closeButton = modal.querySelector('button[aria-label="Close"]');
+        closeButton?.focus({ preventScroll: true });
         loadRenewPlans();
       }
 
@@ -6505,13 +6550,25 @@
         const retry = document.getElementById("q2p-retry-payment-redirect");
         const debug = document.getElementById("q2p-redirect-debug");
         link.href = targetUrl;
-        retry.onclick = () => { console.info("[Q2P subscription] Manual redirect retry", targetUrl); window.location.assign(targetUrl); };
+        retry.onclick = () => {
+          console.info("[Q2P subscription] Manual redirect retry", targetUrl);
+          window.location.assign(targetUrl);
+        };
         // If navigation fails/gets interrupted, expose a direct link instead of
         // leaving the user stuck on an infinite loader.
         window.setTimeout(() => {
-          if (window.location.href.includes("dashboard.html") || window.location.href.includes("localhost") || window.location.href.includes("127.0.0.1")) {
-            console.error("[Q2P subscription] Redirect did not complete after 6 seconds.", { targetUrl, currentUrl: window.location.href });
-            if (debug) debug.textContent = "Redirect has not completed. Use the button below or check the browser console.";
+          if (
+            window.location.href.includes("dashboard.html") ||
+            window.location.href.includes("localhost") ||
+            window.location.href.includes("127.0.0.1")
+          ) {
+            console.error(
+              "[Q2P subscription] Redirect did not complete after 6 seconds.",
+              { targetUrl, currentUrl: window.location.href },
+            );
+            if (debug)
+              debug.textContent =
+                "Redirect has not completed. Use the button below or check the browser console.";
             link.style.display = "inline-block";
             retry.style.display = "block";
           }
@@ -6630,6 +6687,14 @@
       window.loadSubscriptionDetails = loadSubscriptionDetails;
 
       window.quick2PrintRenewPlan = quick2PrintRenewPlan;
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          const modal = document.getElementById("renew-plan-modal");
+          if (modal && !modal.classList.contains("hidden"))
+            closeRenewPlanModal();
+        }
+      });
 
       document.addEventListener("DOMContentLoaded", () => {
         loadSubscriptionDetails();
