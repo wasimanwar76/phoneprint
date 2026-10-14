@@ -19,6 +19,581 @@
 
     <script src="./block.js"></script>
 
+    <style>
+      /* =====================================================================
+   QUICK2PRINT · DUKAAN PANEL THEME
+   ---------------------------------------------------------------------
+   Design idea: "Print-shop precision".
+   Colours come straight from the logo:
+     - Navy wordmark ........ --navy / --indigo
+     - Yellow "2" ........... --yellow
+     - Cyan/blue QR ring .... --cyan / --blue
+     - Ribbon CMYK stripes .. --cyan / --magenta / --yellow  (the .q-cmyk bar)
+   Rounded, soft cards + a thin CMYK stripe = feels like a printed proof.
+   Fonts: Fredoka (headings, close to the logo lettering) + Nunito (body).
+   ===================================================================== */
+
+      /* ---------- 1. DESIGN TOKENS ---------- */
+      :root {
+        --navy: #17135f;
+        --indigo: #211b8f;
+        --blue: #1f7ae0;
+        --cyan: #00b8d9;
+        --yellow: #ffb800;
+        --magenta: #e6248c;
+        --ink: #15181c;
+        --paper: #f6f7fd;
+        --line: #e6e8f2;
+        --radius: 20px;
+        --ease: cubic-bezier(0.22, 1, 0.36, 1); /* soft "settle" easing */
+        --shadow-sm: 0 2px 8px rgba(23, 19, 95, 0.06);
+        --shadow-md: 0 10px 30px rgba(23, 19, 95, 0.1);
+        --shadow-lg: 0 24px 60px rgba(23, 19, 95, 0.16);
+      }
+
+      /* ---------- 2. BASE ---------- */
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: "Nunito", system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+        -webkit-font-smoothing: antialiased;
+      }
+      .font-heading {
+        font-family: "Fredoka", "Nunito", sans-serif;
+        letter-spacing: -0.01em;
+      }
+
+      /* Toggled by JS – must always win over component display rules */
+      .hidden {
+        display: none !important;
+      }
+
+      /* Respect users who prefer less motion */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      /* ---------- 3. BACKGROUND: soft dot grid + colour glows ---------- */
+      .q-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            600px 400px at 100% 0%,
+            rgba(0, 184, 217, 0.12),
+            transparent 70%
+          ),
+          radial-gradient(
+            500px 400px at 0% 100%,
+            rgba(255, 184, 0, 0.12),
+            transparent 70%
+          ),
+          radial-gradient(rgba(33, 27, 143, 0.09) 1px, transparent 1px) 0 0 /
+            22px 22px,
+          var(--paper);
+      }
+
+      /* ---------- 4. KEYFRAMES ---------- */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes popIn {
+        from {
+          opacity: 0;
+          transform: scale(0.94);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes floatY {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes shine {
+        to {
+          background-position: 200% 0;
+        }
+      }
+      @keyframes spinSlow {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ---------- 5. TAB TRANSITIONS ----------
+   JS removes `.hidden` when a tab opens, so the animation replays every time.
+   Direct children stagger in one after another. */
+      .tab-content:not(.hidden) {
+        animation: fadeUp 0.45s var(--ease) both;
+      }
+      .tab-content:not(.hidden) > * {
+        animation: fadeUp 0.55s var(--ease) both;
+      }
+      .tab-content:not(.hidden) > *:nth-child(2) {
+        animation-delay: 0.06s;
+      }
+      .tab-content:not(.hidden) > *:nth-child(3) {
+        animation-delay: 0.12s;
+      }
+      .tab-content:not(.hidden) > *:nth-child(4) {
+        animation-delay: 0.18s;
+      }
+      .tab-content:not(.hidden) > *:nth-child(5) {
+        animation-delay: 0.24s;
+      }
+      .tab-content:not(.hidden) > *:nth-child(6) {
+        animation-delay: 0.3s;
+      }
+
+      /* ---------- 6. CARDS ----------
+   `.manga-card` is kept as an alias so cards rendered by your JS
+   (orders, earnings rows) automatically get the new look. */
+      .q-card,
+      .manga-card {
+        position: relative;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+        transition:
+          transform 0.3s var(--ease),
+          box-shadow 0.3s var(--ease),
+          border-color 0.3s;
+      }
+      .q-card:hover,
+      .manga-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        border-color: rgba(33, 27, 143, 0.2);
+      }
+      /* The logo ribbon: cyan / magenta / yellow stripe on top of a card */
+      .q-cmyk::before {
+        content: "";
+        position: absolute;
+        left: 24px;
+        right: 24px;
+        top: -1px;
+        height: 4px;
+        border-radius: 0 0 6px 6px;
+        background: linear-gradient(
+          90deg,
+          var(--cyan) 0 33.3%,
+          var(--magenta) 33.3% 66.6%,
+          var(--yellow) 66.6% 100%
+        );
+      }
+      .q-static:hover {
+        transform: none;
+        box-shadow: var(--shadow-sm);
+      } /* cards that must not lift */
+
+      /* ---------- 7. BUTTONS ---------- */
+      .q-btn,
+      .manga-btn {
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 20px;
+        border-radius: 14px;
+        border: 0;
+        cursor: pointer;
+        font-family: "Fredoka", sans-serif;
+        font-weight: 600;
+        color: #fff;
+        background: linear-gradient(135deg, var(--indigo), var(--navy));
+        box-shadow:
+          0 6px 0 #0d0a3d,
+          0 10px 20px rgba(23, 19, 95, 0.25); /* chunky "key" look */
+        transition:
+          transform 0.15s var(--ease),
+          box-shadow 0.15s var(--ease),
+          filter 0.2s;
+      }
+      .q-btn:hover,
+      .manga-btn:hover {
+        filter: brightness(1.12);
+        transform: translateY(-2px);
+      }
+      .q-btn:active,
+      .manga-btn:active {
+        transform: translateY(5px);
+        box-shadow: 0 1px 0 #0d0a3d;
+      }
+      /* light sweep on hover */
+      .q-btn::after,
+      .manga-btn::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            110deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.35) 50%,
+            transparent 70%
+          ) -150%
+          0 / 60% 100% no-repeat;
+        transition: background-position 0.6s var(--ease);
+      }
+      .q-btn:hover::after,
+      .manga-btn:hover::after {
+        background-position: 250% 0;
+      }
+      .q-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* Yellow call-to-action (matches the "2" in the logo) */
+      .q-btn-yellow {
+        color: var(--navy);
+        background: linear-gradient(135deg, #ffc933, var(--yellow));
+        box-shadow:
+          0 6px 0 #c98f00,
+          0 10px 20px rgba(255, 184, 0, 0.35);
+      }
+      .q-btn-yellow:active {
+        box-shadow: 0 1px 0 #c98f00;
+      }
+
+      .q-btn-ghost,
+      .manga-btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 14px;
+        cursor: pointer;
+        font-weight: 800;
+        color: var(--navy);
+        background: #fff;
+        border: 2px solid var(--line);
+        transition: all 0.25s var(--ease);
+      }
+      .q-btn-ghost:hover,
+      .manga-btn-secondary:hover {
+        border-color: var(--indigo);
+        background: rgba(33, 27, 143, 0.05);
+        transform: translateY(-2px);
+      }
+
+      /* ---------- 8. INPUTS ---------- */
+      .q-input,
+      .manga-input {
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: #fff;
+        color: var(--ink);
+        border: 2px solid var(--line);
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s,
+          background 0.2s;
+      }
+      .q-input:focus,
+      .manga-input:focus {
+        border-color: var(--cyan);
+        box-shadow: 0 0 0 4px rgba(0, 184, 217, 0.18);
+      }
+      .q-input:disabled,
+      .manga-input:disabled {
+        background: var(--paper);
+        color: #8a8fa8;
+      }
+
+      /* ---------- 9. SIDEBAR ---------- */
+      #sidebar {
+        background: #fff;
+        border-right: 1px solid var(--line);
+        transition: transform 0.4s var(--ease);
+        box-shadow: 8px 0 40px rgba(23, 19, 95, 0.05);
+      }
+      #sidebar-backdrop {
+        transition: opacity 0.3s;
+        backdrop-filter: blur(4px);
+      }
+
+      .q-brand {
+        background: linear-gradient(135deg, #fff7d6 0%, #fff 70%);
+        border-bottom: 1px solid var(--line);
+      }
+      .q-brand .q-logo-chip {
+        animation: floatY 4s ease-in-out infinite;
+      }
+
+      .nav-item {
+        position: relative;
+        color: #4a4f6a;
+        overflow: hidden;
+        transition:
+          color 0.25s,
+          background 0.25s,
+          transform 0.25s var(--ease);
+      }
+      .nav-item i,
+      .nav-item svg {
+        transition: transform 0.3s var(--ease);
+      }
+      .nav-item:hover {
+        background: rgba(33, 27, 143, 0.06);
+        color: var(--navy);
+        transform: translateX(4px);
+      }
+      .nav-item:hover i,
+      .nav-item:hover svg {
+        transform: scale(1.15) rotate(-6deg);
+      }
+      /* Active item: navy pill + yellow marker that slides in */
+      .nav-item.active {
+        color: #fff;
+        background: linear-gradient(135deg, var(--indigo), var(--navy));
+        box-shadow: 0 8px 20px rgba(33, 27, 143, 0.3);
+      }
+      .nav-item.active::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 20%;
+        bottom: 20%;
+        width: 4px;
+        border-radius: 0 4px 4px 0;
+        background: var(--yellow);
+        animation: popIn 0.4s var(--ease);
+      }
+
+      /* ---------- 10. TOP BARS ---------- */
+      .q-topbar {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--line);
+      }
+
+      /* Live "shop online" pill */
+      .q-live {
+        position: relative;
+      }
+      .q-live .dot {
+        position: relative;
+      }
+      .q-live .dot::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        background: inherit;
+        animation: ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+      }
+      @keyframes ping {
+        75%,
+        100% {
+          transform: scale(2.4);
+          opacity: 0;
+        }
+      }
+
+      /* ---------- 11. HERO CARDS (update + subscription) ---------- */
+      .q-update {
+        background:
+          radial-gradient(
+            300px 140px at 100% 0%,
+            rgba(255, 184, 0, 0.25),
+            transparent 70%
+          ),
+          linear-gradient(135deg, #fff, #f1fbfe);
+      }
+      .q-update .q-update-icon {
+        animation: floatY 3s ease-in-out infinite;
+      }
+
+      .q-sub {
+        background: linear-gradient(
+          135deg,
+          var(--navy) 0%,
+          var(--indigo) 60%,
+          #2a4bd0 100%
+        );
+        color: #fff;
+        box-shadow: var(--shadow-lg);
+      }
+      /* Slowly turning QR-ring echo behind the subscription card */
+      .q-sub .q-ring {
+        position: absolute;
+        right: -70px;
+        top: -70px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        border: 18px solid transparent;
+        border-top-color: var(--cyan);
+        border-right-color: var(--magenta);
+        border-bottom-color: var(--yellow);
+        opacity: 0.35;
+        animation: spinSlow 18s linear infinite;
+      }
+      .q-sub-tile {
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 18px;
+        padding: 16px;
+        transition:
+          background 0.25s,
+          transform 0.25s var(--ease);
+      }
+      .q-sub-tile:hover {
+        background: rgba(255, 255, 255, 0.13);
+        transform: translateY(-2px);
+      }
+
+      /* Progress bar with moving shine */
+      .q-progress {
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+      }
+      #subscription-print-bar {
+        background: linear-gradient(
+            90deg,
+            var(--yellow),
+            #ffe08a,
+            var(--yellow)
+          )
+          0 0 / 200% 100%;
+        animation: shine 2.4s linear infinite;
+      }
+
+      .q-tile {
+        background: var(--paper);
+        border-radius: 16px;
+        padding: 16px;
+        transition:
+          background 0.25s,
+          transform 0.25s var(--ease);
+      }
+      .q-tile:hover {
+        background: #eef0fb;
+        transform: translateY(-2px);
+      }
+
+      /* ---------- 12. SHOP STATUS ---------- */
+      #shopDot {
+        transition:
+          background 0.3s,
+          box-shadow 0.3s;
+      }
+      .status-option {
+        transition:
+          transform 0.25s var(--ease),
+          border-color 0.25s,
+          background 0.25s,
+          box-shadow 0.25s;
+      }
+      .status-option:not(:disabled):hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+      }
+      .status-option:not(:disabled):active {
+        transform: scale(0.97);
+      }
+
+      /* ---------- 13. QR TAB ---------- */
+      #qrPreview {
+        transition: transform 0.4s var(--ease);
+      }
+      #qrPreview:hover {
+        transform: scale(1.04) rotate(-1deg);
+      }
+      #qrA4Poster {
+        transition: transform 0.4s var(--ease);
+      }
+
+      /* ---------- 14. EARNINGS ---------- */
+      .q-stat {
+        overflow: hidden;
+      }
+      .q-stat .num {
+        font-family: "Fredoka", sans-serif;
+        font-weight: 700;
+        font-size: 2.4rem;
+        line-height: 1.1;
+      }
+      .q-stat-yellow {
+        background: linear-gradient(135deg, #fff3c4, #fff);
+      }
+      .q-stat-cyan {
+        background: linear-gradient(135deg, #d9f6fc, #fff);
+      }
+      .q-stat-indigo {
+        background: linear-gradient(135deg, #e6e5ff, #fff);
+      }
+
+      #earningsOrdersTable tr {
+        transition: background 0.2s;
+      }
+      #earningsOrdersTable tr:hover {
+        background: rgba(0, 184, 217, 0.06);
+      }
+
+      /* ---------- 15. SETTINGS ---------- */
+      .q-settings-hero {
+        background: linear-gradient(
+          135deg,
+          var(--navy),
+          var(--indigo) 60%,
+          #2a4bd0
+        );
+        color: #fff;
+        border-radius: 28px;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* ---------- 16. SCROLLBAR ---------- */
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(33, 27, 143, 0.25);
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(33, 27, 143, 0.45);
+        background-clip: padding-box;
+      }
+    </style>
+
     <script>
       tailwind.config = {
         theme: {
@@ -285,17 +860,24 @@
       }
     </style>
   </head>
-
-  <body class="h-screen overflow-hidden bg-[#F7F8FC] relative">
-    <div class="bg-speed-lines"></div>
+  <body>
+    <!-- Decorative background (dot grid + soft colour glows). Not interactive. -->
+    <div class="q-bg"></div>
 
     <div class="flex h-full relative z-10">
-      <!-- Mobile Header -->
+      <!-- =============================================================
+         MOBILE HEADER  (visible below md breakpoint only)
+         Logout + hamburger live here so they are always reachable.
+    ============================================================== -->
       <div
-        class="md:hidden flex justify-between items-center p-4 bg-white z-50 fixed w-full top-0 shadow-sm"
+        class="md:hidden flex justify-between items-center p-4 q-topbar z-50 fixed w-full top-0"
       >
         <div class="flex items-center gap-2">
-          <i data-lucide="printer" class="w-6 h-6 text-[#17135F]"></i>
+          <img
+            src="./logo.png"
+            alt="Quick2Print"
+            class="h-8 w-8 object-contain"
+          />
           <span class="font-heading font-bold text-xl text-[#17135F]"
             >Dukaan Panel</span
           >
@@ -303,64 +885,68 @@
         <div class="flex items-center gap-2">
           <button
             onclick="logoutShop()"
-            class="p-2 manga-btn-secondary rounded-lg"
+            class="p-2 q-btn-ghost rounded-lg"
             aria-label="Logout"
             title="Logout"
           >
-            <i data-lucide="log-out" class="w-5 h-5 text-[#17135F]"></i>
+            <i data-lucide="log-out" class="w-5 h-5"></i>
           </button>
           <button
             id="menu-btn"
-            class="p-2 manga-btn-secondary rounded-lg"
+            class="p-2 q-btn-ghost rounded-lg"
             onclick="toggleMenu()"
             aria-label="Open menu"
             aria-expanded="false"
             aria-controls="sidebar"
           >
-            <i data-lucide="menu" class="w-6 h-6 text-[#17135F]"></i>
+            <i data-lucide="menu" class="w-6 h-6"></i>
           </button>
         </div>
       </div>
 
-      <!-- Mobile sidebar backdrop -->
+      <!-- Dim backdrop behind the mobile sidebar -->
       <div
         id="sidebar-backdrop"
-        class="fixed inset-0 bg-[#211B8F]/50 z-30 hidden opacity-0 md:hidden"
+        class="fixed inset-0 bg-[#17135F]/50 z-30 hidden opacity-0 md:hidden"
         onclick="closeMenu()"
       ></div>
 
-      <!-- Sidebar -->
+      <!-- =============================================================
+         SIDEBAR
+         (-translate-x-full / md:translate-x-0 are toggled by your JS)
+    ============================================================== -->
       <aside
         id="sidebar"
-        class="bg-white w-72 max-w-[85vw] flex-shrink-0 flex flex-col h-full fixed md:relative z-40 -translate-x-full md:translate-x-0 pt-16 md:pt-0 border-r-2 border-[#211B8F]"
+        class="w-72 max-w-[85vw] flex-shrink-0 flex flex-col h-full fixed md:relative z-40 -translate-x-full md:translate-x-0 pt-16 md:pt-0"
       >
-        <!-- Logo Area -->
-        <div
-          class="p-6 flex items-center gap-3 bg-[#FFF7D6] border-b-2 border-[#211B8F]"
-        >
+        <!-- Brand / shop identity -->
+        <div class="q-brand p-6 flex items-center gap-3">
           <div
-            class="w-11 h-11 rounded-xl bg-white border border-[#E6E8F0] flex items-center justify-center shrink-0 overflow-hidden shadow-sm"
+            class="q-logo-chip w-12 h-12 rounded-2xl bg-white border border-[#E6E8F0] flex items-center justify-center shrink-0 shadow-sm"
           >
             <img
               src="./logo.png"
               alt="Quick2Print"
-              class="w-8 h-8 object-contain"
+              class="w-9 h-9 object-contain"
             />
           </div>
           <div class="min-w-0">
             <h1
               id="sidebar-shop-name"
-              class="font-heading font-bold text-lg leading-tight truncate"
+              class="font-heading font-bold text-lg leading-tight truncate text-[#17135F]"
             >
               Mera Print Shop
             </h1>
-            <p id="sidebar-shop-id" class="text-xs font-mono font-bold">
+            <p
+              id="sidebar-shop-id"
+              class="text-xs font-mono font-bold text-[#17135F]/60"
+            >
               ID: SHP-9021
             </p>
           </div>
         </div>
 
-        <!-- Navigation -->
+        <!-- Navigation – `active` class is set by switchTab() -->
         <nav class="flex-1 overflow-y-auto p-4 space-y-2">
           <a
             href="#"
@@ -368,22 +954,24 @@
               switchTab('overview', this);
               return false;
             "
-            class="nav-item active flex items-center gap-3 p-3 rounded-lg font-bold transition-colors"
+            class="nav-item active flex items-center gap-3 p-3 rounded-xl font-bold"
           >
             <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i>
             <span class="truncate">Overview (Home)</span>
           </a>
+
           <a
             href="#"
             onclick="
               switchTab('orders', this);
               return false;
             "
-            class="nav-item flex items-center gap-3 p-3 rounded-lg font-bold transition-colors relative"
+            class="nav-item flex items-center gap-3 p-3 rounded-xl font-bold"
           >
             <i data-lucide="file-stack" class="w-5 h-5 shrink-0"></i>
             <span class="truncate">Orders (Print Jobs)</span>
-            <span class="absolute top-2 right-3 flex h-3 w-3">
+            <!-- Yellow "new job" ping -->
+            <span class="absolute top-3 right-3 flex h-3 w-3">
               <span
                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFB800] opacity-75"
               ></span>
@@ -392,116 +980,124 @@
               ></span>
             </span>
           </a>
+
           <a
             href="#"
             onclick="
               switchTab('qr', this);
               return false;
             "
-            class="nav-item flex items-center gap-3 p-3 rounded-lg font-bold transition-colors"
+            class="nav-item flex items-center gap-3 p-3 rounded-xl font-bold"
           >
             <i data-lucide="qr-code" class="w-5 h-5 shrink-0"></i>
             <span class="truncate">Mera QR Code</span>
           </a>
+
           <a
             href="#"
             onclick="
               switchTab('earnings', this);
               return false;
             "
-            class="nav-item flex items-center gap-3 p-3 rounded-lg font-bold transition-colors"
+            class="nav-item flex items-center gap-3 p-3 rounded-xl font-bold"
           >
             <i data-lucide="wallet" class="w-5 h-5 shrink-0"></i>
             <span class="truncate">Kamaayi (Earnings)</span>
           </a>
+
           <a
             href="#"
             onclick="
               switchTab('settings', this);
               return false;
             "
-            class="nav-item flex items-center gap-3 p-3 rounded-lg font-bold transition-colors"
+            class="nav-item flex items-center gap-3 p-3 rounded-xl font-bold"
           >
             <i data-lucide="settings" class="w-5 h-5 shrink-0"></i>
             <span class="truncate">Settings</span>
           </a>
         </nav>
 
-        <!-- Help + Logout -->
-        <div class="p-4 bg-[#F7F8FC] border-t-2 border-[#211B8F] space-y-3">
-          <div class="manga-card p-3 text-center bg-[#FFF7D6]">
-            <p class="font-bold text-sm mb-2">Madad chahiye?</p>
-            <p class="text-xs mb-3">Support team se baat karein</p>
-            <button
-              class="manga-btn w-full py-2 text-sm flex items-center justify-center gap-2"
-            >
+        <!-- Help + Logout (logout also reachable here on mobile) -->
+        <div class="p-4 border-t border-[#E6E8F0] space-y-3 bg-[#F6F7FD]">
+          <div class="q-card q-static q-cmyk p-4 text-center bg-[#FFF7D6]">
+            <p class="font-bold text-sm mb-1 text-[#17135F]">Madad chahiye?</p>
+            <p class="text-xs mb-3 text-[#17135F]/60">
+              Support team se baat karein
+            </p>
+            <button class="q-btn w-full py-2 text-sm">
               <i data-lucide="headphones" class="w-4 h-4"></i> +91 9128554664
             </button>
           </div>
-
-          <!-- Logout is reachable here even on mobile, without opening the topbar -->
           <button
             onclick="logoutShop()"
-            class="manga-btn-secondary w-full py-2.5 text-sm flex items-center justify-center gap-2"
+            class="q-btn-ghost w-full py-2.5 text-sm"
           >
             <i data-lucide="log-out" class="w-4 h-4"></i> Logout
           </button>
         </div>
       </aside>
 
-      <!-- Main Content -->
+      <!-- =============================================================
+         MAIN CONTENT
+    ============================================================== -->
       <main
         class="flex-1 flex flex-col h-full overflow-hidden relative pt-16 md:pt-0 min-w-0"
       >
-        <!-- Desktop Topbar -->
+        <!-- Desktop top bar -->
         <header
-          class="h-16 bg-white items-center justify-between px-6 flex-shrink-0 z-10 hidden md:flex border-b-2 border-[#211B8F]"
+          class="h-16 q-topbar items-center justify-between px-6 flex-shrink-0 z-10 hidden md:flex"
         >
-          <h2 id="page-title" class="font-heading font-bold text-2xl">
+          <h2
+            id="page-title"
+            class="font-heading font-bold text-2xl text-[#17135F]"
+          >
             Overview
           </h2>
 
           <div class="flex items-center gap-3">
+            <!-- Live status pill (pulsing green dot) -->
             <div
-              class="flex items-center gap-2 px-3 py-1 bg-green-100 rounded-full shadow-sm"
+              class="q-live flex items-center gap-2 px-3 py-1.5 bg-green-100 rounded-full"
             >
-              <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-              <span class="font-bold text-sm">Shop Online Hai</span>
+              <div class="dot w-2.5 h-2.5 rounded-full bg-green-500"></div>
+              <span class="font-bold text-sm text-green-800"
+                >Shop Online Hai</span
+              >
             </div>
             <button
-              class="manga-btn-secondary p-2 rounded-full"
+              class="q-btn-ghost p-2 rounded-full"
               aria-label="Notifications"
             >
               <i data-lucide="bell" class="w-5 h-5"></i>
             </button>
             <button
               onclick="logoutShop()"
-              class="manga-btn-secondary px-4 py-2 flex items-center gap-2 rounded-lg"
+              class="q-btn-ghost px-4 py-2 rounded-lg"
             >
-              <i data-lucide="log-out" class="w-4 h-4"></i>
-              Logout
+              <i data-lucide="log-out" class="w-4 h-4"></i> Logout
             </button>
           </div>
         </header>
 
-        <!-- Scrollable Content Area -->
+        <!-- Scrollable area -->
         <div class="flex-1 overflow-y-auto p-4 md:p-8">
-          <!-- ============ TAB: OVERVIEW ============ -->
+          <!-- ===========================================================
+             TAB: OVERVIEW
+        ============================================================ -->
           <section
             id="tab-overview"
             class="tab-content max-w-6xl mx-auto space-y-6"
           >
-            <!-- Software Update -->
-            <div
-              class="manga-card p-6 sm:p-7 bg-gradient-to-br from-teal/10 to-white"
-            >
+            <!-- Software update banner -->
+            <div class="q-card q-static q-cmyk q-update p-6 sm:p-7">
               <div class="flex flex-col gap-5">
                 <div
                   class="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
                 >
                   <div class="flex items-center gap-4">
                     <div
-                      class="w-14 h-14 rounded-2xl border-2 border-[#211B8F] bg-[#FFF7D6] flex items-center justify-center text-2xl shrink-0"
+                      class="q-update-icon w-14 h-14 rounded-2xl bg-[#FFB800] text-2xl flex items-center justify-center shrink-0 shadow-md"
                     >
                       ⬇️
                     </div>
@@ -517,24 +1113,21 @@
                       </p>
                     </div>
                   </div>
-
-                  <button
-                    class="manga-btn-secondary px-5 py-2.5 whitespace-nowrap"
-                  >
+                  <button class="q-btn-ghost px-5 py-2.5 whitespace-nowrap">
                     📄 What's in Update
                   </button>
                 </div>
+
                 <a
                   href="./download/Quick2Print Agent Setup 1.2.0.exe"
                   download="Quick2Print-Agent.exe"
-                  class="manga-btn w-full py-4 sm:py-5 text-base sm:text-lg flex items-center justify-center gap-3"
+                  class="q-btn q-btn-yellow w-full py-4 sm:py-5 text-base sm:text-lg gap-3"
                 >
-                  <span class="text-xl">⬇️</span>
-                  Download &amp; Install
+                  <span class="text-xl">⬇️</span> Download &amp; Install
                 </a>
 
                 <p
-                  class="text-center text-[#17135F]/60 font-medium text-xs sm:text-sm"
+                  class="text-center text-[#17135F]/60 font-semibold text-xs sm:text-sm"
                 >
                   Ek click me download — phir file kholo, install apne aap ho
                   jayega
@@ -542,50 +1135,39 @@
               </div>
             </div>
 
-            <!-- ============================================================ -->
-            <!-- SHOP STATUS SECTION                                          -->
-            <!-- ============================================================ -->
-            <section class="manga-card p-6 sm:p-7" id="shopStatusSection">
-              <!-- Header -->
-              <div class="flex items-start justify-between gap-4 mb-6">
-                <div class="flex items-start gap-3">
-                  <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#211B8F]/10"
-                  >
-                    <span class="text-lg">🏪</span>
-                  </div>
-
-                  <div>
-                    <h2 class="text-xl font-heading font-bold text-[#15181C]">
-                      Shop Status
-                    </h2>
-
-                    <p class="mt-1 text-sm text-[#17135F]/55">
-                      Manage your shop availability and printer condition.
-                    </p>
-                  </div>
+            <!-- ======================= SHOP STATUS ======================= -->
+            <section class="q-card q-static p-6 sm:p-7" id="shopStatusSection">
+              <div class="flex items-start gap-3 mb-6">
+                <div
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#211B8F]/10"
+                >
+                  <span class="text-lg">🏪</span>
+                </div>
+                <div>
+                  <h2 class="text-xl font-heading font-bold text-[#15181C]">
+                    Shop Status
+                  </h2>
+                  <p class="mt-1 text-sm text-[#17135F]/55">
+                    Manage your shop availability and printer condition.
+                  </p>
                 </div>
               </div>
 
-              <!-- Status Message -->
+              <!-- Feedback message (filled by JS) -->
               <div
                 id="shopStatusMsg"
                 role="alert"
                 class="hidden mb-5 rounded-xl border px-4 py-3 text-sm font-semibold"
               ></div>
 
-              <!-- ======================================================== -->
-              <!-- SHOP AVAILABILITY                                         -->
-              <!-- ======================================================== -->
+              <!-- Open / Close control -->
               <div
-                class="rounded-2xl border border-gray-200 bg-[#FAFAFC] p-4 sm:p-5"
+                class="rounded-2xl border border-[#E6E8F0] bg-[#F9FAFE] p-4 sm:p-5"
               >
                 <div
                   class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <!-- Current Status -->
                   <div class="flex items-start gap-3">
-                    <!-- Status Dot -->
                     <div
                       class="mt-1.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center"
                     >
@@ -594,23 +1176,18 @@
                         class="h-3.5 w-3.5 rounded-full bg-gray-300"
                       ></span>
                     </div>
-
                     <div>
                       <div class="flex flex-wrap items-center gap-2">
                         <span
                           id="shopTitle"
                           class="text-lg font-heading font-bold text-[#15181C]"
+                          >Loading…</span
                         >
-                          Loading…
-                        </span>
-
-                        <!-- Status Badge -->
                         <span
                           id="shopStatusBadge"
                           class="hidden rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
                         ></span>
                       </div>
-
                       <p
                         id="shopDesc"
                         class="mt-1 text-sm leading-5 text-[#17135F]/55"
@@ -620,159 +1197,124 @@
                     </div>
                   </div>
 
-                  <!-- Toggle Button -->
                   <button
                     id="toggleShopBtn"
                     type="button"
                     disabled
-                    class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-bold text-[#15181C] shadow-sm transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                    class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border-2 border-[#E6E8F0] bg-white px-5 py-2.5 text-sm font-bold text-[#15181C] shadow-sm transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/5 hover:-translate-y-0.5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <span id="toggleShopIcon" class="text-base"> ⏸️ </span>
-
-                    <span id="toggleShopLabel"> Close Shop </span>
+                    <span id="toggleShopIcon" class="text-base">⏸️</span>
+                    <span id="toggleShopLabel">Close Shop</span>
                   </button>
                 </div>
               </div>
 
-              <!-- ======================================================== -->
-              <!-- PRINTER STATUS                                            -->
-              <!-- ======================================================== -->
+              <!-- Ink & paper status -->
               <div class="mt-6">
-                <!-- Section Header -->
-                <div
-                  class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4"
-                >
-                  <div class="flex items-center gap-2">
-                    <div
-                      class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#211B8F]/10"
-                    >
-                      <span class="text-base">🖨️</span>
-                    </div>
-
-                    <div>
-                      <h3 class="font-heading font-bold text-[#15181C]">
-                        Ink &amp; Paper Status
-                      </h3>
-
-                      <p class="text-xs text-[#17135F]/50">
-                        Visible to customers
-                      </p>
-                    </div>
+                <div class="flex items-center gap-2 mb-4">
+                  <div
+                    class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#00B8D9]/10"
+                  >
+                    <span class="text-base">🖨️</span>
+                  </div>
+                  <div>
+                    <h3 class="font-heading font-bold text-[#15181C]">
+                      Ink &amp; Paper Status
+                    </h3>
+                    <p class="text-xs text-[#17135F]/50">
+                      Visible to customers
+                    </p>
                   </div>
                 </div>
 
-                <!-- Status Options -->
+                <!-- data-status values are read by your JS – do not rename -->
                 <div
                   id="inkButtons"
                   class="grid grid-cols-1 sm:grid-cols-3 gap-3"
                 >
-                  <!-- ALL GOOD -->
                   <button
                     type="button"
                     data-status="online"
                     disabled
-                    class="status-option group relative flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-[#211B8F] bg-[#211B8F]/5 px-4 py-3 text-left transition-all hover:border-[#211B8F] hover:bg-[#211B8F]/10 disabled:cursor-not-allowed disabled:opacity-50"
+                    class="status-option group relative flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-[#211B8F] bg-[#211B8F]/5 px-4 py-3 text-left hover:border-[#211B8F] hover:bg-[#211B8F]/10 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <span
                       class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-700"
+                      >✓</span
                     >
-                      ✓
-                    </span>
-
                     <span class="flex-1">
-                      <span class="block text-sm font-bold text-[#15181C]">
-                        All Good
-                      </span>
-
-                      <span class="mt-0.5 block text-xs text-[#17135F]/50">
-                        Ready to print
-                      </span>
+                      <span class="block text-sm font-bold text-[#15181C]"
+                        >All Good</span
+                      >
+                      <span class="mt-0.5 block text-xs text-[#17135F]/50"
+                        >Ready to print</span
+                      >
                     </span>
                   </button>
 
-                  <!-- LOW INK -->
                   <button
                     type="button"
                     data-status="low_ink"
                     disabled
-                    class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-yellow-400 hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left hover:border-yellow-400 hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <span
                       class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-yellow-100"
-                    >
-                      <span class="h-3 w-3 rounded-full bg-yellow-400"></span>
-                    </span>
-
+                      ><span class="h-3 w-3 rounded-full bg-yellow-400"></span
+                    ></span>
                     <span class="flex-1">
-                      <span class="block text-sm font-bold text-[#15181C]">
-                        Low on Ink
-                      </span>
-
-                      <span class="mt-0.5 block text-xs text-[#17135F]/50">
-                        Ink needs attention
-                      </span>
+                      <span class="block text-sm font-bold text-[#15181C]"
+                        >Low on Ink</span
+                      >
+                      <span class="mt-0.5 block text-xs text-[#17135F]/50"
+                        >Ink needs attention</span
+                      >
                     </span>
                   </button>
 
-                  <!-- OUT OF PAPER -->
                   <button
                     type="button"
                     data-status="out_of_paper"
                     disabled
-                    class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-[#FFB800] hover:bg-[#FFB800]/10 disabled:cursor-not-allowed disabled:opacity-50"
+                    class="status-option group flex min-h-[72px] items-center gap-3 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-left hover:border-[#FFB800] hover:bg-[#FFB800]/10 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <span
                       class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FFB800]/15"
-                    >
-                      <span class="h-3 w-3 rounded-full bg-[#FFB800]"></span>
-                    </span>
-
+                      ><span class="h-3 w-3 rounded-full bg-[#FFB800]"></span
+                    ></span>
                     <span class="flex-1">
-                      <span class="block text-sm font-bold text-[#15181C]">
-                        Out of Paper
-                      </span>
-
-                      <span class="mt-0.5 block text-xs text-[#17135F]/50">
-                        Paper needs refill
-                      </span>
+                      <span class="block text-sm font-bold text-[#15181C]"
+                        >Out of Paper</span
+                      >
+                      <span class="mt-0.5 block text-xs text-[#17135F]/50"
+                        >Paper needs refill</span
+                      >
                     </span>
                   </button>
                 </div>
 
-                <!-- Hint -->
                 <div
                   id="inkHint"
-                  class="hidden mt-4 rounded-xl border border-[#211B8F]/10 bg-[#211B8F]/5 px-4 py-3 text-xs font-medium text-[#17135F]/60"
+                  class="hidden mt-4 rounded-xl border border-[#211B8F]/10 bg-[#211B8F]/5 px-4 py-3 text-xs font-semibold text-[#17135F]/60"
                 >
                   Open the shop to change ink &amp; paper status.
                 </div>
               </div>
             </section>
 
-            <!-- ================= SUBSCRIPTION ================= -->
-            <!-- ================= SUBSCRIPTION ================= -->
-
+            <!-- ======================= SUBSCRIPTION ======================= -->
             <section id="subscription-section" class="space-y-5">
-              <!-- SUBSCRIPTION HERO -->
-
+              <!-- Hero card: navy gradient with a slowly rotating CMYK ring (logo echo) -->
               <div
                 id="subscription-card"
-                class="relative overflow-hidden rounded-3xl bg-[#17135F] p-6 sm:p-8 text-white shadow-lg"
+                class="q-sub relative overflow-hidden rounded-3xl p-6 sm:p-8"
               >
-                <div
-                  class="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[#FFB800]/20"
-                ></div>
-
-                <div
-                  class="absolute -bottom-20 -left-10 h-44 w-44 rounded-full bg-[#00B8D9]/10"
-                ></div>
+                <div class="q-ring"></div>
 
                 <div class="relative z-10">
                   <div
                     class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6"
                   >
-                    <!-- LEFT -->
-
                     <div class="flex gap-4">
                       <div
                         id="subscription-icon"
@@ -780,17 +1322,14 @@
                       >
                         ✓
                       </div>
-
                       <div>
                         <p class="text-sm font-semibold text-white/60">Your</p>
-
                         <h2
                           id="subscription-title"
-                          class="font-heading text-2xl sm:text-3xl font-extrabold"
+                          class="font-heading text-2xl sm:text-3xl font-bold"
                         >
                           Subscription Is Running
                         </h2>
-
                         <p
                           id="subscription-description"
                           class="mt-2 max-w-xl text-sm text-white/70"
@@ -798,26 +1337,20 @@
                           Your plan is active and your shop is ready to accept
                           print orders.
                         </p>
-
                         <div class="mt-4 flex flex-wrap gap-2">
                           <span
                             id="subscription-status-badge"
                             class="rounded-full bg-green-400/20 px-3 py-1 text-xs font-extrabold text-green-300"
+                            >ACTIVE</span
                           >
-                            ACTIVE
-                          </span>
-
                           <span
                             id="subscription-plan-badge"
                             class="rounded-full bg-white/10 px-3 py-1 text-xs font-extrabold text-white"
+                            >—</span
                           >
-                            —
-                          </span>
                         </div>
                       </div>
                     </div>
-
-                    <!-- PLAN PRICE -->
 
                     <div class="lg:text-right">
                       <p
@@ -825,14 +1358,12 @@
                       >
                         Current Plan
                       </p>
-
                       <h3
                         id="subscription-plan-name"
-                        class="mt-1 font-heading text-2xl font-extrabold"
+                        class="mt-1 font-heading text-2xl font-bold"
                       >
                         —
                       </h3>
-
                       <p
                         id="subscription-plan-price"
                         class="mt-1 text-lg font-bold text-[#FFB800]"
@@ -842,24 +1373,18 @@
                     </div>
                   </div>
 
-                  <!-- DETAILS -->
-
+                  <!-- Key dates -->
                   <div class="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    <div class="rounded-2xl bg-white/5 p-4">
+                    <div class="q-sub-tile">
                       <p class="text-xs text-white/50">Started</p>
-
                       <p id="subscription-start" class="mt-1 font-bold">—</p>
                     </div>
-
-                    <div class="rounded-2xl bg-white/5 p-4">
+                    <div class="q-sub-tile">
                       <p class="text-xs text-white/50">Expires</p>
-
                       <p id="subscription-end" class="mt-1 font-bold">—</p>
                     </div>
-
-                    <div class="rounded-2xl bg-white/5 p-4">
+                    <div class="q-sub-tile">
                       <p class="text-xs text-white/50">Days Left</p>
-
                       <p
                         id="subscription-days-left"
                         class="mt-1 font-bold text-[#FFB800]"
@@ -867,17 +1392,14 @@
                         —
                       </p>
                     </div>
-
-                    <div class="rounded-2xl bg-white/5 p-4">
+                    <div class="q-sub-tile">
                       <p class="text-xs text-white/50">Duration</p>
-
                       <p id="subscription-duration" class="mt-1 font-bold">—</p>
                     </div>
                   </div>
 
-                  <!-- PRINT USAGE -->
-
-                  <div class="mt-4 rounded-2xl bg-white/5 p-5">
+                  <!-- Print usage -->
+                  <div class="q-sub-tile mt-4 !p-5">
                     <div class="flex items-center justify-between gap-4">
                       <div>
                         <p
@@ -885,33 +1407,26 @@
                         >
                           Print Usage
                         </p>
-
                         <p
                           id="subscription-print-usage"
-                          class="mt-1 font-heading text-lg font-extrabold"
+                          class="mt-1 font-heading text-lg font-bold"
                         >
                           —
                         </p>
                       </div>
-
                       <span
                         id="subscription-print-percentage"
                         class="text-sm font-bold text-[#FFB800]"
+                        >0%</span
                       >
-                        0%
-                      </span>
                     </div>
-
-                    <div
-                      class="mt-3 h-2 overflow-hidden rounded-full bg-white/10"
-                    >
+                    <div class="q-progress mt-3">
                       <div
                         id="subscription-print-bar"
-                        class="h-full rounded-full bg-[#FFB800] transition-all duration-500"
+                        class="h-full rounded-full transition-all duration-700"
                         style="width: 0%"
                       ></div>
                     </div>
-
                     <p
                       id="subscription-print-remaining"
                       class="mt-2 text-xs text-white/50"
@@ -922,38 +1437,29 @@
                 </div>
               </div>
 
-              <!-- PLAN DETAILS -->
-
-              <div
-                class="rounded-3xl border-2 border-[#211B8F]/10 bg-white p-6 shadow-sm"
-              >
+              <!-- Plan details -->
+              <div class="q-card q-static q-cmyk p-6">
                 <div class="flex items-center justify-between gap-4 mb-5">
                   <div>
-                    <h3
-                      class="font-heading text-xl font-extrabold text-[#17135F]"
-                    >
+                    <h3 class="font-heading text-xl font-bold text-[#17135F]">
                       Plan Details
                     </h3>
-
                     <p class="mt-1 text-sm text-[#17135F]/50">
                       Your complete subscription information
                     </p>
                   </div>
-
                   <span
                     id="subscription-payment-status"
                     class="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700"
+                    >Checking…</span
                   >
-                    Checking…
-                  </span>
                 </div>
 
                 <div
                   class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
                 >
-                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                  <div class="q-tile">
                     <p class="text-xs font-semibold text-[#17135F]/50">Plan</p>
-
                     <p
                       id="detail-plan-name"
                       class="mt-1 font-bold text-[#17135F]"
@@ -961,10 +1467,8 @@
                       —
                     </p>
                   </div>
-
-                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                  <div class="q-tile">
                     <p class="text-xs font-semibold text-[#17135F]/50">Price</p>
-
                     <p
                       id="detail-plan-price"
                       class="mt-1 font-bold text-[#17135F]"
@@ -972,12 +1476,10 @@
                       —
                     </p>
                   </div>
-
-                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                  <div class="q-tile">
                     <p class="text-xs font-semibold text-[#17135F]/50">
                       Printers
                     </p>
-
                     <p
                       id="detail-printer-limit"
                       class="mt-1 font-bold text-[#17135F]"
@@ -985,12 +1487,10 @@
                       —
                     </p>
                   </div>
-
-                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                  <div class="q-tile">
                     <p class="text-xs font-semibold text-[#17135F]/50">
                       Print Limit
                     </p>
-
                     <p
                       id="detail-print-limit"
                       class="mt-1 font-bold text-[#17135F]"
@@ -998,12 +1498,10 @@
                       —
                     </p>
                   </div>
-
-                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                  <div class="q-tile">
                     <p class="text-xs font-semibold text-[#17135F]/50">
                       Support
                     </p>
-
                     <p
                       id="detail-support"
                       class="mt-1 font-bold text-[#17135F]"
@@ -1011,12 +1509,10 @@
                       —
                     </p>
                   </div>
-
-                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                  <div class="q-tile">
                     <p class="text-xs font-semibold text-[#17135F]/50">
                       Payment Method
                     </p>
-
                     <p
                       id="detail-payment-method"
                       class="mt-1 font-bold text-[#17135F]"
@@ -1024,12 +1520,10 @@
                       —
                     </p>
                   </div>
-
-                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                  <div class="q-tile">
                     <p class="text-xs font-semibold text-[#17135F]/50">
                       Amount Paid
                     </p>
-
                     <p
                       id="detail-payment-amount"
                       class="mt-1 font-bold text-[#17135F]"
@@ -1037,12 +1531,10 @@
                       —
                     </p>
                   </div>
-
-                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                  <div class="q-tile">
                     <p class="text-xs font-semibold text-[#17135F]/50">
                       Payment Date
                     </p>
-
                     <p
                       id="detail-payment-date"
                       class="mt-1 font-bold text-[#17135F]"
@@ -1053,11 +1545,10 @@
                 </div>
 
                 <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                  <div class="q-tile">
                     <p class="text-xs font-semibold text-[#17135F]/50">
                       Cashfree Order ID
                     </p>
-
                     <p
                       id="detail-cashfree-order"
                       class="mt-1 break-all font-mono text-xs font-bold text-[#17135F]"
@@ -1065,12 +1556,10 @@
                       —
                     </p>
                   </div>
-
-                  <div class="rounded-2xl bg-[#F8FAFC] p-4">
+                  <div class="q-tile">
                     <p class="text-xs font-semibold text-[#17135F]/50">
                       Payment ID
                     </p>
-
                     <p
                       id="detail-payment-id"
                       class="mt-1 break-all font-mono text-xs font-bold text-[#17135F]"
@@ -1085,7 +1574,7 @@
                     id="subscription-renew-button"
                     type="button"
                     onclick="quick2PrintRenewPlan()"
-                    class="hidden rounded-xl bg-[#17135F] px-5 py-3 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-[#211B8F]"
+                    class="hidden q-btn q-btn-yellow px-5 py-3 text-sm"
                   >
                     Renew Plan
                   </button>
@@ -1093,7 +1582,9 @@
               </div>
             </section>
 
-            <!-- QUICK2PRINT RENEW PLAN MODAL -->
+            <!-- ======================= RENEW PLAN MODAL =======================
+               Opened/closed by quick2PrintRenewPlan() / closeRenewPlanModal().
+               The plan cards inside #renew-plan-grid are rendered by JS. -->
             <div
               id="renew-plan-modal"
               class="fixed inset-0 z-[9999] hidden"
@@ -1102,28 +1593,26 @@
               aria-labelledby="renew-plan-title"
               aria-hidden="true"
             >
-              <!-- Backdrop -->
               <div
-                class="absolute inset-0 bg-[#09083A]/60 backdrop-blur-sm transition-opacity"
+                class="absolute inset-0 bg-[#09083A]/60 backdrop-blur-sm"
                 onclick="closeRenewPlanModal()"
               ></div>
 
-              <!-- Modal Wrapper -->
               <div
                 class="relative flex min-h-full items-center justify-center p-3 sm:p-6"
               >
                 <div
-                  class="relative flex w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_24px_80px_rgba(9,8,58,0.28)]"
+                  class="relative flex w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-white shadow-[0_24px_80px_rgba(9,8,58,0.3)]"
+                  style="animation: popIn 0.35s var(--ease)"
                 >
-                  <!-- ================= HEADER ================= -->
+                  <!-- Header -->
                   <div
                     class="border-b border-slate-200 px-5 py-5 sm:px-8 sm:py-6"
                   >
                     <div class="flex items-start justify-between gap-4">
                       <div class="flex items-start gap-4">
-                        <!-- Icon -->
                         <div
-                          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#211B8F]/[0.07] text-[#211B8F] ring-1 ring-inset ring-[#211B8F]/10"
+                          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FFB800]/20 text-[#B77900]"
                         >
                           <svg
                             class="h-5 w-5"
@@ -1140,19 +1629,16 @@
                             />
                           </svg>
                         </div>
-
                         <div>
                           <p class="text-sm font-semibold text-[#00A9C7]">
                             Quick2Print
                           </p>
-
                           <h3
                             id="renew-plan-title"
-                            class="mt-0.5 text-xl font-semibold tracking-tight text-[#17135F] sm:text-2xl"
+                            class="mt-0.5 font-heading text-xl font-semibold text-[#17135F] sm:text-2xl"
                           >
                             Renew your subscription
                           </h3>
-
                           <p
                             class="mt-1.5 max-w-xl text-sm leading-6 text-slate-600"
                           >
@@ -1162,13 +1648,11 @@
                           </p>
                         </div>
                       </div>
-
-                      <!-- Close -->
                       <button
                         type="button"
                         onclick="closeRenewPlanModal()"
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#211B8F] focus-visible:ring-offset-2"
                         aria-label="Close"
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:rotate-90 hover:bg-slate-100 hover:text-slate-700"
                       >
                         <svg
                           class="h-5 w-5"
@@ -1188,11 +1672,10 @@
                     </div>
                   </div>
 
-                  <!-- ================= CONTENT ================= -->
+                  <!-- Content: loading → error → grid -->
                   <div
-                    class="max-h-[72vh] overflow-y-auto bg-slate-50/70 px-4 py-5 sm:px-8 sm:py-7"
+                    class="max-h-[72vh] overflow-y-auto bg-[#F6F7FD] px-4 py-5 sm:px-8 sm:py-7"
                   >
-                    <!-- Loading State -->
                     <div
                       id="renew-plan-loading"
                       class="flex min-h-[300px] flex-col items-center justify-center text-center"
@@ -1202,17 +1685,14 @@
                       <div
                         class="h-10 w-10 animate-spin rounded-full border-[3px] border-slate-200 border-t-[#211B8F] motion-reduce:animate-none"
                       ></div>
-
                       <p class="mt-5 text-sm font-semibold text-[#17135F]">
                         Loading subscription plans
                       </p>
-
                       <p class="mt-1 text-sm text-slate-500">
                         This will only take a moment.
                       </p>
                     </div>
 
-                    <!-- Error State -->
                     <div
                       id="renew-plan-error"
                       class="hidden rounded-xl border border-red-200 bg-white p-5"
@@ -1237,17 +1717,14 @@
                             ></path>
                           </svg>
                         </div>
-
                         <div>
                           <p class="font-semibold text-red-700">
                             Couldn't load plans
                           </p>
-
                           <p
                             id="renew-plan-error-message"
                             class="mt-1 text-sm leading-6 text-slate-600"
                           ></p>
-
                           <p class="mt-2 text-sm leading-6 text-slate-500">
                             Check your connection and Supabase table
                             permissions, then retry.
@@ -1255,7 +1732,7 @@
                           <button
                             type="button"
                             onclick="loadRenewPlans()"
-                            class="mt-4 inline-flex items-center justify-center rounded-xl bg-[#211B8F] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#17135F] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00B8D9] focus-visible:ring-offset-2"
+                            class="q-btn mt-4 px-4 py-2.5 text-sm"
                           >
                             Retry loading plans
                           </button>
@@ -1263,21 +1740,19 @@
                       </div>
                     </div>
 
-                    <!-- Plans -->
                     <div
                       id="renew-plan-grid"
                       class="hidden grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
                     ></div>
                   </div>
 
-                  <!-- ================= FOOTER ================= -->
+                  <!-- Footer -->
                   <div
                     class="border-t border-slate-200 bg-white px-5 py-4 sm:px-8"
                   >
                     <div
                       class="flex flex-col items-center justify-between gap-2 sm:flex-row"
                     >
-                      <!-- Security -->
                       <div class="flex items-center gap-2.5">
                         <svg
                           class="h-4 w-4 shrink-0 text-emerald-600"
@@ -1298,7 +1773,6 @@
                             d="m9 12 2 2 4-4"
                           />
                         </svg>
-
                         <p class="text-xs text-slate-600">
                           <span class="font-semibold text-slate-800"
                             >Secure payment</span
@@ -1306,8 +1780,6 @@
                           processed by Cashfree
                         </p>
                       </div>
-
-                      <!-- Payment Methods -->
                       <p class="text-xs text-slate-500">
                         Pay with UPI, cards or net banking
                       </p>
@@ -1318,136 +1790,128 @@
             </div>
           </section>
 
-          <!-- ============ TAB: ORDERS ============ -->
+          <!-- ===========================================================
+             TAB: ORDERS
+             #ordersContainer is filled by JS; its cards use .manga-card
+             which is aliased to the new card style in the theme CSS.
+        ============================================================ -->
           <section
             id="tab-orders"
             class="tab-content hidden max-w-4xl mx-auto space-y-6"
           >
-            <!-- Orders Header -->
             <div class="flex justify-between items-end mb-2">
               <p class="font-bold text-[#17135F]/60">
                 Naye print jobs yahan aayenge.
               </p>
-
               <button
                 id="refreshOrdersBtn"
-                class="manga-btn-secondary px-3 py-1.5 text-sm flex items-center gap-2"
+                class="q-btn-ghost px-3 py-1.5 text-sm"
                 onclick="refreshOrders()"
               >
-                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                Refresh
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh
               </button>
             </div>
 
-            <!-- Loading State -->
+            <!-- Loading -->
             <div
               id="ordersLoading"
               class="flex flex-col items-center justify-center py-16 text-center"
             >
               <div
-                class="w-8 h-8 border-4 border-[#211B8F]/15 border-t-stamp rounded-full animate-spin mb-3"
+                class="w-9 h-9 border-4 border-[#211B8F]/15 border-t-[#FFB800] rounded-full animate-spin mb-3"
               ></div>
-
               <p class="text-sm font-semibold text-[#17135F]/50">
                 Orders load ho rahe hain...
               </p>
             </div>
 
-            <!-- Empty State -->
-            <div id="ordersEmpty" class="hidden manga-card p-10 text-center">
-              <i
-                data-lucide="inbox"
-                class="w-10 h-10 mx-auto mb-3 text-[#17135F]/30"
-              ></i>
-
-              <p class="font-bold text-[#17135F]/60">
+            <!-- Empty -->
+            <div
+              id="ordersEmpty"
+              class="hidden q-card q-static q-cmyk p-10 text-center"
+            >
+              <div
+                class="w-16 h-16 mx-auto mb-3 rounded-full bg-[#FFF7D6] flex items-center justify-center"
+                style="animation: floatY 3s ease-in-out infinite"
+              >
+                <i data-lucide="inbox" class="w-8 h-8 text-[#B77900]"></i>
+              </div>
+              <p class="font-bold text-[#17135F]/70">
                 Abhi tak koi order nahi aaya.
               </p>
-
               <p class="text-sm text-[#17135F]/40 mt-1">
                 Jaise hi koi customer QR scan karke print bhejega, yahan
                 dikhega.
               </p>
             </div>
 
-            <!-- Error State -->
+            <!-- Error -->
             <div
               id="ordersError"
-              class="hidden manga-card p-5 bg-red-50 border-red-200 text-red-700 flex items-start gap-2"
+              class="hidden q-card q-static p-5 bg-red-50 border-red-200 text-red-700 flex items-start gap-2"
             >
               <i
                 data-lucide="alert-triangle"
                 class="w-5 h-5 shrink-0 mt-0.5"
               ></i>
-
               <p id="ordersErrorText" class="text-sm font-semibold">
                 Orders load nahi ho paaye.
               </p>
             </div>
 
-            <!-- Orders Container -->
             <div id="ordersContainer" class="space-y-6"></div>
           </section>
 
-          <!-- ============ TAB: QR CODE ============ -->
+          <!-- ===========================================================
+             TAB: QR CODE
+        ============================================================ -->
           <section id="tab-qr" class="tab-content hidden max-w-4xl mx-auto">
-            <!-- Page Header -->
-            <div class="mb-6">
-              <div
-                class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
-              >
-                <div>
-                  <span
-                    class="text-[10px] font-black uppercase tracking-[0.2em] text-[#00B8D9]"
-                  >
-                    Customer Access
-                  </span>
-
-                  <h2
-                    class="mt-1 font-heading text-2xl font-extrabold tracking-tight text-[#17135F] sm:text-3xl"
-                  >
-                    Shop QR Code
-                  </h2>
-
-                  <p
-                    class="mt-1 max-w-2xl text-sm font-medium leading-6 text-slate-500"
-                  >
-                    Customers can scan this QR code to open your Quick2Print
-                    shop page and submit documents for printing.
-                  </p>
-                </div>
-
-                <!-- Status -->
-                <div
-                  id="qrStatus"
-                  class="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-bold text-emerald-700"
+            <div
+              class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
+            >
+              <div>
+                <span
+                  class="text-[10px] font-black uppercase tracking-[0.2em] text-[#00B8D9]"
+                  >Customer Access</span
                 >
-                  <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-                  QR Ready
-                </div>
+                <h2
+                  class="mt-1 font-heading text-2xl font-bold tracking-tight text-[#17135F] sm:text-3xl"
+                >
+                  Shop QR Code
+                </h2>
+                <p
+                  class="mt-1 max-w-2xl text-sm font-semibold leading-6 text-slate-500"
+                >
+                  Customers can scan this QR code to open your Quick2Print shop
+                  page and submit documents for printing.
+                </p>
+              </div>
+              <div
+                id="qrStatus"
+                class="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-bold text-emerald-700"
+              >
+                <span class="h-2 w-2 rounded-full bg-emerald-500"></span> QR
+                Ready
               </div>
             </div>
 
-            <!-- Generator Card -->
+            <!-- QR generator card -->
             <div
               class="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(23,19,95,0.08)]"
             >
-              <!-- Generator Header -->
               <div
-                class="border-b border-slate-100 bg-gradient-to-r from-[#17135F] via-[#211B8F] to-[#00B8D9] px-5 py-5 text-white sm:px-7"
+                class="bg-gradient-to-r from-[#17135F] via-[#211B8F] to-[#00B8D9] px-5 py-5 text-white sm:px-7"
               >
                 <div class="flex items-center gap-4">
                   <div
-                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/20 backdrop-blur"
+                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/20"
                   >
                     <i data-lucide="qr-code" class="h-6 w-6"></i>
                   </div>
-
                   <div>
-                    <h3 class="text-base font-extrabold sm:text-lg">
+                    <h3 class="text-base font-bold sm:text-lg font-heading">
                       Your Customer QR
                     </h3>
-
                     <p class="mt-1 text-xs font-medium text-white/75">
                       Automatically linked to your shop account
                     </p>
@@ -1455,34 +1919,28 @@
                 </div>
               </div>
 
-              <!-- QR Content -->
               <div class="p-5 sm:p-8">
                 <div
                   class="grid gap-7 lg:grid-cols-[280px_1fr] lg:items-center"
                 >
-                  <!-- QR Preview -->
+                  <!-- QR preview with logo-coloured corner brackets -->
                   <div class="flex justify-center">
                     <div
                       class="relative rounded-[26px] border border-slate-200 bg-slate-50 p-4 shadow-inner"
                     >
-                      <!-- Corner decorations -->
                       <div
                         class="absolute -left-1 -top-1 h-8 w-8 rounded-tl-xl border-l-4 border-t-4 border-[#00B8D9]"
                       ></div>
-
                       <div
-                        class="absolute -right-1 -top-1 h-8 w-8 rounded-tr-xl border-r-4 border-t-4 border-[#211B8F]"
+                        class="absolute -right-1 -top-1 h-8 w-8 rounded-tr-xl border-r-4 border-t-4 border-[#E6248C]"
+                      ></div>
+                      <div
+                        class="absolute -bottom-1 -left-1 h-8 w-8 rounded-bl-xl border-b-4 border-l-4 border-[#FFB800]"
+                      ></div>
+                      <div
+                        class="absolute -bottom-1 -right-1 h-8 w-8 rounded-br-xl border-b-4 border-r-4 border-[#211B8F]"
                       ></div>
 
-                      <div
-                        class="absolute -bottom-1 -left-1 h-8 w-8 rounded-bl-xl border-b-4 border-l-4 border-[#211B8F]"
-                      ></div>
-
-                      <div
-                        class="absolute -bottom-1 -right-1 h-8 w-8 rounded-br-xl border-b-4 border-r-4 border-[#00B8D9]"
-                      ></div>
-
-                      <!-- QR -->
                       <div
                         id="qrPreview"
                         class="flex h-[230px] w-[230px] items-center justify-center rounded-2xl bg-white p-3 shadow-sm sm:h-[260px] sm:w-[260px]"
@@ -1491,7 +1949,6 @@
                           <div
                             class="mx-auto mb-3 h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-[#211B8F]"
                           ></div>
-
                           <p class="text-xs font-bold text-slate-400">
                             Generating QR...
                           </p>
@@ -1502,7 +1959,6 @@
 
                   <!-- Details -->
                   <div>
-                    <!-- Shop Name -->
                     <div
                       class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
                     >
@@ -1512,14 +1968,12 @@
                         >
                           <i data-lucide="store" class="h-5 w-5"></i>
                         </div>
-
                         <div class="min-w-0">
                           <p
                             class="text-[10px] font-black uppercase tracking-wider text-slate-400"
                           >
                             Shop Name
                           </p>
-
                           <p
                             id="qrShopName"
                             class="mt-0.5 truncate text-base font-extrabold text-[#17135F]"
@@ -1530,7 +1984,6 @@
                       </div>
                     </div>
 
-                    <!-- Shop ID -->
                     <div
                       class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4"
                     >
@@ -1540,14 +1993,12 @@
                         >
                           <i data-lucide="fingerprint" class="h-5 w-5"></i>
                         </div>
-
                         <div class="min-w-0 flex-1">
                           <p
                             class="text-[10px] font-black uppercase tracking-wider text-slate-400"
                           >
                             Shop ID
                           </p>
-
                           <p
                             id="qrShopId"
                             class="mt-0.5 truncate font-mono text-sm font-bold text-slate-700"
@@ -1558,7 +2009,6 @@
                       </div>
                     </div>
 
-                    <!-- URL -->
                     <div
                       class="mt-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4"
                     >
@@ -1567,7 +2017,6 @@
                       >
                         Customer URL
                       </p>
-
                       <p
                         id="qrUrl"
                         class="mt-2 break-all font-mono text-[11px] font-semibold leading-5 text-[#211B8F]"
@@ -1576,35 +2025,24 @@
                       </p>
                     </div>
 
-                    <!-- Buttons -->
                     <div class="mt-5 grid gap-3 sm:grid-cols-2">
                       <button
                         id="downloadQrBtn"
                         type="button"
                         disabled
                         onclick="downloadShopQRCode()"
-                        class="group flex items-center justify-center gap-2 rounded-xl bg-[#211B8F] px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-indigo-900/15 transition hover:-translate-y-0.5 hover:bg-[#17135F]"
+                        class="q-btn px-5 py-3 text-sm"
                       >
-                        <i
-                          data-lucide="download"
-                          class="h-4 w-4 transition-transform group-hover:translate-y-0.5"
-                        ></i>
-
-                        Download QR
+                        <i data-lucide="download" class="h-4 w-4"></i> Download
+                        QR
                       </button>
-
                       <button
                         id="printQrBtn"
                         type="button"
                         onclick="printShopA4QRCode()"
-                        class="group flex items-center justify-center gap-2 rounded-xl border-2 border-[#211B8F] bg-white px-5 py-3 text-sm font-extrabold text-[#211B8F] transition hover:-translate-y-0.5 hover:bg-indigo-50"
+                        class="q-btn-ghost px-5 py-3 text-sm"
                       >
-                        <i
-                          data-lucide="printer"
-                          class="h-4 w-4 transition-transform group-hover:scale-110"
-                        ></i>
-
-                        Print A4
+                        <i data-lucide="printer" class="h-4 w-4"></i> Print A4
                       </button>
                     </div>
                   </div>
@@ -1612,31 +2050,26 @@
               </div>
             </div>
 
-            <!-- =======================================================
-       A4 PREVIEW
-  ======================================================== -->
+            <!-- A4 poster preview (this exact node is printed – keep ids) -->
             <div class="mt-8">
               <div class="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <span
                     class="text-[10px] font-black uppercase tracking-[0.2em] text-[#00B8D9]"
+                    >Print Preview</span
                   >
-                    Print Preview
-                  </span>
-
-                  <h3 class="mt-1 text-lg font-extrabold text-[#17135F]">
+                  <h3
+                    class="mt-1 text-lg font-bold font-heading text-[#17135F]"
+                  >
                     A4 Customer Poster
                   </h3>
                 </div>
-
                 <span
                   class="rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-bold text-slate-500"
+                  >A4 • 210 × 297 mm</span
                 >
-                  A4 • 210 × 297 mm
-                </span>
               </div>
 
-              <!-- A4 Preview -->
               <div
                 class="flex justify-center overflow-x-auto rounded-[28px] bg-slate-100 p-4 sm:p-8"
               >
@@ -1644,50 +2077,39 @@
                   id="qrA4Poster"
                   class="relative flex min-h-[842px] w-[595px] min-w-[595px] flex-col items-center overflow-hidden bg-white px-12 py-14 text-center shadow-[0_25px_80px_rgba(15,23,42,0.18)]"
                 >
-                  <!-- Decorative background -->
                   <div
                     class="pointer-events-none absolute -right-28 -top-28 h-72 w-72 rounded-full bg-[#00B8D9]/10 blur-3xl"
                   ></div>
-
                   <div
-                    class="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-[#211B8F]/10 blur-3xl"
+                    class="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-[#FFB800]/15 blur-3xl"
                   ></div>
 
-                  <!-- Top branding -->
                   <div class="relative z-10">
-                    <div class="relative z-10">
-                      <img
-                        src="logo.png"
-                        alt="Quick2Print"
-                        class="mx-auto h-24 w-auto object-contain"
-                      />
-                    </div>
-
+                    <img
+                      src="logo.png"
+                      alt="Quick2Print"
+                      class="mx-auto h-24 w-auto object-contain"
+                    />
                     <p
                       class="mt-5 text-[10px] font-black uppercase tracking-[0.3em] text-[#00B8D9]"
                     >
                       Quick2Print
                     </p>
-
-                    <!-- Shop Name -->
                     <h1
                       id="a4ShopName"
                       class="mt-3 max-w-[480px] text-4xl font-black leading-tight tracking-tight text-[#17135F]"
                     >
                       Your Shop Name
                     </h1>
-
                     <div
-                      class="mx-auto mt-5 h-1 w-20 rounded-full bg-gradient-to-r from-[#211B8F] to-[#00B8D9]"
+                      class="mx-auto mt-5 h-1 w-20 rounded-full bg-gradient-to-r from-[#00B8D9] via-[#E6248C] to-[#FFB800]"
                     ></div>
                   </div>
 
-                  <!-- Instruction -->
                   <div class="relative z-10 mt-10">
                     <p class="text-lg font-bold text-slate-700">
                       Scan to Send Your Documents
                     </p>
-
                     <p
                       class="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400"
                     >
@@ -1696,7 +2118,6 @@
                     </p>
                   </div>
 
-                  <!-- QR -->
                   <div
                     class="relative z-10 mt-8 rounded-[28px] border-2 border-slate-100 bg-white p-5 shadow-[0_20px_60px_rgba(23,19,95,0.12)]"
                   >
@@ -1706,15 +2127,13 @@
                     ></div>
                   </div>
 
-                  <!-- Scan text -->
                   <div class="relative z-10 mt-8">
                     <div
                       class="inline-flex items-center gap-2 rounded-full bg-[#211B8F] px-5 py-2.5 text-xs font-extrabold text-white"
                     >
-                      <i data-lucide="scan-line" class="h-4 w-4"></i>
-                      SCAN TO UPLOAD
+                      <i data-lucide="scan-line" class="h-4 w-4"></i> SCAN TO
+                      UPLOAD
                     </div>
-
                     <p
                       id="a4Url"
                       class="mt-4 max-w-[460px] break-all font-mono text-[10px] font-semibold text-slate-400"
@@ -1723,15 +2142,14 @@
                     </p>
                   </div>
 
-                  <!-- Footer -->
                   <div
                     class="absolute bottom-8 left-12 right-12 border-t border-slate-100 pt-5"
                   >
                     <div
                       class="flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-slate-400"
                     >
-                      <span>Quick2Print</span>
-                      <span>QR → Upload → Auto Print</span>
+                      <span>Quick2Print</span
+                      ><span>QR → Upload → Auto Print</span>
                     </div>
                   </div>
                 </div>
@@ -1739,180 +2157,137 @@
             </div>
           </section>
 
-          <!-- ============ TAB: EARNINGS ============ -->
+          <!-- ===========================================================
+             TAB: EARNINGS
+        ============================================================ -->
           <section
             id="tab-earnings"
             class="tab-content hidden max-w-5xl mx-auto space-y-6"
           >
-            <!-- =========================
-       CASHFREE PAYMENT DETAILS
-  ========================== -->
-            <div class="manga-card p-6">
+            <!-- Cashfree credentials -->
+            <div class="q-card q-static q-cmyk p-6">
               <div class="flex items-start justify-between gap-4 mb-6">
                 <div>
-                  <h2 class="font-heading font-extrabold text-2xl">
+                  <h2 class="font-heading font-bold text-2xl text-[#17135F]">
                     Cashfree Payment Details
                   </h2>
-
                   <p class="text-sm font-bold text-[#17135F]/50 mt-1">
                     Apne shop ke Cashfree credentials yahan save karein.
                   </p>
                 </div>
-
                 <span
                   id="cashfreeEnvironmentBadge"
                   class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-bold"
+                  >SANDBOX</span
                 >
-                  SANDBOX
-                </span>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <!-- App ID -->
                 <div>
-                  <label class="block text-sm font-bold mb-2">
-                    Cashfree App ID
-                  </label>
-
+                  <label class="block text-sm font-bold mb-2"
+                    >Cashfree App ID</label
+                  >
                   <input
                     id="earningsCashfreeAppId"
                     type="password"
                     autocomplete="off"
                     placeholder="Cashfree App ID"
-                    class="manga-input w-full font-bold"
+                    class="q-input w-full font-bold"
                   />
                 </div>
-
-                <!-- Secret Key -->
                 <div>
-                  <label class="block text-sm font-bold mb-2">
-                    Cashfree Secret Key
-                  </label>
-
+                  <label class="block text-sm font-bold mb-2"
+                    >Cashfree Secret Key</label
+                  >
                   <input
                     id="earningsCashfreeSecret"
                     type="password"
                     autocomplete="new-password"
                     placeholder="Enter Secret Key"
-                    class="manga-input w-full font-bold"
+                    class="q-input w-full font-bold"
                   />
                 </div>
-
-                <!-- Environment -->
                 <div>
-                  <label class="block text-sm font-bold mb-2">
-                    Environment
-                  </label>
-
+                  <label class="block text-sm font-bold mb-2"
+                    >Environment</label
+                  >
                   <select
                     id="earningsCashfreeEnv"
-                    class="manga-input w-full font-bold"
+                    class="q-input w-full font-bold"
                   >
                     <option value="SANDBOX">SANDBOX</option>
                     <option value="PRODUCTION">PRODUCTION</option>
                   </select>
                 </div>
-
-                <!-- Save -->
                 <div class="flex items-end">
                   <button
                     id="saveEarningsCashfreeBtn"
                     onclick="saveEarningsCashfreeSettings()"
-                    class="manga-btn w-full py-3 flex items-center justify-center gap-2"
+                    class="q-btn w-full py-3"
                   >
-                    <i data-lucide="save" class="w-5 h-5"></i>
-                    Save Cashfree Details
+                    <i data-lucide="save" class="w-5 h-5"></i> Save Cashfree
+                    Details
                   </button>
                 </div>
               </div>
 
-              <!-- Cashfree Message -->
               <div
                 id="earningsCashfreeMessage"
                 class="hidden mt-5 rounded-xl px-4 py-3 text-sm font-bold"
               ></div>
             </div>
 
-            <!-- =========================
-       EARNINGS SUMMARY
-  ========================== -->
+            <!-- Summary stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <!-- Completed Earnings -->
-              <div class="manga-card p-6 bg-[#FFF7D6]">
+              <div class="q-card q-stat q-stat-yellow p-6">
                 <p class="text-sm font-bold text-[#17135F]/60">
                   Completed Earnings
                 </p>
-
-                <p
-                  id="earningsTotalCompleted"
-                  class="font-heading font-extrabold text-4xl mt-2"
-                >
+                <p id="earningsTotalCompleted" class="num mt-2 text-[#17135F]">
                   ₹0
                 </p>
               </div>
-
-              <!-- This Month -->
-              <div class="manga-card p-6">
+              <div class="q-card q-stat q-stat-cyan p-6">
                 <p class="text-sm font-bold text-[#17135F]/60">This Month</p>
-
-                <p
-                  id="earningsThisMonth"
-                  class="font-heading font-extrabold text-4xl mt-2"
-                >
-                  ₹0
-                </p>
+                <p id="earningsThisMonth" class="num mt-2 text-[#17135F]">₹0</p>
               </div>
-
-              <!-- Completed Orders -->
-              <div class="manga-card p-6">
+              <div class="q-card q-stat q-stat-indigo p-6">
                 <p class="text-sm font-bold text-[#17135F]/60">
                   Completed Orders
                 </p>
-
-                <p
-                  id="earningsCompletedOrders"
-                  class="font-heading font-extrabold text-4xl mt-2"
-                >
+                <p id="earningsCompletedOrders" class="num mt-2 text-[#17135F]">
                   0
                 </p>
               </div>
             </div>
 
-            <!-- =========================
-       YEAR / MONTH FILTER
-  ========================== -->
-            <div class="manga-card p-5">
+            <!-- Filters -->
+            <div class="q-card q-static p-5">
               <div
                 class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
               >
-                <!-- Filter Heading -->
                 <div>
-                  <h3 class="font-heading font-bold text-lg">Filter Orders</h3>
-
+                  <h3 class="font-heading font-bold text-lg text-[#17135F]">
+                    Filter Orders
+                  </h3>
                   <p class="text-sm font-bold text-[#17135F]/50 mt-1">
                     Year aur month ke according completed orders dekhein.
                   </p>
                 </div>
-
-                <!-- Filters -->
                 <div class="flex flex-col sm:flex-row gap-3">
-                  <!-- Year -->
                   <select
                     id="earningsYear"
-                    class="manga-input font-bold min-w-[150px]"
+                    class="q-input font-bold min-w-[150px]"
                     onchange="filterEarningsOrders()"
                   >
                     <option value="">All Years</option>
                   </select>
-
-                  <!-- Month -->
                   <select
                     id="earningsMonth"
-                    class="manga-input font-bold min-w-[160px]"
+                    class="q-input font-bold min-w-[160px]"
                     onchange="filterEarningsOrders()"
                   >
                     <option value="">All Months</option>
-
                     <option value="1">January</option>
                     <option value="2">February</option>
                     <option value="3">March</option>
@@ -1926,76 +2301,57 @@
                     <option value="11">November</option>
                     <option value="12">December</option>
                   </select>
-
-                  <!-- Reset -->
                   <button
                     type="button"
                     onclick="resetEarningsFilters()"
-                    class="manga-btn-secondary px-4 py-2 flex items-center justify-center gap-2"
+                    class="q-btn-ghost px-4 py-2"
                     title="Reset Filters"
                   >
-                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                    Reset
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reset
                   </button>
                 </div>
               </div>
             </div>
 
-            <!-- =========================
-       COMPLETED PRINT ORDERS
-  ========================== -->
+            <!-- Completed orders table -->
             <div>
-              <!-- Heading -->
               <div class="flex items-center justify-between gap-4 mb-4">
                 <div>
-                  <h3 class="font-heading font-bold text-xl sm:text-2xl">
+                  <h3
+                    class="font-heading font-bold text-xl sm:text-2xl text-[#17135F]"
+                  >
                     Completed Print Orders
                   </h3>
-
                   <p class="text-sm font-bold text-[#17135F]/50">
                     Supabase se real completed orders
                   </p>
                 </div>
-
-                <!-- Refresh -->
                 <button
                   onclick="loadShopEarnings()"
-                  class="manga-btn-secondary p-3"
+                  class="q-btn-ghost p-3"
                   title="Refresh"
                 >
                   <i data-lucide="refresh-cw" class="w-5 h-5"></i>
                 </button>
               </div>
 
-              <!-- =========================
-         TABLE
-    ========================== -->
-              <div class="manga-card overflow-hidden">
+              <div class="q-card q-static overflow-hidden">
                 <div class="overflow-x-auto">
                   <table class="w-full text-left">
-                    <!-- Table Header -->
-                    <thead class="bg-[#F7F8FC]">
-                      <tr>
+                    <thead class="bg-[#F6F7FD]">
+                      <tr class="text-[#17135F]">
                         <th class="p-4 font-heading font-bold">Order ID</th>
-
                         <th class="p-4 font-heading font-bold">Files</th>
-
                         <th class="p-4 font-heading font-bold">Pages</th>
-
                         <th class="p-4 font-heading font-bold">Amount</th>
-
                         <th class="p-4 font-heading font-bold">Payment</th>
-
                         <th class="p-4 font-heading font-bold">Completed</th>
-
                         <th class="p-4 font-heading font-bold">Status</th>
                       </tr>
                     </thead>
-
-                    <!-- Table Body -->
                     <tbody
                       id="earningsOrdersTable"
-                      class="divide-y-2 divide-gray-100"
+                      class="divide-y divide-gray-100"
                     >
                       <tr>
                         <td
@@ -2009,189 +2365,154 @@
                   </table>
                 </div>
 
-                <!-- =========================
-           EMPTY STATE
-      ========================== -->
                 <div id="earningsEmptyState" class="hidden p-10 text-center">
                   <div
-                    class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#F7F8FC] flex items-center justify-center"
+                    class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#F6F7FD] flex items-center justify-center"
                   >
                     <i data-lucide="receipt" class="w-8 h-8 text-gray-400"></i>
                   </div>
-
                   <h4 class="font-heading font-bold text-lg">
                     No Orders Found
                   </h4>
-
                   <p class="text-sm font-bold text-[#17135F]/50 mt-1">
                     Selected year/month ke liye koi completed order nahi mila.
                   </p>
                 </div>
 
-                <!-- =========================
-           PAGINATION
-      ========================== -->
                 <div
                   id="earningsPagination"
-                  class="border-t-2 border-gray-100 p-4 flex flex-wrap items-center justify-center gap-2"
+                  class="border-t border-gray-100 p-4 flex flex-wrap items-center justify-center gap-2"
                 ></div>
               </div>
             </div>
           </section>
 
-          <!-- ============ TAB: SETTINGS ============ -->
+          <!-- ===========================================================
+             TAB: SETTINGS
+        ============================================================ -->
           <section
             id="tab-settings"
             class="tab-content hidden max-w-4xl mx-auto space-y-6 pb-10"
           >
-            <!-- =========================================================
-       SHOP PROFILE HEADER
-  ========================================================== -->
-            <div
-              class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#17135F] via-[#211B8F] to-[#2F2AA8] text-white shadow-[6px_6px_0_#111827]"
-            >
+            <!-- Profile hero -->
+            <div class="q-settings-hero">
               <div
                 class="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-white/10 blur-2xl"
               ></div>
-
               <div
-                class="absolute -left-20 -bottom-24 w-56 h-56 rounded-full bg-[#FFB800]/10 blur-3xl"
+                class="absolute -left-20 -bottom-24 w-56 h-56 rounded-full bg-[#FFB800]/15 blur-3xl"
               ></div>
-
-              <div class="relative p-6 sm:p-8">
-                <div
-                  class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5"
-                >
-                  <div class="flex items-start gap-4">
-                    <div
-                      class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shadow-lg"
-                    >
-                      <i data-lucide="store" class="w-7 h-7 sm:w-8 sm:h-8"></i>
-                    </div>
-
-                    <div>
-                      <div
-                        class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/10 text-white/80 text-[10px] font-black uppercase tracking-widest mb-2"
-                      >
-                        <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
-                        Shop Settings
-                      </div>
-
-                      <h2
-                        class="font-heading font-extrabold text-2xl sm:text-3xl tracking-tight"
-                      >
-                        Shop Profile
-                      </h2>
-
-                      <p class="text-sm text-white/65 font-medium mt-1">
-                        Apni dukaan ki details aur printing charges manage
-                        karein.
-                      </p>
-                    </div>
-                  </div>
-
-                  <!-- Shop Status -->
+              <div
+                class="relative p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5"
+              >
+                <div class="flex items-start gap-4">
                   <div
-                    id="settings-shop-status"
-                    class="self-start sm:self-auto inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 border border-white/10 backdrop-blur-sm"
+                    class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shadow-lg"
                   >
-                    <div
-                      id="settings-status-dot"
-                      class="w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,.7)]"
-                    ></div>
-
-                    <span
-                      id="settings-status-text"
-                      class="font-extrabold text-sm text-white"
-                    >
-                      Online
-                    </span>
+                    <i data-lucide="store" class="w-7 h-7 sm:w-8 sm:h-8"></i>
                   </div>
+                  <div>
+                    <div
+                      class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/10 text-white/80 text-[10px] font-black uppercase tracking-widest mb-2"
+                    >
+                      <i data-lucide="settings-2" class="w-3.5 h-3.5"></i> Shop
+                      Settings
+                    </div>
+                    <h2
+                      class="font-heading font-bold text-2xl sm:text-3xl tracking-tight"
+                    >
+                      Shop Profile
+                    </h2>
+                    <p class="text-sm text-white/65 font-medium mt-1">
+                      Apni dukaan ki details aur printing charges manage karein.
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  id="settings-shop-status"
+                  class="self-start sm:self-auto inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 border border-white/10"
+                >
+                  <div
+                    id="settings-status-dot"
+                    class="w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,.7)]"
+                  ></div>
+                  <span
+                    id="settings-status-text"
+                    class="font-extrabold text-sm text-white"
+                    >Online</span
+                  >
                 </div>
               </div>
             </div>
 
-            <!-- =========================================================
-       SHOP INFORMATION
-  ========================================================== -->
-            <div class="manga-card overflow-hidden">
+            <!-- Shop information -->
+            <div class="q-card q-static overflow-hidden">
               <div
-                class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-[#F7F8FC] to-white"
+                class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-[#F6F7FD] to-white flex items-center gap-3"
               >
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-10 h-10 rounded-xl bg-[#211B8F]/10 text-[#211B8F] flex items-center justify-center"
+                <div
+                  class="w-10 h-10 rounded-xl bg-[#211B8F]/10 text-[#211B8F] flex items-center justify-center"
+                >
+                  <i data-lucide="user-round-cog" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3
+                    class="font-heading font-bold text-lg sm:text-xl text-[#17135F]"
                   >
-                    <i data-lucide="user-round-cog" class="w-5 h-5"></i>
-                  </div>
-
-                  <div>
-                    <h3 class="font-heading font-extrabold text-lg sm:text-xl">
-                      Shop Information
-                    </h3>
-
-                    <p
-                      class="text-xs sm:text-sm text-gray-500 font-semibold mt-0.5"
-                    >
-                      Basic shop aur owner details.
-                    </p>
-                  </div>
+                    Shop Information
+                  </h3>
+                  <p
+                    class="text-xs sm:text-sm text-gray-500 font-semibold mt-0.5"
+                  >
+                    Basic shop aur owner details.
+                  </p>
                 </div>
               </div>
 
               <div class="p-6 space-y-5">
-                <!-- Shop Name + Owner -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <!-- Shop Name -->
                   <div>
                     <label
                       for="settings-shop-name"
                       class="block font-extrabold mb-2 text-sm text-[#17135F]"
+                      >Dukaan Ka Naam
+                      <span class="text-gray-400 font-semibold"
+                        >(Shop Name)</span
+                      ></label
                     >
-                      Dukaan Ka Naam
-                      <span class="text-gray-400 font-semibold">
-                        (Shop Name)
-                      </span>
-                    </label>
-
                     <div class="relative">
                       <i
                         data-lucide="store"
                         class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
                       ></i>
-
                       <input
                         id="settings-shop-name"
                         type="text"
-                        class="manga-input w-full font-bold pl-11 pr-4"
+                        class="q-input w-full font-bold pl-11 pr-4"
                         placeholder="Enter shop name"
                         value=""
                       />
                     </div>
                   </div>
-
-                  <!-- Owner Name -->
                   <div>
                     <label
                       for="settings-owner-name"
                       class="block font-extrabold mb-2 text-sm text-[#17135F]"
+                      >Owner Ka Naam
+                      <span class="text-gray-400 font-semibold"
+                        >(Owner Name)</span
+                      ></label
                     >
-                      Owner Ka Naam
-                      <span class="text-gray-400 font-semibold">
-                        (Owner Name)
-                      </span>
-                    </label>
-
                     <div class="relative">
                       <i
                         data-lucide="user"
                         class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
                       ></i>
-
                       <input
                         id="settings-owner-name"
                         type="text"
-                        class="manga-input w-full font-bold pl-11 pr-4"
+                        class="q-input w-full font-bold pl-11 pr-4"
                         placeholder="Enter owner name"
                         value=""
                       />
@@ -2199,56 +2520,45 @@
                   </div>
                 </div>
 
-                <!-- Mobile + Email -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <!-- Mobile -->
                   <div>
                     <label
                       for="settings-mobile"
                       class="block font-extrabold mb-2 text-sm text-[#17135F]"
+                      >Mobile Number</label
                     >
-                      Mobile Number
-                    </label>
-
                     <div class="relative">
                       <i
                         data-lucide="phone"
                         class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
                       ></i>
-
                       <input
                         id="settings-mobile"
                         type="text"
-                        class="manga-input w-full font-bold pl-11 bg-[#F7F8FC] text-gray-500"
+                        class="q-input w-full font-bold pl-11"
                         value=""
                         disabled
                       />
                     </div>
-
                     <p class="text-[11px] text-gray-400 mt-1.5 font-bold">
                       Mobile number change karne ke liye support se baat karein.
                     </p>
                   </div>
-
-                  <!-- Email -->
                   <div>
                     <label
                       for="settings-email"
                       class="block font-extrabold mb-2 text-sm text-[#17135F]"
+                      >Email Address</label
                     >
-                      Email Address
-                    </label>
-
                     <div class="relative">
                       <i
                         data-lucide="mail"
                         class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
                       ></i>
-
                       <input
                         id="settings-email"
                         type="email"
-                        class="manga-input w-full font-bold pl-11 pr-4"
+                        class="q-input w-full font-bold pl-11 pr-4"
                         placeholder="shop@example.com"
                         value=""
                       />
@@ -2256,28 +2566,24 @@
                   </div>
                 </div>
 
-                <!-- Address -->
                 <div>
                   <label
                     for="settings-address"
                     class="block font-extrabold mb-2 text-sm text-[#17135F]"
+                    >Dukaan Ka Address
+                    <span class="text-gray-400 font-semibold"
+                      >(Shop Address)</span
+                    ></label
                   >
-                    Dukaan Ka Address
-                    <span class="text-gray-400 font-semibold">
-                      (Shop Address)
-                    </span>
-                  </label>
-
                   <div class="relative">
                     <i
                       data-lucide="map-pin"
                       class="absolute left-3.5 top-3.5 w-5 h-5 text-gray-400"
                     ></i>
-
                     <textarea
                       id="settings-address"
                       rows="3"
-                      class="manga-input w-full font-bold pl-11 pr-4 resize-none"
+                      class="q-input w-full font-bold pl-11 pr-4 resize-none"
                       placeholder="Enter complete shop address"
                     ></textarea>
                   </div>
@@ -2285,39 +2591,35 @@
               </div>
             </div>
 
-            <!-- =========================================================
-       PRINTING PRICES
-  ========================================================== -->
-            <div class="manga-card overflow-hidden">
+            <!-- Printing charges -->
+            <div class="q-card q-static overflow-hidden">
               <div
-                class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-[#FFF9E8] to-white"
+                class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-[#FFF9E8] to-white flex items-start gap-3"
               >
-                <div class="flex items-start gap-3">
-                  <div
-                    class="w-10 h-10 rounded-xl bg-[#FFB800]/15 text-[#B77900] flex items-center justify-center"
+                <div
+                  class="w-10 h-10 rounded-xl bg-[#FFB800]/15 text-[#B77900] flex items-center justify-center"
+                >
+                  <i data-lucide="receipt" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3
+                    class="font-heading font-bold text-lg sm:text-xl text-[#17135F]"
                   >
-                    <i data-lucide="receipt" class="w-5 h-5"></i>
-                  </div>
-
-                  <div>
-                    <h3 class="font-heading font-extrabold text-lg sm:text-xl">
-                      Printing Charges
-                    </h3>
-
-                    <p
-                      class="text-xs sm:text-sm text-gray-500 font-semibold mt-0.5"
-                    >
-                      Customer se per page kitna charge lena hai.
-                    </p>
-                  </div>
+                    Printing Charges
+                  </h3>
+                  <p
+                    class="text-xs sm:text-sm text-gray-500 font-semibold mt-0.5"
+                  >
+                    Customer se per page kitna charge lena hai.
+                  </p>
                 </div>
               </div>
 
               <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <!-- Black Print Cost -->
+                  <!-- B&W -->
                   <div
-                    class="rounded-2xl border-2 border-gray-100 bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+                    class="rounded-2xl border-2 border-gray-100 bg-white p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300"
                   >
                     <div class="flex items-center justify-between gap-3 mb-4">
                       <div class="flex items-center gap-3">
@@ -2326,89 +2628,73 @@
                         >
                           <i data-lucide="printer" class="w-5 h-5"></i>
                         </div>
-
                         <div>
                           <p class="font-extrabold text-sm text-gray-900">
                             Black Print Cost
                           </p>
-
                           <p class="text-[11px] text-gray-500 font-semibold">
-                            B&W · Per Page
+                            B&amp;W · Per Page
                           </p>
                         </div>
                       </div>
-
                       <span
                         class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-wide"
+                        >B&amp;W</span
                       >
-                        B&W
-                      </span>
                     </div>
-
                     <div class="relative">
                       <span
                         class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-[#17135F] text-lg"
+                        >₹</span
                       >
-                        ₹
-                      </span>
-
                       <input
                         id="settings-print-price"
                         type="number"
                         min="0"
                         step="0.01"
-                        class="manga-input w-full font-extrabold text-lg pl-10 pr-4"
+                        class="q-input w-full font-extrabold text-lg pl-10 pr-4"
                         placeholder="5.00"
                         value="5"
                       />
                     </div>
-
-                    <!-- -->
                   </div>
 
-                  <!-- Color Print Cost -->
+                  <!-- Color -->
                   <div
-                    class="rounded-2xl border-2 border-[#211B8F]/10 bg-gradient-to-br from-[#F7F7FF] to-white p-5 shadow-sm hover:shadow-md transition-shadow"
+                    class="rounded-2xl border-2 border-[#211B8F]/10 bg-gradient-to-br from-[#F4F5FF] to-white p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300"
                   >
                     <div class="flex items-center justify-between gap-3 mb-4">
                       <div class="flex items-center gap-3">
                         <div
-                          class="w-10 h-10 rounded-xl bg-[#211B8F] text-white flex items-center justify-center"
+                          class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00B8D9] via-[#E6248C] to-[#FFB800] text-white flex items-center justify-center"
                         >
                           <i data-lucide="palette" class="w-5 h-5"></i>
                         </div>
-
                         <div>
                           <p class="font-extrabold text-sm text-[#17135F]">
                             Color Print Cost
                           </p>
-
                           <p class="text-[11px] text-gray-500 font-semibold">
                             Color · Per Page
                           </p>
                         </div>
                       </div>
-
                       <span
                         class="px-2.5 py-1 rounded-full bg-[#211B8F]/10 text-[#211B8F] text-[10px] font-black uppercase tracking-wide"
+                        >COLOR</span
                       >
-                        COLOR
-                      </span>
                     </div>
-
                     <div class="relative">
                       <span
                         class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-[#17135F] text-lg"
+                        >₹</span
                       >
-                        ₹
-                      </span>
-
                       <input
                         id="settings-color-price"
                         type="number"
                         min="0"
                         step="0.01"
-                        class="manga-input w-full font-extrabold text-lg pl-10 pr-4"
+                        class="q-input w-full font-extrabold text-lg pl-10 pr-4"
                         placeholder="10.00"
                         value="10"
                       />
@@ -2416,19 +2702,17 @@
                   </div>
                 </div>
 
-                <!-- Pricing Information -->
                 <div
-                  class="mt-5 flex items-start gap-3 rounded-2xl bg-[#17135F]/5 border border-[#17135F]/10 p-4"
+                  class="mt-5 flex items-start gap-3 rounded-2xl bg-[#00B8D9]/8 border border-[#00B8D9]/20 p-4"
                 >
                   <i
                     data-lucide="info"
-                    class="w-5 h-5 text-[#211B8F] shrink-0 mt-0.5"
+                    class="w-5 h-5 text-[#0092AD] shrink-0 mt-0.5"
                   ></i>
-
                   <p
                     class="text-xs text-gray-600 font-semibold leading-relaxed"
                   >
-                    B&W printing ke liye
+                    B&amp;W printing ke liye
                     <span class="font-black text-gray-900"
                       >Black Print Cost</span
                     >
@@ -2443,80 +2727,66 @@
               </div>
             </div>
 
-            <!-- =========================================================
-       SHOP IDENTIFICATION
-  ========================================================== -->
-            <div class="manga-card overflow-hidden">
+            <!-- Shop identification (read-only) -->
+            <div class="q-card q-static overflow-hidden">
               <div
-                class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-[#F7F8FC] to-white"
+                class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-[#F6F7FD] to-white flex items-center gap-3"
               >
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-10 h-10 rounded-xl bg-gray-100 text-gray-700 flex items-center justify-center"
+                <div
+                  class="w-10 h-10 rounded-xl bg-gray-100 text-gray-700 flex items-center justify-center"
+                >
+                  <i data-lucide="shield-check" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3
+                    class="font-heading font-bold text-lg sm:text-xl text-[#17135F]"
                   >
-                    <i data-lucide="shield-check" class="w-5 h-5"></i>
-                  </div>
-
-                  <div>
-                    <h3 class="font-heading font-extrabold text-lg sm:text-xl">
-                      Shop Identification
-                    </h3>
-
-                    <p
-                      class="text-xs sm:text-sm text-gray-500 font-semibold mt-0.5"
-                    >
-                      System-generated details. Ye values manually change nahi
-                      ki ja sakti.
-                    </p>
-                  </div>
+                    Shop Identification
+                  </h3>
+                  <p
+                    class="text-xs sm:text-sm text-gray-500 font-semibold mt-0.5"
+                  >
+                    System-generated details. Ye values manually change nahi ki
+                    ja sakti.
+                  </p>
                 </div>
               </div>
-
               <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
-                <!-- Shop ID -->
                 <div>
                   <label
                     for="settings-shop-id"
                     class="block font-extrabold mb-2 text-sm text-[#17135F]"
+                    >Shop ID</label
                   >
-                    Shop ID
-                  </label>
-
                   <div class="relative">
                     <i
                       data-lucide="hash"
                       class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
                     ></i>
-
                     <input
                       id="settings-shop-id"
                       type="text"
-                      class="manga-input w-full font-bold pl-11 bg-[#F7F8FC] text-gray-500"
+                      class="q-input w-full font-bold pl-11"
                       value=""
                       disabled
                     />
                   </div>
                 </div>
-
-                <!-- QR Token -->
                 <div>
                   <label
                     for="settings-qr-token"
                     class="block font-extrabold mb-2 text-sm text-[#17135F]"
+                    >QR Token</label
                   >
-                    QR Token
-                  </label>
-
                   <div class="relative">
                     <i
                       data-lucide="qr-code"
                       class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
                     ></i>
-
                     <input
                       id="settings-qr-token"
                       type="text"
-                      class="manga-input w-full font-bold pl-11 bg-[#F7F8FC] text-gray-500"
+                      class="q-input w-full font-bold pl-11"
                       value=""
                       disabled
                     />
@@ -2525,35 +2795,29 @@
               </div>
             </div>
 
-            <!-- =========================================================
-       SAVE
-  ========================================================== -->
+            <!-- Save bar -->
             <div
-              class="manga-card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+              class="q-card q-static q-cmyk p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
             >
               <div>
                 <p class="font-extrabold text-sm text-[#17135F]">
                   Save your shop settings
                 </p>
-
                 <p class="text-xs text-gray-500 font-semibold mt-1">
                   Changes will be applied to your Quick2Print shop.
                 </p>
               </div>
-
               <div class="flex items-center gap-3">
                 <span
                   id="settings-save-message"
                   class="text-sm font-bold hidden"
                 ></span>
-
                 <button
                   id="save-shop-profile-btn"
                   type="button"
-                  class="manga-btn px-6 py-3 inline-flex items-center justify-center gap-2 min-w-[160px]"
+                  class="q-btn q-btn-yellow px-6 py-3 min-w-[160px]"
                 >
-                  <i data-lucide="save" class="w-5 h-5"></i>
-                  Save Profile
+                  <i data-lucide="save" class="w-5 h-5"></i> Save Profile
                 </button>
               </div>
             </div>
@@ -5728,6 +5992,7 @@
 
         loadShopProfile();
       });
+
       /* ============================================================
 
    QUICK2PRINT SUBSCRIPTION
@@ -5791,13 +6056,43 @@
       }
 
       function q2pGetShopId() {
-        return (
-          currentShop?.shop_id ||
-          window.currentShop?.shop_id ||
-          localStorage.getItem("shop_id") ||
-          localStorage.getItem("shopId") ||
-          JSON.parse(localStorage.getItem("loggedInShop") || "null")?.shop_id
-        );
+        try {
+          const shop =
+            window.currentShop ||
+            (typeof currentShop !== "undefined" ? currentShop : null);
+          let savedShop = null;
+          try {
+            savedShop = JSON.parse(
+              localStorage.getItem("loggedInShop") || "null",
+            );
+          } catch (_) {
+            savedShop = null;
+          }
+          return (
+            shop?.shop_id ||
+            localStorage.getItem("shop_id") ||
+            localStorage.getItem("shopId") ||
+            savedShop?.shop_id ||
+            null
+          );
+        } catch (error) {
+          console.error("[Quick2Print] Could not resolve shop ID:", error);
+          return (
+            localStorage.getItem("shop_id") ||
+            localStorage.getItem("shopId") ||
+            null
+          );
+        }
+      }
+
+      function q2pSetText(id, value) {
+        const element = document.getElementById(id);
+        if (!element) {
+          console.warn(`[Quick2Print] Missing HTML element: #${id}`);
+          return;
+        }
+        element.textContent =
+          value == null || value === "" ? "—" : String(value);
       }
 
       function q2pDaysLeft(expiry) {
@@ -5821,29 +6116,40 @@
 
         const planId = String(shop.plan_id || "")
           .trim()
+
           .toLowerCase();
+
         const now = new Date();
 
         // Free plan is a 24-hour trial starting when the shop was created
+
         // (or subscription_start when explicitly populated), with a 10-print cap.
+
         if (planId === "free") {
           const used = Math.max(0, Number(shop.total_prints) || 0);
+
           const anchorRaw = shop.subscription_start || shop.created_at;
+
           const anchor = anchorRaw ? new Date(anchorRaw) : null;
+
           const within24Hours =
             anchor &&
             !Number.isNaN(anchor.getTime()) &&
             now.getTime() < anchor.getTime() + 24 * 60 * 60 * 1000;
+
           return Boolean(within24Hours && used <= 10);
         }
 
         const status = String(shop.subscription_status || "").toLowerCase();
+
         if (status !== "active") return false;
 
         const expiryRaw = shop.plan_expires_at || shop.subscription_end;
+
         if (!expiryRaw) return false;
 
         const expiry = new Date(expiryRaw);
+
         return !Number.isNaN(expiry.getTime()) && expiry > now;
       }
 
@@ -5923,42 +6229,55 @@
 
         const badge = document.getElementById("subscription-status-badge");
 
-        const planBadge = document.getElementById("subscription-plan-badge");
-
         const status = String(shop.subscription_status || "").toUpperCase();
+
         const isFreePlan =
           String(shop.plan_id || "")
             .trim()
+
             .toLowerCase() === "free";
+
         const freePrintCount = Math.max(0, Number(shop.total_prints) || 0);
+
         const freeAnchorRaw = shop.subscription_start || shop.created_at;
+
         const freeAnchor = freeAnchorRaw ? new Date(freeAnchorRaw) : null;
+
         const freeExpired =
           isFreePlan &&
           (!freeAnchor ||
             Number.isNaN(freeAnchor.getTime()) ||
             Date.now() >= freeAnchor.getTime() + 24 * 60 * 60 * 1000);
+
         const freeLimitReached = isFreePlan && freePrintCount > 10;
 
         if (isFreePlan && freeLimitReached) {
           if (icon) icon.textContent = "⚠";
+
           if (title) title.textContent = "Free Plan Deactivated";
+
           if (description)
             description.textContent =
               "Your free plan allows up to 10 prints. Please buy another subscription plan to continue.";
+
           if (badge) {
             badge.textContent = "PRINT LIMIT REACHED";
+
             badge.className =
               "rounded-full bg-red-400/20 px-3 py-1 text-xs font-extrabold text-red-300";
           }
         } else if (isFreePlan && freeExpired) {
           if (icon) icon.textContent = "⚠";
+
           if (title) title.textContent = "Free Trial Expired";
+
           if (description)
             description.textContent =
               "Your free QR access expired after 24 hours. Please buy a subscription plan to continue.";
+
           if (badge) {
             badge.textContent = "EXPIRED";
+
             badge.className =
               "rounded-full bg-red-400/20 px-3 py-1 text-xs font-extrabold text-red-300";
           }
@@ -6018,72 +6337,91 @@
 
         const daysLeft = q2pDaysLeft(shop.plan_expires_at);
 
-        document.getElementById("subscription-plan-name").textContent =
-          planName;
+        q2pSetText("subscription-plan-name", planName);
 
-        document.getElementById("subscription-plan-badge").textContent =
-          planName;
+        q2pSetText("subscription-plan-badge", planName);
 
-        document.getElementById("subscription-plan-price").textContent =
-          q2pFormatINR(planPrice);
+        q2pSetText("subscription-plan-price", q2pFormatINR(planPrice));
 
-        document.getElementById("subscription-start").textContent =
-          q2pFormatDate(shop.subscription_start);
-
-        document.getElementById("subscription-end").textContent = q2pFormatDate(
-          shop.plan_expires_at || shop.subscription_end,
+        q2pSetText(
+          "subscription-start",
+          q2pFormatDate(shop.subscription_start),
         );
 
-        document.getElementById("subscription-days-left").textContent =
-          daysLeft === null ? "—" : `${daysLeft} days`;
+        q2pSetText(
+          "subscription-end",
+          q2pFormatDate(shop.plan_expires_at || shop.subscription_end),
+        );
 
-        document.getElementById("subscription-duration").textContent =
+        q2pSetText(
+          "subscription-days-left",
+          daysLeft === null ? "—" : `${daysLeft} days`,
+        );
+
+        q2pSetText(
+          "subscription-duration",
           plan?.duration_label ||
-          (plan?.duration_months ? `${plan.duration_months} Months` : "—");
+            (plan?.duration_months ? `${plan.duration_months} Months` : "—"),
+        );
 
-        document.getElementById("detail-plan-name").textContent = planName;
+        q2pSetText("detail-plan-name", planName);
 
-        document.getElementById("detail-plan-price").textContent =
-          q2pFormatINR(planPrice);
+        q2pSetText("detail-plan-price", q2pFormatINR(planPrice));
 
-        document.getElementById("detail-printer-limit").textContent =
-          plan?.max_printers ? `${plan.max_printers}` : "Unlimited";
+        q2pSetText(
+          "detail-printer-limit",
+          plan?.max_printers ? `${plan.max_printers}` : "Unlimited",
+        );
 
-        document.getElementById("detail-print-limit").textContent =
+        q2pSetText(
+          "detail-print-limit",
           plan?.max_prints_per_year
             ? q2pFormatNumber(plan.max_prints_per_year)
-            : "Unlimited";
+            : "Unlimited",
+        );
 
-        document.getElementById("detail-support").textContent =
-          plan?.support_level || "—";
+        q2pSetText("detail-support", plan?.support_level || "—");
 
         const paymentStatus = String(
           payment?.payment_status || "",
         ).toUpperCase();
+
         const confirmedPaid = paymentStatus === "PAID";
 
-        document.getElementById("detail-payment-method").textContent =
+        q2pSetText(
+          "detail-payment-method",
           confirmedPaid
             ? payment?.payment_method || "Cashfree (method not returned)"
-            : "Not paid yet";
+            : "Not paid yet",
+        );
 
-        document.getElementById("detail-payment-amount").textContent =
-          confirmedPaid ? q2pFormatINR(payment.amount) : "—";
+        q2pSetText(
+          "detail-payment-amount",
+          confirmedPaid ? q2pFormatINR(payment.amount) : "—",
+        );
 
         // The schema has no paid_at column. updated_at is the closest available
+
         // timestamp, but it can also change for non-payment updates. Prefer it
+
         // only for confirmed payments and fall back to created_at.
-        document.getElementById("detail-payment-date").textContent =
+
+        q2pSetText(
+          "detail-payment-date",
           confirmedPaid
             ? q2pFormatDateTime(payment.updated_at || payment.created_at)
-            : "—";
+            : "—",
+        );
 
-        document.getElementById("detail-cashfree-order").textContent =
-          confirmedPaid ? payment?.cashfree_order_id || "—" : "—";
+        q2pSetText(
+          "detail-cashfree-order",
+          confirmedPaid ? payment?.cashfree_order_id || "—" : "—",
+        );
 
-        document.getElementById("detail-payment-id").textContent = confirmedPaid
-          ? payment?.cashfree_payment_id || "—"
-          : "—";
+        q2pSetText(
+          "detail-payment-id",
+          confirmedPaid ? payment?.cashfree_payment_id || "—" : "—",
+        );
 
         const paymentBadge = document.getElementById(
           "subscription-payment-status",
@@ -6116,9 +6454,13 @@
         if (payment && paymentStatus !== "PAID") {
           console.warn("Quick2Print subscription payment is not confirmed", {
             shopId: shop.shop_id,
+
             subscriptionId: payment.subscription_id,
+
             paymentStatus,
+
             paymentErrorMessage: payment.payment_error_message || null,
+
             cashfreeOrderId: payment.cashfree_order_id || null,
           });
         }
@@ -6137,22 +6479,33 @@
 
         if (!shopId) {
           console.error("Quick2Print: Shop ID not found.");
+
           return;
         }
 
-        if (typeof supabaseClient === "undefined" || !supabaseClient) {
+        if (
+          typeof supabaseClient === "undefined" ||
+          !supabaseClient ||
+          typeof supabaseClient.from !== "function"
+        ) {
           console.error("Quick2Print: Supabase client is not initialized.");
+
           return;
         }
 
         try {
           // 1. Load shop data. Keep this select limited to the shop columns used here.
+
           const { data: shop, error: shopError } = await supabaseClient
+
             .from("shops")
+
             .select(
               "shop_id,shop_name,created_at,plan_id,plan_expires_at,subscription_status,subscription_start,subscription_end,total_prints",
             )
+
             .eq("shop_id", String(shopId).trim())
+
             .maybeSingle();
 
           if (shopError) {
@@ -6163,29 +6516,41 @@
 
           if (!shop) {
             subscriptionShop = null;
+
             subscriptionPlan = null;
+
             subscriptionRecord = null;
+
             console.error(
               "Quick2Print: No shop row found for shop_id:",
+
               shopId,
             );
+
             return;
           }
 
           subscriptionShop = shop;
 
           // 2. Load the plan separately. A plan lookup failure should not prevent
+
           // the rest of the subscription panel from rendering.
+
           subscriptionPlan = null;
+
           const planId = String(shop.plan_id || "").trim();
 
           if (planId) {
             const { data: plan, error: planError } = await supabaseClient
+
               .from("plans")
+
               .select(
                 "plan_id,name,price_inr,max_printers,max_prints_per_year,support_level,duration_months,duration_label",
               )
+
               .eq("plan_id", planId)
+
               .maybeSingle();
 
             if (planError) {
@@ -6202,25 +6567,47 @@
           }
 
           // 3. Load payment attempts. select("*") avoids the entire query failing
-          // because one optional column is absent from a particular schema version.
-          subscriptionRecord = null;
 
-          const { data: attempts, error: attemptsError } = await supabaseClient
+          // because one optional column is absent from a particular schema version.
+
+          subscriptionRecord = null;
+          let attempts = null;
+          let attemptsError = null;
+          ({ data: attempts, error: attemptsError } = await supabaseClient
             .from("shop_subscriptions")
             .select("*")
             .eq("shop_id", String(shopId).trim())
             .order("created_at", { ascending: false })
-            .limit(50);
+            .limit(50));
+
+          // Retry without created_at ordering if this schema version lacks that column.
+          if (
+            attemptsError &&
+            /created_at|column/i.test(String(attemptsError.message || ""))
+          ) {
+            ({ data: attempts, error: attemptsError } = await supabaseClient
+              .from("shop_subscriptions")
+              .select("*")
+              .eq("shop_id", String(shopId).trim())
+              .limit(50));
+          }
 
           if (attemptsError) {
-            // The plan/shop information can still render if payment history is
-            // restricted by RLS. Do not treat an unreadable payment as PAID.
             console.warn(
               "Quick2Print: Could not read subscription payment history:",
               attemptsError,
             );
           } else {
             const rows = Array.isArray(attempts) ? attempts : [];
+            rows.sort((a, b) => {
+              const aDate = new Date(
+                a.created_at || a.updated_at || 0,
+              ).getTime();
+              const bDate = new Date(
+                b.created_at || b.updated_at || 0,
+              ).getTime();
+              return bDate - aDate;
+            });
             subscriptionRecord =
               rows.find(
                 (row) =>
@@ -6232,24 +6619,31 @@
 
           console.info("[Quick2Print] Subscription details loaded", {
             shopId: shop.shop_id,
+
             planId: shop.plan_id,
+
             planFound: Boolean(subscriptionPlan),
+
             paymentStatus: subscriptionRecord?.payment_status || "NO RECORD",
           });
 
           // Render even when the plan or payment query has no result.
+
           q2pRenderSubscription();
         } catch (error) {
           console.error("Quick2Print: Subscription load failed:", error);
 
           // If shop data was already retrieved, render the available data instead
+
           // of leaving all fields stuck on their initial em dashes.
+
           if (subscriptionShop) {
             try {
               q2pRenderSubscription();
             } catch (renderError) {
               console.error(
                 "Quick2Print: Subscription render failed:",
+
                 renderError,
               );
             }
@@ -6258,10 +6652,10 @@
       }
 
       const SUBSCRIPTION_PAYMENT_API =
-        "https://quick2print-payment-subscription-na.vercel.app";
+        "https\://quick2print-payment-subscription-na.vercel.app";
 
       const SUBSCRIPTION_PAYMENT_PAGE =
-        "https://www.quick2print.in/subscription-payment.html";
+        "https\://www.quick2print.in/subscription-payment.html";
 
       let renewPlans = [];
 
@@ -6283,17 +6677,23 @@
 
         const planId = String(shop.plan_id || "")
           .trim()
+
           .toLowerCase();
+
         const now = new Date();
 
         if (planId === "free") {
           const anchorRaw = shop.subscription_start || shop.created_at;
+
           const anchor = anchorRaw ? new Date(anchorRaw) : null;
+
           if (!anchor || Number.isNaN(anchor.getTime())) return true;
+
           return now.getTime() >= anchor.getTime() + 24 * 60 * 60 * 1000;
         }
 
         const expiry = shop.plan_expires_at || shop.subscription_end;
+
         if (!expiry) {
           return (
             String(shop.subscription_status || "").toLowerCase() === "expired"
@@ -6301,6 +6701,7 @@
         }
 
         const parsedExpiry = new Date(expiry);
+
         return (
           Number.isNaN(parsedExpiry.getTime()) ||
           parsedExpiry <= now ||
@@ -6319,7 +6720,9 @@
 
         const isFreePlan =
           String(subscriptionShop?.plan_id || "").toLowerCase() === "free"; // Free plan: keep the subscription section visible and allow the
+
         // shop owner to choose a paid plan. Active paid plans: hide renewal.
+
         // Expired/cancelled/suspended paid plans: show renewal.
 
         button.classList.toggle(
@@ -6333,12 +6736,17 @@
 
       function closeRenewPlanModal() {
         const modal = document.getElementById("renew-plan-modal");
+
         if (modal) {
           modal.classList.add("hidden");
+
           modal.setAttribute("aria-hidden", "true");
         }
+
         document.body.classList.remove("overflow-hidden");
+
         const trigger = document.getElementById("subscription-renew-button");
+
         trigger?.focus({ preventScroll: true });
       }
 
@@ -6356,13 +6764,13 @@
         if (!renewPlans.length) {
           grid.innerHTML = `
 
-            <div class="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-200 bg-white p-8 text-center">
+            <div class="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-200 bg-white p-8 text-center">
 
-              <p class="font-bold text-[#17135F]">No plans are currently available.</p>
+              <p class="font-bold text-[#17135F]">No plans are currently available.</p>
 
-              <p class="mt-1 text-sm text-slate-500">Please try again later.</p>
+              <p class="mt-1 text-sm text-slate-500">Please try again later.</p>
 
-            </div>`;
+            </div>`;
 
           return;
         }
@@ -6402,47 +6810,47 @@
 
             return `
 
-            <article class="relative flex flex-col rounded-2xl border ${isCurrent ? "border-[#211B8F] ring-2 ring-[#211B8F]/10" : "border-slate-200"} bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+            <article class="relative flex flex-col rounded-2xl border ${isCurrent ? "border-[#211B8F] ring-2 ring-[#211B8F]/10" : "border-slate-200"} bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
 
-              ${isCurrent ? `<span class="absolute right-4 top-4 rounded-full bg-indigo-50 px-2.5 py-1 text-[10px] font-extrabold uppercase text-[#211B8F]">Current plan</span>` : ""}
+              ${isCurrent ? `<span class="absolute right-4 top-4 rounded-full bg-indigo-50 px-2.5 py-1 text-[10px] font-extrabold uppercase text-[#211B8F]">Current plan</span>` : ""}
 
-              <div class="pr-20">
+              <div class="pr-20">
 
-                <p class="text-xs font-extrabold uppercase tracking-wider text-[#00B8D9]">${planId}</p>
+                <p class="text-xs font-extrabold uppercase tracking-wider text-[#00B8D9]">${planId}</p>
 
-                <h4 class="mt-1 text-xl font-extrabold text-[#17135F]">${name}</h4>
+                <h4 class="mt-1 text-xl font-extrabold text-[#17135F]">${name}</h4>
 
-              </div>
+              </div>
 
-              <div class="mt-5">
+              <div class="mt-5">
 
-                <span class="text-3xl font-extrabold text-[#17135F]">${price}</span>
+                <span class="text-3xl font-extrabold text-[#17135F]">${price}</span>
 
-                <span class="text-xs text-slate-400"> / ${duration}</span>
+                <span class="text-xs text-slate-400"> / ${duration}</span>
 
-              </div>
+              </div>
 
-              <div class="mt-5 space-y-2 text-xs text-slate-600">
+              <div class="mt-5 space-y-2 text-xs text-slate-600">
 
-                <div>✓ ${q2pEscapeHtml(printers)}</div>
+                <div>✓ ${q2pEscapeHtml(printers)}</div>
 
-                <div>✓ ${q2pEscapeHtml(prints)}</div>
+                <div>✓ ${q2pEscapeHtml(prints)}</div>
 
-                <div>✓ ${support}</div>
+                <div>✓ ${support}</div>
 
-              </div>
+              </div>
 
-              <button type="button"
+              <button type="button"
 
-                onclick="startQuick2PrintRenewal('${q2pEscapeHtml(plan.plan_id)}')"
+                onclick="startQuick2PrintRenewal('${q2pEscapeHtml(plan.plan_id)}')"
 
-                class="mt-6 w-full rounded-xl bg-[#17135F] px-4 py-3 text-sm font-extrabold text-white transition hover:bg-[#211B8F]">
+                class="mt-6 w-full rounded-xl bg-[#17135F] px-4 py-3 text-sm font-extrabold text-white transition hover:bg-[#211B8F]">
 
-                ${isCurrent ? "Renew This Plan" : "Choose Plan"}
+                ${isCurrent ? "Renew This Plan" : "Choose Plan"}
 
-              </button>
+              </button>
 
-            </article>`;
+            </article>`;
           })
 
           .join("");
@@ -6462,55 +6870,75 @@
         errorBox?.classList.add("hidden");
 
         try {
-          if (!window.supabase || typeof supabaseClient === "undefined") {
+          if (
+            typeof supabaseClient === "undefined" ||
+            !supabaseClient ||
+            typeof supabaseClient.from !== "function"
+          ) {
             throw new Error(
               "Supabase client did not initialize. Refresh the dashboard and try again.",
             );
           }
 
           const { data, error } = await supabaseClient
+
             .from("plans")
+
             .select(
               "plan_id,name,price_inr,max_printers,max_prints_per_year,support_level,duration_months,duration_label",
             )
+
             .order("price_inr", { ascending: true });
 
           if (error) {
             const friendly = new Error(
               error.message || "Could not read the plans table.",
             );
+
             friendly.code = error.code;
+
             throw friendly;
           }
 
           renewPlans = (Array.isArray(data) ? data : [])
+
             .filter((plan) => Number(plan.price_inr) > 0)
+
             .map((plan) => ({
               ...plan,
+
               plan_id: String(plan.plan_id || ""),
+
               name: String(plan.name || "Quick2Print Plan"),
+
               price_inr: Number(plan.price_inr || 0),
             }))
+
             .filter((plan) => plan.plan_id);
 
           q2pRenderRenewPlans();
         } catch (error) {
           console.error("Renew plan load failed:", error);
+
           loading?.classList.add("hidden");
+
           grid?.classList.add("hidden");
 
           const message = document.getElementById("renew-plan-error-message");
+
           if (errorBox) {
             if (message) {
               const isRls =
                 /row.level security|permission denied|not allowed|rls/i.test(
                   String(error.message || ""),
                 );
+
               message.textContent = isRls
                 ? "Supabase blocked reading public.plans. Add a SELECT policy for plans in the Supabase SQL Editor, then tap Retry."
                 : error.message ||
                   "We couldn't load plans. Check your connection and retry.";
             }
+
             errorBox.classList.remove("hidden");
           }
         }
@@ -6518,44 +6946,69 @@
 
       function quick2PrintRenewPlan() {
         // Open the plan chooser every time the shop owner clicks the subscription
+
         // action. Previously, a missing/not-yet-loaded subscriptionShop made the
+
         // guard treat the shop as a paid active plan and silently return.
+
         const modal = document.getElementById("renew-plan-modal");
+
         if (!modal) {
           console.error(
             "Quick2Print: #renew-plan-modal was not found in the page.",
           );
+
           return;
         }
 
         modal.classList.remove("hidden");
+
         modal.setAttribute("aria-hidden", "false");
+
         document.body.classList.add("overflow-hidden");
 
         const closeButton = modal.querySelector('button[aria-label="Close"]');
+
         closeButton?.focus({ preventScroll: true });
+
         loadRenewPlans();
       }
 
       // Shows a loader during navigation, with a manual fallback if the browser
+
       // does not leave this page. Diagnostic logs are intentionally retained.
+
       function showSubscriptionRedirectLoader(targetUrl) {
         let el = document.getElementById("q2p-subscription-redirect-loader");
+
         if (el) el.remove();
+
         el = document.createElement("div");
+
         el.id = "q2p-subscription-redirect-loader";
+
         el.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.72);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px"><div style="width:min(440px,100%);background:#fff;border-radius:24px;padding:32px;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.25)"><div style="width:58px;height:58px;margin:0 auto 18px;border-radius:18px;background:#211B8F;display:grid;place-items:center"><div style="width:26px;height:26px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:q2pSpin .7s linear infinite"></div></div><h3 style="margin:0;color:#17135F;font:800 20px Inter,Arial,sans-serif">Preparing Secure Checkout</h3><p style="margin:8px 0 0;color:#64748b;font:500 14px/1.6 Inter,Arial,sans-serif">Please wait while we open the Cashfree payment page.</p><p id="q2p-redirect-debug" style="margin:10px 0 0;color:#94a3b8;font:12px/1.5 monospace;overflow-wrap:anywhere">Starting redirect…</p><a id="q2p-manual-payment-link" href="#" style="display:none;margin-top:18px;padding:12px 16px;background:#211B8F;color:white;border-radius:12px;text-decoration:none;font:700 14px Inter,Arial,sans-serif">Continue to payment</a><button id="q2p-retry-payment-redirect" type="button" style="display:none;margin:10px auto 0;padding:9px 14px;border:1px solid #dbe2f0;border-radius:10px;color:#211B8F;background:white;font:600 13px Inter,Arial,sans-serif">Retry redirect</button></div></div><style>@keyframes q2pSpin{to{transform:rotate(360deg)}}</style>`;
+
         document.body.appendChild(el);
+
         const link = document.getElementById("q2p-manual-payment-link");
+
         const retry = document.getElementById("q2p-retry-payment-redirect");
+
         const debug = document.getElementById("q2p-redirect-debug");
+
         link.href = targetUrl;
+
         retry.onclick = () => {
           console.info("[Q2P subscription] Manual redirect retry", targetUrl);
+
           window.location.assign(targetUrl);
         };
+
         // If navigation fails/gets interrupted, expose a direct link instead of
+
         // leaving the user stuck on an infinite loader.
+
         window.setTimeout(() => {
           if (
             window.location.href.includes("dashboard.html") ||
@@ -6564,12 +7017,16 @@
           ) {
             console.error(
               "[Q2P subscription] Redirect did not complete after 6 seconds.",
+
               { targetUrl, currentUrl: window.location.href },
             );
+
             if (debug)
               debug.textContent =
                 "Redirect has not completed. Use the button below or check the browser console.";
+
             link.style.display = "inline-block";
+
             retry.style.display = "block";
           }
         }, 6000);
@@ -6621,7 +7078,9 @@
 
               body: JSON.stringify({
                 shopId,
+
                 planId: plan.plan_id,
+
                 planName: plan.name,
               }),
             },
@@ -6651,19 +7110,27 @@
           });
 
           const targetUrl = `${SUBSCRIPTION_PAYMENT_PAGE}?${params.toString()}`;
+
           console.info("[Q2P subscription] Payment session created", {
             shopId,
+
             planId: plan.plan_id,
+
             subscriptionId: data.subscription_id,
+
             apiStatus: response.status,
+
             targetUrl,
           });
 
           closeRenewPlanModal();
+
           showSubscriptionRedirectLoader(targetUrl);
 
           // Use assign() so browser history and navigation behavior are explicit.
+
           console.info("[Q2P subscription] Navigating to checkout", targetUrl);
+
           window.location.assign(targetUrl);
         } catch (error) {
           console.error("Renewal payment creation failed:", error);
@@ -6683,14 +7150,12 @@
       window.startQuick2PrintRenewal = startQuick2PrintRenewal;
 
       window.quick2PrintRenewPlan = quick2PrintRenewPlan;
-
       window.loadSubscriptionDetails = loadSubscriptionDetails;
-
-      window.quick2PrintRenewPlan = quick2PrintRenewPlan;
 
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
           const modal = document.getElementById("renew-plan-modal");
+
           if (modal && !modal.classList.contains("hidden"))
             closeRenewPlanModal();
         }
@@ -6698,6 +7163,10 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         loadSubscriptionDetails();
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        if (window.lucide) window.lucide.createIcons();
       });
     </script>
 
