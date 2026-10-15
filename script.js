@@ -664,23 +664,53 @@ async function submitLogin(event) {
   modal.id = "q2pSubscriptionModal";
   modal.className =
     "fixed inset-0 z-[100000] hidden items-center justify-center bg-slate-950/65 p-4 backdrop-blur-sm";
-  modal.innerHTML = `
-    <section role="dialog" aria-modal="true" aria-labelledby="q2pModalTitle" class="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-6 text-slate-900 shadow-2xl sm:p-8">
-      <button type="button" id="q2pModalClose" aria-label="Close" class="absolute right-4 top-4 rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-800">✕</button>
-      <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-2xl text-[#211B8F]">↻</div>
-      <p class="text-xs font-extrabold uppercase tracking-[.18em] text-[#00A6C5]">Quick2Print subscription</p>
-      <h2 id="q2pModalTitle" class="mt-2 text-2xl font-black tracking-tight text-[#17135F]">Renew your plan</h2>
-      <p id="q2pModalIntro" class="mt-2 text-sm leading-6 text-slate-500">Enter your Shop ID. We’ll securely check the current subscription before proceeding.</p>
-      <div id="q2pModalAlert" role="status" aria-live="polite" class="mt-5 hidden rounded-2xl border p-4 text-sm"></div>
-      <form id="q2pShopForm" class="mt-5 space-y-4">
-        <label for="q2pShopId" class="block text-sm font-bold text-slate-700">Shop ID</label>
-        <input id="q2pShopId" name="shopId" required autocomplete="off" spellcheck="false" placeholder="e.g. kpcscd-3130" class="w-full rounded-xl border border-slate-200 px-4 py-3.5 text-sm outline-none transition focus:border-[#211B8F] focus:ring-4 focus:ring-indigo-100" />
-        <div id="q2pSelectedPlan" class="rounded-2xl bg-slate-50 p-4"><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Selected plan</p><p id="q2pPlanLabel" class="mt-1 font-extrabold text-[#17135F]">—</p></div>
-        <button id="q2pCheckButton" type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#211B8F] px-5 py-3.5 text-sm font-extrabold text-white transition hover:bg-[#17135F] disabled:cursor-not-allowed disabled:opacity-60"><span id="q2pCheckButtonText">Check subscription</span></button>
-      </form>
-      <button id="q2pContinueButton" type="button" class="mt-3 hidden w-full rounded-xl bg-[#00A6C5] px-5 py-3.5 text-sm font-extrabold text-white hover:bg-cyan-700">Continue to secure payment</button>
-      <p class="mt-5 text-center text-[11px] leading-5 text-slate-400">Your plan and payment amount are validated by the Quick2Print server. Never share your payment credentials.</p>
-    </section>`;
+  modal.innerHTML = `<div class="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-6 text-slate-900 shadow-2xl sm:p-8">
+  <button type="button"  id="q2pModalClose" aria-label="Close" class="absolute right-4 top-4 rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-800">✕</button>
+
+  <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-2xl text-[#211B8F]">↻</div>
+
+  <p class="text-xs font-extrabold uppercase tracking-[.18em] text-[#00A6C5]">Quick2Print Subscription</p>
+  <h2 id="q2pModalTitle" class="mt-2 text-2xl font-black tracking-tight text-[#17135F]">Renew your plan</h2>
+  <p id="q2pModalIntro" class="mt-2 text-sm leading-6 text-slate-500">Enter your Shop ID to securely check your current subscription and continue.</p>
+
+  <!-- Sign Up Information -->
+  <div class="mt-5 rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-cyan-50 p-4 sm:p-5">
+    <div class="flex items-start gap-3">
+      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-xl shadow-sm">🏪</div>
+      <div class="min-w-0 flex-1">
+        <h3 class="text-sm font-extrabold text-[#17135F]">Don't have a Shop ID yet?</h3>
+        <p class="mt-1 text-sm leading-6 text-slate-600">No worries! Sign up to register your shop and get started with Quick2Print.</p>
+        <p class="mt-2 text-xs leading-5 text-slate-500">Create your shop account to get started with digital print orders.</p>
+        <a href="#" id="q2pSignupButton" class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#00A6C5] px-4 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-cyan-700 focus:outline-none focus:ring-4 focus:ring-cyan-100 sm:w-auto">
+          Sign Up Now <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div id="q2pModalAlert" role="status" aria-live="polite" class="mt-5 hidden rounded-2xl border p-4 text-sm"></div>
+
+  <form id="q2pShopForm" class="mt-5 space-y-4">
+    <div>
+      <label for="q2pShopId" class="mb-2 block text-sm font-bold text-slate-700">Already have a Shop ID?</label>
+      <input id="q2pShopId" name="shopId" required autocomplete="off" spellcheck="false" placeholder="Enter your Shop ID (e.g. kpcscd-3130)" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none transition placeholder:text-slate-400 focus:border-[#211B8F] focus:ring-4 focus:ring-indigo-100" />
+    </div>
+
+    <div id="q2pSelectedPlan" class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Selected plan</p>
+      <p id="q2pPlanLabel" class="mt-1 font-extrabold text-[#17135F]">—</p>
+    </div>
+
+    <button id="q2pCheckButton" type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#211B8F] px-5 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#17135F] focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-60">
+      <span id="q2pCheckButtonText">Check Subscription</span>
+      <span aria-hidden="true">→</span>
+    </button>
+  </form>
+
+  <button id="q2pContinueButton" type="button" class="mt-3 hidden w-full rounded-xl bg-[#00A6C5] px-5 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-cyan-700 focus:outline-none focus:ring-4 focus:ring-cyan-100">Continue to Secure Payment →</button>
+
+  <p class="mt-5 text-center text-[11px] leading-5 text-slate-400">Your plan and payment amount are validated by the Quick2Print server. Never share your payment credentials.</p>
+</div>`;
   document.body.appendChild(modal);
   const $ = (id) => document.getElementById(id);
   let verifiedShopId = "";
