@@ -514,7 +514,9 @@
 
       async function apiGetSubscription(subscriptionId, shopId) {
         if (!subscriptionId || !shopId) {
-          throw new Error("Subscription ID and Shop ID are required to load the receipt.");
+          throw new Error(
+            "Subscription ID and Shop ID are required to load the receipt.",
+          );
         }
         const url = new URL(
           `${PAYMENT_API}/api/subscription/${encodeURIComponent(subscriptionId)}`,

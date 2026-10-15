@@ -642,3 +642,172 @@ async function submitLogin(event) {
 
   return false;
 }
+
+/* Quick2Print homepage subscription renewal modal */
+(() => {
+  const pricing = document.getElementById("pricing");
+  if (!pricing || document.getElementById("q2pSubscriptionModal")) return;
+  const PAYMENT_API = "https://quick2print-payment-subscription-na.vercel.app";
+  const checkoutPage = new URL(
+    "subscription-payment.html",
+    window.location.href,
+  ).href;
+  const plans = [
+    { name: "Free", label: "Muft (Free)" },
+    { name: "Starter", label: "Starter" },
+    { name: "Smart", label: "Smart" },
+    { name: "Business", label: "Business" },
+    { name: "Pro", label: "Pro" },
+  ];
+  let selectedPlan = plans[0];
+  const modal = document.createElement("div");
+  modal.id = "q2pSubscriptionModal";
+  modal.className =
+    "fixed inset-0 z-[100000] hidden items-center justify-center bg-slate-950/65 p-4 backdrop-blur-sm";
+  modal.innerHTML = `
+    <section role="dialog" aria-modal="true" aria-labelledby="q2pModalTitle" class="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-6 text-slate-900 shadow-2xl sm:p-8">
+      <button type="button" id="q2pModalClose" aria-label="Close" class="absolute right-4 top-4 rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-800">✕</button>
+      <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-2xl text-[#211B8F]">↻</div>
+      <p class="text-xs font-extrabold uppercase tracking-[.18em] text-[#00A6C5]">Quick2Print subscription</p>
+      <h2 id="q2pModalTitle" class="mt-2 text-2xl font-black tracking-tight text-[#17135F]">Renew your plan</h2>
+      <p id="q2pModalIntro" class="mt-2 text-sm leading-6 text-slate-500">Enter your Shop ID. We’ll securely check the current subscription before proceeding.</p>
+      <div id="q2pModalAlert" role="status" aria-live="polite" class="mt-5 hidden rounded-2xl border p-4 text-sm"></div>
+      <form id="q2pShopForm" class="mt-5 space-y-4">
+        <label for="q2pShopId" class="block text-sm font-bold text-slate-700">Shop ID</label>
+        <input id="q2pShopId" name="shopId" required autocomplete="off" spellcheck="false" placeholder="e.g. kpcscd-3130" class="w-full rounded-xl border border-slate-200 px-4 py-3.5 text-sm outline-none transition focus:border-[#211B8F] focus:ring-4 focus:ring-indigo-100" />
+        <div id="q2pSelectedPlan" class="rounded-2xl bg-slate-50 p-4"><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Selected plan</p><p id="q2pPlanLabel" class="mt-1 font-extrabold text-[#17135F]">—</p></div>
+        <button id="q2pCheckButton" type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#211B8F] px-5 py-3.5 text-sm font-extrabold text-white transition hover:bg-[#17135F] disabled:cursor-not-allowed disabled:opacity-60"><span id="q2pCheckButtonText">Check subscription</span></button>
+      </form>
+      <button id="q2pContinueButton" type="button" class="mt-3 hidden w-full rounded-xl bg-[#00A6C5] px-5 py-3.5 text-sm font-extrabold text-white hover:bg-cyan-700">Continue to secure payment</button>
+      <p class="mt-5 text-center text-[11px] leading-5 text-slate-400">Your plan and payment amount are validated by the Quick2Print server. Never share your payment credentials.</p>
+    </section>`;
+  document.body.appendChild(modal);
+  const $ = (id) => document.getElementById(id);
+  let verifiedShopId = "";
+  let busy = false;
+  function alert(message, type = "error") {
+    const el = $("q2pModalAlert");
+    el.className =
+      "mt-5 rounded-2xl border p-4 text-sm " +
+      (type === "success"
+        ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+        : type === "info"
+          ? "border-indigo-200 bg-indigo-50 text-indigo-800"
+          : "border-rose-200 bg-rose-50 text-rose-800");
+    el.textContent = message;
+    el.classList.remove("hidden");
+  }
+  function open(plan) {
+    selectedPlan = plan;
+    verifiedShopId = "";
+    $("q2pPlanLabel").textContent = plan.label;
+    $("q2pShopId").value = "";
+    $("q2pModalAlert").classList.add("hidden");
+    $("q2pContinueButton").classList.add("hidden");
+    $("q2pCheckButton").classList.remove("hidden");
+    $("q2pCheckButton").disabled = false;
+    $("q2pCheckButtonText").textContent = "Check subscription";
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.classList.add("overflow-hidden");
+    setTimeout(() => $("q2pShopId").focus(), 50);
+  }
+  function close() {
+    if (busy) return;
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.body.classList.remove("overflow-hidden");
+  }
+  $("q2pModalClose").addEventListener("click", close);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.classList.contains("hidden")) close();
+  });
+  pricing.querySelectorAll("button").forEach((button, index) => {
+    if (!plans[index]) return;
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
+      open(plans[index]);
+    });
+  });
+  $("q2pShopForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    const shopId = $("q2pShopId").value.trim();
+    if (!shopId) return alert("Please enter your Shop ID.");
+    busy = true;
+    $("q2pCheckButton").disabled = true;
+    $("q2pCheckButtonText").textContent = "Checking securely…";
+    $("q2pContinueButton").classList.add("hidden");
+    try {
+      const response = await fetch(`${PAYMENT_API}/api/subscription/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shopId }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.success)
+        throw new Error(result.message || "Could not verify this Shop ID.");
+      if (result.data?.active) {
+        verifiedShopId = "";
+        alert(
+          `Subscription already active for ${result.data.shop_name || shopId}. Plan: ${result.data.plan_id || "Active"}. Valid until: ${result.data.expires_at ? new Date(result.data.expires_at).toLocaleDateString("en-IN") : "date not available"}. No renewal payment is needed right now.`,
+          "success",
+        );
+        $("q2pCheckButtonText").textContent = "Check another Shop ID";
+      } else {
+        verifiedShopId = shopId;
+        alert(
+          `Shop verified: ${result.data?.shop_name || shopId}. No active paid subscription was found. You can continue to renew with the ${selectedPlan.label} plan.`,
+          "info",
+        );
+        $("q2pContinueButton").classList.remove("hidden");
+        $("q2pCheckButtonText").textContent = "Recheck subscription";
+      }
+    } catch (error) {
+      alert(error.message || "Unable to check subscription. Please try again.");
+    } finally {
+      busy = false;
+      $("q2pCheckButton").disabled = false;
+    }
+  });
+  $("q2pContinueButton").addEventListener("click", async () => {
+    if (busy || !verifiedShopId) return;
+    if (selectedPlan.name === "Free") {
+      alert(
+        "The Free plan does not require a payment. Please contact support or use the shop activation flow to activate it.",
+        "info",
+      );
+      return;
+    }
+    busy = true;
+    $("q2pContinueButton").disabled = true;
+    $("q2pContinueButton").textContent = "Preparing secure checkout…";
+    try {
+      const response = await fetch(`${PAYMENT_API}/api/subscription/create`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shopId: verifiedShopId,
+          planName: selectedPlan.name,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.success || !result.data?.subscription_id)
+        throw new Error(
+          result.message || "Could not prepare subscription payment.",
+        );
+      const url = new URL(checkoutPage);
+      url.searchParams.set("subscription_id", result.data.subscription_id);
+      url.searchParams.set("shop_id", verifiedShopId);
+      window.location.assign(url.toString());
+    } catch (error) {
+      alert(error.message || "Unable to prepare payment. Please try again.");
+      busy = false;
+      $("q2pContinueButton").disabled = false;
+      $("q2pContinueButton").textContent = "Continue to secure payment";
+    }
+  });
+})();
