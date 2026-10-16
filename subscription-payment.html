@@ -838,6 +838,11 @@
        */
 
       function goBack() {
+        showOverlay(
+          "Returning to Dashboard",
+          "Please wait while we take you back to your Quick2Print dashboard.",
+        );
+
         if (document.referrer) {
           history.back();
         } else {
@@ -868,6 +873,10 @@
        */
       (async function init() {
         try {
+          showOverlay(
+            "Loading Subscription",
+            "Please wait while we securely load your plan and payment details.",
+          );
           show("loadingState");
 
           const params = queryParams();
