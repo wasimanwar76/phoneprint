@@ -20,20 +20,6 @@
     <script src="./block.js"></script>
 
     <style>
-      /* =====================================================================
-   QUICK2PRINT · DUKAAN PANEL THEME
-   ---------------------------------------------------------------------
-   Design idea: "Print-shop precision".
-   Colours come straight from the logo:
-     - Navy wordmark ........ --navy / --indigo
-     - Yellow "2" ........... --yellow
-     - Cyan/blue QR ring .... --cyan / --blue
-     - Ribbon CMYK stripes .. --cyan / --magenta / --yellow  (the .q-cmyk bar)
-   Rounded, soft cards + a thin CMYK stripe = feels like a printed proof.
-   Fonts: Fredoka (headings, close to the logo lettering) + Nunito (body).
-   ===================================================================== */
-
-      /* ---------- 1. DESIGN TOKENS ---------- */
       :root {
         --navy: #17135f;
         --indigo: #211b8f;
@@ -533,6 +519,61 @@
       }
       #qrA4Poster {
         transition: transform 0.4s var(--ease);
+      }
+      /* QR poster scales cleanly on phones while preserving its A4 print layout. */
+      @media (max-width: 639px) {
+        #qr-workspace {
+          gap: 1rem;
+        }
+        #qrPreview {
+          width: min(230px, 68vw);
+          height: min(230px, 68vw);
+        }
+        .qr-a4-poster {
+          min-height: 0 !important;
+          aspect-ratio: 210 / 297;
+          padding: 5vw 4vw !important;
+          justify-content: flex-start;
+        }
+        .qr-a4-poster h2 {
+          font-size: clamp(1.1rem, 5vw, 1.65rem);
+          line-height: 1.15;
+        }
+        .qr-a4-poster .mt-10 {
+          margin-top: 4vw !important;
+        }
+        .qr-a4-poster .mt-8 {
+          margin-top: 3vw !important;
+        }
+        .qr-a4-poster .mt-6 {
+          margin-top: 3vw !important;
+        }
+        .qr-a4-poster .mt-5 {
+          margin-top: 2.5vw !important;
+        }
+        .qr-a4-poster .mt-4 {
+          margin-top: 2vw !important;
+        }
+        .qr-a4-poster .mt-2 {
+          margin-top: 1vw !important;
+        }
+        .qr-a4-poster #a4QrCode {
+          width: min(48vw, 190px) !important;
+          height: min(48vw, 190px) !important;
+          max-width: 190px !important;
+          max-height: 190px !important;
+        }
+        .qr-a4-poster #a4QrCode img,
+        .qr-a4-poster #a4QrCode canvas {
+          max-width: 100% !important;
+          max-height: 100% !important;
+        }
+        .qr-a4-poster .absolute.bottom-8 {
+          left: 5vw !important;
+          right: 5vw !important;
+          bottom: 3vw !important;
+          padding-top: 2vw !important;
+        }
       }
 
       /* ---------- 14. EARNINGS ---------- */
@@ -1865,7 +1906,7 @@
           <!-- ===========================================================
              TAB: QR CODE
         ============================================================ -->
-          <section id="tab-qr" class="tab-content hidden max-w-4xl mx-auto">
+          <section id="tab-qr" class="tab-content hidden max-w-6xl mx-auto">
             <div
               class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
             >
@@ -1895,266 +1936,290 @@
               </div>
             </div>
 
-            <!-- QR generator card -->
+            <!-- Two-column QR workspace: QR controls on the left, print preview on the right -->
             <div
-              class="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(23,19,95,0.08)]"
+              id="qr-workspace"
+              class="grid grid-cols-1 xl:grid-cols-2 items-start gap-6"
             >
+              <!-- QR generator card -->
               <div
-                class="bg-gradient-to-r from-[#17135F] via-[#211B8F] to-[#00B8D9] px-5 py-5 text-white sm:px-7"
+                class="h-full min-w-0 overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(23,19,95,0.08)]"
               >
-                <div class="flex items-center gap-4">
-                  <div
-                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/20"
-                  >
-                    <i data-lucide="qr-code" class="h-6 w-6"></i>
-                  </div>
-                  <div>
-                    <h3 class="text-base font-bold sm:text-lg font-heading">
-                      Your Customer QR
-                    </h3>
-                    <p class="mt-1 text-xs font-medium text-white/75">
-                      Automatically linked to your shop account
-                    </p>
+                <div
+                  class="bg-gradient-to-r from-[#17135F] via-[#211B8F] to-[#00B8D9] px-5 py-5 text-white sm:px-7"
+                >
+                  <div class="flex items-center gap-4">
+                    <div
+                      class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/20"
+                    >
+                      <i data-lucide="qr-code" class="h-6 w-6"></i>
+                    </div>
+                    <div>
+                      <h3 class="text-base font-bold sm:text-lg font-heading">
+                        Your Customer QR
+                      </h3>
+                      <p class="mt-1 text-xs font-medium text-white/75">
+                        Automatically linked to your shop account
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="p-5 sm:p-8">
-                <div
-                  class="grid gap-7 lg:grid-cols-[280px_1fr] lg:items-center"
-                >
-                  <!-- QR preview with logo-coloured corner brackets -->
-                  <div class="flex justify-center">
-                    <div
-                      class="relative rounded-[26px] border border-slate-200 bg-slate-50 p-4 shadow-inner"
-                    >
+                <div class="p-5 sm:p-8">
+                  <div
+                    class="grid gap-7 md:grid-cols-[minmax(0,280px)_minmax(0,1fr)] md:items-center"
+                  >
+                    <!-- QR preview with logo-coloured corner brackets -->
+                    <div class="flex justify-center">
                       <div
-                        class="absolute -left-1 -top-1 h-8 w-8 rounded-tl-xl border-l-4 border-t-4 border-[#00B8D9]"
-                      ></div>
-                      <div
-                        class="absolute -right-1 -top-1 h-8 w-8 rounded-tr-xl border-r-4 border-t-4 border-[#E6248C]"
-                      ></div>
-                      <div
-                        class="absolute -bottom-1 -left-1 h-8 w-8 rounded-bl-xl border-b-4 border-l-4 border-[#FFB800]"
-                      ></div>
-                      <div
-                        class="absolute -bottom-1 -right-1 h-8 w-8 rounded-br-xl border-b-4 border-r-4 border-[#211B8F]"
-                      ></div>
-
-                      <div
-                        id="qrPreview"
-                        class="flex h-[230px] w-[230px] items-center justify-center rounded-2xl bg-white p-3 shadow-sm sm:h-[260px] sm:w-[260px]"
+                        class="relative rounded-[26px] border border-slate-200 bg-slate-50 p-4 shadow-inner"
                       >
-                        <div class="text-center">
+                        <div
+                          class="absolute -left-1 -top-1 h-8 w-8 rounded-tl-xl border-l-4 border-t-4 border-[#00B8D9]"
+                        ></div>
+                        <div
+                          class="absolute -right-1 -top-1 h-8 w-8 rounded-tr-xl border-r-4 border-t-4 border-[#E6248C]"
+                        ></div>
+                        <div
+                          class="absolute -bottom-1 -left-1 h-8 w-8 rounded-bl-xl border-b-4 border-l-4 border-[#FFB800]"
+                        ></div>
+                        <div
+                          class="absolute -bottom-1 -right-1 h-8 w-8 rounded-br-xl border-b-4 border-r-4 border-[#211B8F]"
+                        ></div>
+
+                        <div
+                          id="qrPreview"
+                          class="flex h-[230px] w-[230px] items-center justify-center rounded-2xl bg-white p-3 shadow-sm sm:h-[260px] sm:w-[260px]"
+                        >
+                          <div class="text-center">
+                            <div
+                              class="mx-auto mb-3 h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-[#211B8F]"
+                            ></div>
+                            <p class="text-xs font-bold text-slate-400">
+                              Generating QR...
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Details -->
+                    <div>
+                      <div
+                        class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                      >
+                        <div class="flex items-center gap-3">
                           <div
-                            class="mx-auto mb-3 h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-[#211B8F]"
-                          ></div>
-                          <p class="text-xs font-bold text-slate-400">
-                            Generating QR...
-                          </p>
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#211B8F] shadow-sm"
+                          >
+                            <i data-lucide="store" class="h-5 w-5"></i>
+                          </div>
+                          <div class="min-w-0">
+                            <p
+                              class="text-[10px] font-black uppercase tracking-wider text-slate-400"
+                            >
+                              Shop Name
+                            </p>
+                            <p
+                              id="qrShopName"
+                              class="mt-0.5 truncate text-base font-extrabold text-[#17135F]"
+                            >
+                              Loading...
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <!-- Details -->
-                  <div>
-                    <div
-                      class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
-                    >
-                      <div class="flex items-center gap-3">
-                        <div
-                          class="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#211B8F] shadow-sm"
+                      <div
+                        class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                      >
+                        <div class="flex items-center gap-3">
+                          <div
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#00A0C0] shadow-sm"
+                          >
+                            <i data-lucide="fingerprint" class="h-5 w-5"></i>
+                          </div>
+                          <div class="min-w-0 flex-1">
+                            <p
+                              class="text-[10px] font-black uppercase tracking-wider text-slate-400"
+                            >
+                              Shop ID
+                            </p>
+                            <p
+                              id="qrShopId"
+                              class="mt-0.5 truncate font-mono text-sm font-bold text-slate-700"
+                            >
+                              —
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div
+                        class="mt-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4"
+                      >
+                        <p
+                          class="text-[10px] font-black uppercase tracking-wider text-blue-500"
                         >
-                          <i data-lucide="store" class="h-5 w-5"></i>
-                        </div>
-                        <div class="min-w-0">
-                          <p
-                            class="text-[10px] font-black uppercase tracking-wider text-slate-400"
-                          >
-                            Shop Name
-                          </p>
-                          <p
-                            id="qrShopName"
-                            class="mt-0.5 truncate text-base font-extrabold text-[#17135F]"
-                          >
-                            Loading...
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div
-                      class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4"
-                    >
-                      <div class="flex items-center gap-3">
-                        <div
-                          class="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#00A0C0] shadow-sm"
+                          Customer URL
+                        </p>
+                        <p
+                          id="qrUrl"
+                          class="mt-2 break-all font-mono text-[11px] font-semibold leading-5 text-[#211B8F]"
                         >
-                          <i data-lucide="fingerprint" class="h-5 w-5"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                          <p
-                            class="text-[10px] font-black uppercase tracking-wider text-slate-400"
-                          >
-                            Shop ID
-                          </p>
-                          <p
-                            id="qrShopId"
-                            class="mt-0.5 truncate font-mono text-sm font-bold text-slate-700"
-                          >
-                            —
-                          </p>
-                        </div>
+                          —
+                        </p>
                       </div>
-                    </div>
 
-                    <div
-                      class="mt-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4"
-                    >
-                      <p
-                        class="text-[10px] font-black uppercase tracking-wider text-blue-500"
-                      >
-                        Customer URL
-                      </p>
-                      <p
-                        id="qrUrl"
-                        class="mt-2 break-all font-mono text-[11px] font-semibold leading-5 text-[#211B8F]"
-                      >
-                        —
-                      </p>
-                    </div>
-
-                    <div class="mt-5 grid gap-3 sm:grid-cols-2">
-                      <button
-                        id="downloadQrBtn"
-                        type="button"
-                        disabled
-                        onclick="downloadShopQRCode()"
-                        class="q-btn px-5 py-3 text-sm"
-                      >
-                        <i data-lucide="download" class="h-4 w-4"></i> Download
-                        QR
-                      </button>
-                      <button
-                        id="printQrBtn"
-                        type="button"
-                        onclick="printShopA4QRCode()"
-                        class="q-btn-ghost px-5 py-3 text-sm"
-                      >
-                        <i data-lucide="printer" class="h-4 w-4"></i> Print A4
-                      </button>
+                      <div class="mt-5 grid gap-3 sm:grid-cols-2">
+                        <button
+                          id="downloadQrBtn"
+                          type="button"
+                          disabled
+                          onclick="downloadShopQRCode()"
+                          class="q-btn px-5 py-3 text-sm"
+                        >
+                          <i data-lucide="download" class="h-4 w-4"></i>
+                          Download QR
+                        </button>
+                        <button
+                          id="printQrBtn"
+                          type="button"
+                          onclick="printShopA4QRCode()"
+                          class="q-btn-ghost px-5 py-3 text-sm"
+                        >
+                          <i data-lucide="printer" class="h-4 w-4"></i> Print A4
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- A4 poster preview (this exact node is printed – keep ids) -->
-            <div class="mt-8">
-              <div class="mb-4 flex items-center justify-between gap-4">
-                <div>
-                  <span
-                    class="text-[10px] font-black uppercase tracking-[0.2em] text-[#00B8D9]"
-                    >Print Preview</span
-                  >
-                  <h3
-                    class="mt-1 text-lg font-bold font-heading text-[#17135F]"
-                  >
-                    A4 Customer Poster
-                  </h3>
-                </div>
-                <span
-                  class="rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-bold text-slate-500"
-                  >A4 • 210 × 297 mm</span
-                >
-              </div>
-
-              <div
-                class="flex justify-center overflow-x-auto rounded-[28px] bg-slate-100 p-4 sm:p-8"
-              >
+              <!-- A4 poster preview (this exact node is printed – keep ids) -->
+              <div class="min-w-0">
                 <div
-                  id="qrA4Poster"
-                  class="relative flex min-h-[842px] w-[595px] min-w-[595px] flex-col items-center overflow-hidden bg-white px-12 py-14 text-center shadow-[0_25px_80px_rgba(15,23,42,0.18)]"
+                  class="mb-4 flex flex-wrap items-center justify-between gap-3"
+                >
+                  <div>
+                    <span
+                      class="text-[10px] font-black uppercase tracking-[0.2em] text-[#00B8D9]"
+                      >Print Preview</span
+                    >
+                    <h3
+                      class="mt-1 text-lg font-bold font-heading text-[#17135F]"
+                    >
+                      A4 Customer Poster
+                    </h3>
+                  </div>
+                  <span
+                    class="rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-bold text-slate-500"
+                    >A4 • 210 × 297 mm</span
+                  >
+                </div>
+
+                <div
+                  class="flex min-w-0 justify-center overflow-hidden rounded-[28px] bg-slate-100 p-2 sm:p-4 xl:p-3"
                 >
                   <div
-                    class="pointer-events-none absolute -right-28 -top-28 h-72 w-72 rounded-full bg-[#00B8D9]/10 blur-3xl"
-                  ></div>
-                  <div
-                    class="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-[#FFB800]/15 blur-3xl"
-                  ></div>
-
-                  <div class="relative z-10">
-                    <img
-                      src="logo.png"
-                      alt="Quick2Print"
-                      class="mx-auto h-24 w-auto object-contain"
-                    />
-                    <p
-                      class="mt-5 text-[10px] font-black uppercase tracking-[0.3em] text-[#00B8D9]"
-                    >
-                      Quick2Print
-                    </p>
-                    <h1
-                      id="a4ShopName"
-                      class="mt-3 max-w-[480px] text-4xl font-black leading-tight tracking-tight text-[#17135F]"
-                    >
-                      Your Shop Name
-                    </h1>
-                    <div
-                      class="mx-auto mt-5 h-1 w-20 rounded-full bg-gradient-to-r from-[#00B8D9] via-[#E6248C] to-[#FFB800]"
-                    ></div>
-                  </div>
-
-                  <div class="relative z-10 mt-10">
-                    <p class="text-lg font-bold text-slate-700">
-                      Scan to Send Your Documents
-                    </p>
-                    <p
-                      class="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400"
-                    >
-                      Scan this QR code with your phone to upload documents
-                      directly to this printing shop.
-                    </p>
-                  </div>
-
-                  <div
-                    class="relative z-10 mt-8 rounded-[28px] border-2 border-slate-100 bg-white p-5 shadow-[0_20px_60px_rgba(23,19,95,0.12)]"
+                    id="qrA4Poster"
+                    class="qr-a4-poster relative flex min-h-[842px] w-full max-w-[595px] min-w-0 flex-col items-center overflow-hidden bg-white px-4 py-8 text-center shadow-[0_25px_80px_rgba(15,23,42,0.18)] sm:px-8 sm:py-10 xl:px-10 xl:py-12"
                   >
                     <div
-                      id="a4QrCode"
-                      class="flex h-[300px] w-[300px] items-center justify-center"
+                      class="pointer-events-none absolute -right-28 -top-28 h-72 w-72 rounded-full bg-[#00B8D9]/10 blur-3xl"
                     ></div>
-                  </div>
-
-                  <div class="relative z-10 mt-8">
                     <div
-                      class="inline-flex items-center gap-2 rounded-full bg-[#211B8F] px-5 py-2.5 text-xs font-extrabold text-white"
-                    >
-                      <i data-lucide="scan-line" class="h-4 w-4"></i> SCAN TO
-                      UPLOAD
+                      class="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-[#FFB800]/15 blur-3xl"
+                    ></div>
+
+                    <div class="relative z-10">
+                      <img
+                        src="logo.png"
+                        alt="Quick2Print"
+                        class="mx-auto h-24 w-auto object-contain"
+                      />
+                      <p
+                        class="mt-5 text-[10px] font-black uppercase tracking-[0.3em] text-[#00B8D9]"
+                      >
+                        Quick2Print
+                      </p>
+                      <h1
+                        id="a4ShopName"
+                        class="mt-3 max-w-[480px] text-4xl font-black leading-tight tracking-tight text-[#17135F]"
+                      >
+                        Your Shop Name
+                      </h1>
+                      <div
+                        class="mx-auto mt-5 h-1 w-20 rounded-full bg-gradient-to-r from-[#00B8D9] via-[#E6248C] to-[#FFB800]"
+                      ></div>
                     </div>
-                    <p
-                      id="a4Url"
-                      class="mt-4 max-w-[460px] break-all font-mono text-[10px] font-semibold text-slate-400"
-                    >
-                      https://www.quick2print.in/qrcode.html?shop_id=—
-                    </p>
-                  </div>
 
-                  <div
-                    class="absolute bottom-8 left-12 right-12 border-t border-slate-100 pt-5"
-                  >
+                    <div class="relative z-10 mt-10">
+                      <p class="text-lg font-bold text-slate-700">
+                        Scan to Send Your Documents
+                      </p>
+                      <p
+                        class="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400"
+                      >
+                        Scan this QR code with your phone to upload documents
+                        directly to this printing shop.
+                      </p>
+                    </div>
+
                     <div
-                      class="flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-slate-400"
+                      class="relative z-10 mt-5 flex flex-wrap justify-center gap-2 text-[10px] font-extrabold sm:text-xs"
                     >
-                      <span>Quick2Print</span
-                      ><span>QR → Upload → Auto Print</span>
+                      <span
+                        id="a4PrinterType"
+                        class="rounded-full bg-indigo-50 px-3 py-2 text-[#211B8F]"
+                        >Printer: B&amp;W + Color</span
+                      >
+                      <span
+                        id="a4PaymentMethod"
+                        class="rounded-full bg-cyan-50 px-3 py-2 text-cyan-800"
+                        >Payment: UPI + Cash</span
+                      >
+                    </div>
+
+                    <div
+                      class="relative z-10 mt-6 rounded-[28px] border-2 border-slate-100 bg-white p-3 sm:p-5 shadow-[0_20px_60px_rgba(23,19,95,0.12)]"
+                    >
+                      <div
+                        id="a4QrCode"
+                        class="flex h-[min(300px,68vw)] w-[min(300px,68vw)] max-h-[300px] max-w-[300px] items-center justify-center"
+                      ></div>
+                    </div>
+
+                    <div class="relative z-10 mt-8">
+                      <div
+                        class="inline-flex items-center gap-2 rounded-full bg-[#211B8F] px-5 py-2.5 text-xs font-extrabold text-white"
+                      >
+                        <i data-lucide="scan-line" class="h-4 w-4"></i> SCAN TO
+                        UPLOAD
+                      </div>
+                      <p
+                        id="a4Url"
+                        class="mt-4 max-w-[460px] break-all font-mono text-[10px] font-semibold text-slate-400"
+                      >
+                        https://www.quick2print.in/qrcode.html?shop_id=—
+                      </p>
+                    </div>
+
+                    <div
+                      class="absolute bottom-8 left-12 right-12 border-t border-slate-100 pt-5"
+                    >
+                      <div
+                        class="flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-slate-400"
+                      >
+                        <span>Quick2Print</span
+                        ><span>QR → Upload → Auto Print</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+            <!-- /#qr-workspace -->
           </section>
 
           <!-- ===========================================================
@@ -2260,6 +2325,58 @@
                 </p>
               </div>
             </div>
+
+            <!-- Cash collection: shown only when cash orders exist -->
+            <section
+              id="cashCollectionSection"
+              class="hidden overflow-hidden rounded-[26px] border border-amber-200 bg-white shadow-[0_16px_45px_rgba(146,64,14,0.08)]"
+            >
+              <div
+                class="flex flex-col gap-3 border-b border-amber-100 bg-gradient-to-r from-amber-50 to-orange-50 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6"
+              >
+                <div class="flex items-start gap-3">
+                  <div
+                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-700"
+                  >
+                    <i data-lucide="wallet" class="h-5 w-5"></i>
+                  </div>
+                  <div>
+                    <h3
+                      class="font-heading text-lg font-extrabold text-[#17135F]"
+                    >
+                      Cash Collection
+                    </h3>
+                    <p class="mt-1 text-sm leading-5 text-slate-600">
+                      Cash orders ki payment counter par receive hone ke baad
+                      confirm karein.
+                    </p>
+                  </div>
+                </div>
+                <div class="flex flex-wrap gap-2 sm:justify-end">
+                  <span
+                    id="cashCollectionPendingCount"
+                    class="rounded-full bg-amber-100 px-3 py-1.5 text-xs font-extrabold text-amber-800"
+                    >0 pending</span
+                  >
+                  <span
+                    id="cashCollectionPendingAmount"
+                    class="rounded-full bg-white px-3 py-1.5 text-xs font-extrabold text-[#17135F]"
+                    >₹0 pending</span
+                  >
+                  <button
+                    type="button"
+                    onclick="loadCashCollectionOrders()"
+                    class="q-btn-ghost px-3 py-2 text-xs"
+                  >
+                    <i data-lucide="refresh-cw" class="h-4 w-4"></i> Refresh
+                  </button>
+                </div>
+              </div>
+              <div
+                id="cashCollectionList"
+                class="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 sm:p-5"
+              ></div>
+            </section>
 
             <!-- Filters -->
             <div class="q-card q-static p-5">
@@ -2588,6 +2705,163 @@
                     ></textarea>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <!-- Printer and payment configuration -->
+            <div
+              class="q-card q-static overflow-hidden"
+              id="shop-capability-settings"
+            >
+              <div
+                class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-[#EAFBFF] to-white flex items-center gap-3"
+              >
+                <div
+                  class="w-10 h-10 rounded-xl bg-[#00B8D9]/15 text-[#008EAA] flex items-center justify-center"
+                >
+                  <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3
+                    class="font-heading font-bold text-lg sm:text-xl text-[#17135F]"
+                  >
+                    Printer &amp; Payment Settings
+                  </h3>
+                  <p
+                    class="text-xs sm:text-sm text-gray-500 font-semibold mt-0.5"
+                  >
+                    Choose what your shop can print and how customers can pay.
+                  </p>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 p-5 sm:p-6">
+                <fieldset
+                  class="min-w-0 rounded-2xl border border-slate-200 p-4 sm:p-5"
+                >
+                  <legend class="px-2 text-sm font-extrabold text-[#17135F]">
+                    Printer Type
+                  </legend>
+                  <p class="mb-4 text-xs leading-5 text-slate-500">
+                    Color printing will be disabled for B&amp;W-only shops when
+                    the customer flow enforces this setting.
+                  </p>
+                  <div class="space-y-3">
+                    <label
+                      class="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4 transition hover:border-[#211B8F] has-[:checked]:border-[#211B8F] has-[:checked]:bg-indigo-50/60"
+                    >
+                      <input
+                        type="radio"
+                        name="settings-printer-type"
+                        id="settings-printer-bw"
+                        value="BW"
+                        class="mt-1 accent-[#211B8F]"
+                      />
+                      <span
+                        ><span
+                          class="block text-sm font-extrabold text-slate-800"
+                          >Black &amp; White Only</span
+                        ><span
+                          class="mt-1 block text-xs leading-5 text-slate-500"
+                          >This shop can only print monochrome documents.</span
+                        ></span
+                      >
+                    </label>
+                    <label
+                      class="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4 transition hover:border-[#211B8F] has-[:checked]:border-[#211B8F] has-[:checked]:bg-indigo-50/60"
+                    >
+                      <input
+                        type="radio"
+                        name="settings-printer-type"
+                        id="settings-printer-color"
+                        value="BW_COLOR"
+                        class="mt-1 accent-[#211B8F]"
+                      />
+                      <span
+                        ><span
+                          class="block text-sm font-extrabold text-slate-800"
+                          >B&amp;W + Color</span
+                        ><span
+                          class="mt-1 block text-xs leading-5 text-slate-500"
+                          >This shop supports both monochrome and color
+                          printing.</span
+                        ></span
+                      >
+                    </label>
+                  </div>
+                </fieldset>
+                <fieldset
+                  class="min-w-0 rounded-2xl border border-slate-200 p-4 sm:p-5"
+                >
+                  <legend class="px-2 text-sm font-extrabold text-[#17135F]">
+                    Accepted Payment Methods
+                  </legend>
+                  <p class="mb-4 text-xs leading-5 text-slate-500">
+                    Select the payment choices customers should see when
+                    ordering.
+                  </p>
+                  <div class="space-y-3">
+                    <label
+                      class="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4 transition hover:border-[#00A6C5] has-[:checked]:border-[#00A6C5] has-[:checked]:bg-cyan-50/60"
+                    >
+                      <input
+                        type="radio"
+                        name="settings-payment-method"
+                        id="settings-payment-upi"
+                        value="UPI"
+                        class="mt-1 accent-cyan-600"
+                      />
+                      <span
+                        ><span
+                          class="block text-sm font-extrabold text-slate-800"
+                          >UPI Only</span
+                        ><span
+                          class="mt-1 block text-xs leading-5 text-slate-500"
+                          >Accept online payments only.</span
+                        ></span
+                      >
+                    </label>
+                    <label
+                      class="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4 transition hover:border-[#00A6C5] has-[:checked]:border-[#00A6C5] has-[:checked]:bg-cyan-50/60"
+                    >
+                      <input
+                        type="radio"
+                        name="settings-payment-method"
+                        id="settings-payment-cash"
+                        value="CASH"
+                        class="mt-1 accent-cyan-600"
+                      />
+                      <span
+                        ><span
+                          class="block text-sm font-extrabold text-slate-800"
+                          >Cash Only</span
+                        ><span
+                          class="mt-1 block text-xs leading-5 text-slate-500"
+                          >Accept cash at the shop counter.</span
+                        ></span
+                      >
+                    </label>
+                    <label
+                      class="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4 transition hover:border-[#00A6C5] has-[:checked]:border-[#00A6C5] has-[:checked]:bg-cyan-50/60"
+                    >
+                      <input
+                        type="radio"
+                        name="settings-payment-method"
+                        id="settings-payment-both"
+                        value="BOTH"
+                        class="mt-1 accent-cyan-600"
+                      />
+                      <span
+                        ><span
+                          class="block text-sm font-extrabold text-slate-800"
+                          >UPI + Cash</span
+                        ><span
+                          class="mt-1 block text-xs leading-5 text-slate-500"
+                          >Let customers choose either method.</span
+                        ></span
+                      >
+                    </label>
+                  </div>
+                </fieldset>
               </div>
             </div>
 
@@ -2929,6 +3203,7 @@
         if (tabId === "earnings") {
           loadEarningsCashfreeSettings();
           loadShopEarnings();
+          loadCashCollectionOrders();
         }
 
         if (element) {
@@ -4638,6 +4913,135 @@
       }
 
       /* ============================================================
+   CASH COLLECTION
+   Only unpaid cash orders are shown. Confirming cash updates the
+   existing print_orders.payment_status field to PAID.
+   ============================================================ */
+      async function loadCashCollectionOrders() {
+        const section = document.getElementById("cashCollectionSection");
+        const list = document.getElementById("cashCollectionList");
+        const count = document.getElementById("cashCollectionPendingCount");
+        const amount = document.getElementById("cashCollectionPendingAmount");
+        const shopId = getEarningsShopId();
+        if (!section || !list) return;
+        if (!shopId) {
+          section.classList.add("hidden");
+          return;
+        }
+
+        list.innerHTML =
+          '<div class="col-span-full rounded-xl bg-slate-50 p-5 text-center text-sm font-semibold text-slate-500">Loading cash orders…</div>';
+        try {
+          const { data, error } = await supabaseClient
+            .from("print_orders")
+            .select(
+              "order_id, total_files, total_pages, amount_charged, payment_mode, payment_status, status, created_at",
+            )
+            .eq("shop_id", shopId)
+            .eq("payment_mode", "CASH")
+            .order("created_at", { ascending: false })
+            .limit(100);
+          if (error) throw error;
+
+          const pending = (data || []).filter(
+            (order) =>
+              String(order.payment_status || "PENDING").toUpperCase() !==
+                "PAID" &&
+              !["cancelled", "failed", "expired"].includes(
+                String(order.status || "").toLowerCase(),
+              ),
+          );
+          const pendingTotal = pending.reduce(
+            (sum, order) => sum + Number(order.amount_charged || 0),
+            0,
+          );
+          if (count) count.textContent = `${pending.length} pending`;
+          if (amount)
+            amount.textContent = `${formatEarningsINR(pendingTotal)} pending`;
+
+          if (!pending.length) {
+            section.classList.add("hidden");
+            list.innerHTML = "";
+            return;
+          }
+          section.classList.remove("hidden");
+          list.innerHTML = pending
+            .map(
+              (order) => `
+            <article class="min-w-0 rounded-2xl border border-amber-100 bg-white p-4 shadow-sm">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="break-all font-mono text-sm font-extrabold text-[#17135F]">Order ${escapeEarnings(
+                    String(order.order_id || "")
+                      .slice(0, 12)
+                      .toUpperCase(),
+                  )}</p>
+                  <p class="mt-1 text-xs font-semibold text-slate-500">${formatEarningsDate(order.created_at)}</p>
+                </div>
+                <span class="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-amber-800">Cash due</span>
+              </div>
+              <div class="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-slate-50 p-3">
+                <div><p class="text-[10px] font-bold uppercase text-slate-400">Files</p><p class="mt-1 text-sm font-extrabold text-slate-800">${Number(order.total_files || 0)}</p></div>
+                <div><p class="text-[10px] font-bold uppercase text-slate-400">Pages</p><p class="mt-1 text-sm font-extrabold text-slate-800">${Number(order.total_pages || 0)}</p></div>
+                <div><p class="text-[10px] font-bold uppercase text-slate-400">Amount</p><p class="mt-1 text-sm font-extrabold text-[#17135F]">${formatEarningsINR(order.amount_charged)}</p></div>
+              </div>
+              <button type="button" data-cash-order-id="${escapeEarnings(order.order_id)}" onclick="confirmCashCollection(this.dataset.cashOrderId, this)" class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"><i data-lucide="check-circle-2" class="h-4 w-4"></i> Confirm Cash Received</button>
+            </article>
+          `,
+            )
+            .join("");
+          lucide.createIcons();
+        } catch (error) {
+          console.error("Cash collection load failed:", error);
+          section.classList.remove("hidden");
+          list.innerHTML = `<div class="col-span-full rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-semibold text-red-700">Cash orders load nahi ho paaye: ${escapeEarnings(error.message || "Please retry.")}</div>`;
+        }
+      }
+
+      async function confirmCashCollection(orderId, button) {
+        const shopId = getEarningsShopId();
+        if (!shopId || !orderId || !button) return;
+        const accepted = window.confirm(
+          "Confirm karein ki customer se cash payment receive ho chuki hai?",
+        );
+        if (!accepted) return;
+        const original = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML =
+          '<i data-lucide="loader-2" class="h-4 w-4 animate-spin"></i> Confirming…';
+        lucide.createIcons();
+        try {
+          const { data, error } = await supabaseClient
+            .from("print_orders")
+            .update({ payment_status: "PAID" })
+            .eq("shop_id", shopId)
+            .eq("order_id", orderId)
+            .eq("payment_mode", "CASH")
+            .select("order_id, payment_status");
+          if (error) throw error;
+          if (!data || data.length === 0)
+            throw new Error(
+              "Order update nahi hua. Ho sakta hai payment pehle hi confirm ho chuki ho ya database permission missing ho.",
+            );
+          await loadCashCollectionOrders();
+          await loadShopEarnings();
+          showEarningsMessage(
+            "success",
+            "Cash payment successfully confirm ho gayi.",
+          );
+        } catch (error) {
+          console.error("Cash confirmation failed:", error);
+          button.disabled = false;
+          button.innerHTML = original;
+          lucide.createIcons();
+          showEarningsMessage(
+            "error",
+            error.message || "Cash payment confirm nahi ho paayi.",
+          );
+        }
+      }
+
+      /* ============================================================
    LOAD SHOP EARNINGS
    ============================================================ */
 
@@ -4723,6 +5127,7 @@
            * Apply current filter.
            */
           filterEarningsOrders();
+          loadCashCollectionOrders();
         } catch (error) {
           console.error("Earnings orders load failed:", error);
 
@@ -5663,6 +6068,8 @@
               shop_address,
               print_price,
               color_price,
+              printer_type,
+              payment_method,
               shop_status,
               qr_token
             `,
@@ -5711,6 +6118,27 @@
 
             document.getElementById("settings-color-price").value =
               data.color_price ?? 10;
+
+            /* Printer and payment preferences */
+            const printerType = ["BW", "BW_COLOR"].includes(data.printer_type)
+              ? data.printer_type
+              : "BW_COLOR";
+            const paymentMethod = ["UPI", "CASH", "BOTH"].includes(
+              data.payment_method,
+            )
+              ? data.payment_method
+              : "BOTH";
+            const printerRadio = document.querySelector(
+              `input[name="settings-printer-type"][value="${printerType}"]`,
+            );
+            const paymentRadio = document.querySelector(
+              `input[name="settings-payment-method"][value="${paymentMethod}"]`,
+            );
+            if (printerRadio) printerRadio.checked = true;
+            if (paymentRadio) paymentRadio.checked = true;
+            if (typeof window.q2pUpdateQrPreferencePreview === "function") {
+              window.q2pUpdateQrPreferencePreview(printerType, paymentMethod);
+            }
 
             /* System fields */
 
@@ -5762,6 +6190,12 @@
           const colorPrice = Number(
             document.getElementById("settings-color-price").value,
           );
+          const printerType = document.querySelector(
+            'input[name="settings-printer-type"]:checked',
+          )?.value;
+          const paymentMethod = document.querySelector(
+            'input[name="settings-payment-method"]:checked',
+          )?.value;
 
           /* -----------------------------------------
            VALIDATION
@@ -5789,6 +6223,14 @@
 
           if (!Number.isFinite(colorPrice) || colorPrice < 0) {
             showMessage("Valid Color Print Cost enter karein.", "error");
+            return;
+          }
+          if (!["BW", "BW_COLOR"].includes(printerType)) {
+            showMessage("Printer type select karein.", "error");
+            return;
+          }
+          if (!["UPI", "CASH", "BOTH"].includes(paymentMethod)) {
+            showMessage("Accepted payment method select karein.", "error");
             return;
           }
 
@@ -5831,6 +6273,10 @@
                 /* Color */
                 color_price: colorPrice,
 
+                /* Shop capabilities */
+                printer_type: printerType,
+                payment_method: paymentMethod,
+
                 updated_at: new Date().toISOString(),
               })
               .eq("shop_id", shopId)
@@ -5844,6 +6290,8 @@
                   shop_address,
                   print_price,
                   color_price,
+                  printer_type,
+                  payment_method,
                   shop_status,
                   qr_token
                 `,
@@ -5872,7 +6320,15 @@
                */
               print_price: data.print_price,
               color_price: data.color_price,
+              printer_type: data.printer_type,
+              payment_method: data.payment_method,
             };
+            if (typeof window.q2pUpdateQrPreferencePreview === "function") {
+              window.q2pUpdateQrPreferencePreview(
+                data.printer_type,
+                data.payment_method,
+              );
+            }
 
             localStorage.setItem("loggedInShop", JSON.stringify(updatedShop));
 
@@ -5901,6 +6357,30 @@
             }
           }
         });
+
+        /* Update the print poster preview immediately when settings are changed. */
+        document
+          .querySelectorAll(
+            'input[name="settings-printer-type"], input[name="settings-payment-method"]',
+          )
+          .forEach((input) => {
+            input.addEventListener("change", () => {
+              const selectedPrinter =
+                document.querySelector(
+                  'input[name="settings-printer-type"]:checked',
+                )?.value || "BW_COLOR";
+              const selectedPayment =
+                document.querySelector(
+                  'input[name="settings-payment-method"]:checked',
+                )?.value || "BOTH";
+              if (typeof window.q2pUpdateQrPreferencePreview === "function") {
+                window.q2pUpdateQrPreferencePreview(
+                  selectedPrinter,
+                  selectedPayment,
+                );
+              }
+            });
+          });
 
         /* -----------------------------------------
        STATUS DISPLAY
@@ -7171,5 +7651,42 @@
     </script>
 
     <script src="qr-code.js"></script>
+    <script>
+      window.q2pUpdateQrPreferencePreview = function (
+        printerType,
+        paymentMethod,
+      ) {
+        const printerLabels = {
+          BW: "B&amp;W Only",
+          BW_COLOR: "B&amp;W + Color",
+        };
+        const paymentLabels = {
+          UPI: "UPI Only",
+          CASH: "Cash Only",
+          BOTH: "UPI + Cash",
+        };
+        const printer = printerLabels[printerType]
+          ? printerLabels[printerType].replace(/&amp;/g, "&")
+          : "B&W + Color";
+        const payment = paymentLabels[paymentMethod] || "UPI + Cash";
+        const printerEl = document.getElementById("a4PrinterType");
+        const paymentEl = document.getElementById("a4PaymentMethod");
+        if (printerEl) printerEl.textContent = "Printer: " + printer;
+        if (paymentEl) paymentEl.textContent = "Payment: " + payment;
+      };
+      document.addEventListener("DOMContentLoaded", () => {
+        try {
+          const shop = JSON.parse(
+            localStorage.getItem("loggedInShop") || "null",
+          );
+          window.q2pUpdateQrPreferencePreview(
+            shop?.printer_type || "BW_COLOR",
+            shop?.payment_method || "BOTH",
+          );
+        } catch (_) {
+          window.q2pUpdateQrPreferencePreview("BW_COLOR", "BOTH");
+        }
+      });
+    </script>
   </body>
 </html>

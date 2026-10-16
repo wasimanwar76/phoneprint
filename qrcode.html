@@ -832,6 +832,42 @@
           </div>
         </div>
 
+        <div class="mb-4 grid grid-cols-3 gap-2" aria-label="How it works">
+          <div
+            class="rounded-xl border border-indigo-100 bg-indigo-50 px-2 py-3 text-center"
+          >
+            <span
+              class="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-[#211B8F] text-xs font-extrabold text-white"
+              >1</span
+            >
+            <span class="block text-[11px] font-bold text-[#211B8F]"
+              >Upload</span
+            >
+          </div>
+          <div
+            class="rounded-xl border border-gray-200 bg-white px-2 py-3 text-center"
+          >
+            <span
+              class="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-xs font-extrabold text-gray-600"
+              >2</span
+            >
+            <span class="block text-[11px] font-bold text-gray-600"
+              >Set options</span
+            >
+          </div>
+          <div
+            class="rounded-xl border border-gray-200 bg-white px-2 py-3 text-center"
+          >
+            <span
+              class="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-xs font-extrabold text-gray-600"
+              >3</span
+            >
+            <span class="block text-[11px] font-bold text-gray-600"
+              >Place order</span
+            >
+          </div>
+        </div>
+
         <!-- Upload Card -->
         <label
           for="fileInput"
@@ -873,11 +909,11 @@
             <span
               class="block text-base font-extrabold text-[#111827] transition-colors group-hover:text-[#211B8F]"
             >
-              Upload your documents
+              Choose documents to print
             </span>
 
             <span class="mt-1 block text-sm text-gray-500">
-              Click here or drag & drop your files
+              Tap to browse your phone or computer
             </span>
 
             <span
@@ -885,7 +921,7 @@
             >
               PDF · JPG · PNG
               <span class="mx-1.5 text-gray-300">•</span>
-              Max 10MB each
+              Up to 10 MB per file
             </span>
           </div>
 
@@ -972,6 +1008,12 @@
           class="flex-1 min-h-0 overflow-y-auto"
           style="-webkit-overflow-scrolling: touch"
         >
+          <div
+            id="shopOptionsNotice"
+            class="hidden mb-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs font-semibold leading-5 text-amber-900"
+            role="status"
+            aria-live="polite"
+          ></div>
           <!-- Shop -->
           <div class="mb-5 px-1">
             <span
@@ -1746,6 +1788,10 @@
 
       let currentShopRow = null;
 
+      // Shop-controlled customer options from public.shops.
+      let shopPrinterType = "BW_COLOR"; // BW | BW_COLOR
+      let shopPaymentMethod = "BOTH"; // UPI | CASH | BOTH
+
       // Subscription / upload-limit state
       let subscriptionState = {
         valid: false,
@@ -2488,7 +2534,7 @@
           const { data: shop, error } = await supabaseClient
             .from("shops")
             .select(
-              "shop_id, shop_name, created_at, shop_status, print_price, color_price, total_prints, cashfree_app_id, cashfree_env, plan_id, plan_expires_at, subscription_status, subscription_start, subscription_end",
+              "shop_id, shop_name, created_at, shop_status, print_price, color_price, total_prints, cashfree_app_id, cashfree_env, plan_id, plan_expires_at, subscription_status, subscription_start, subscription_end, printer_type, payment_method",
             )
             .eq("shop_id", currentShopId)
             .single();
@@ -2519,6 +2565,27 @@
 
             return;
           }
+
+          // ------------------------------------------------------
+          // 2. SHOP PRINTER / PAYMENT OPTIONS
+          // Defaults preserve existing shops until settings are configured.
+          // ------------------------------------------------------
+          shopPrinterType =
+            String(shop.printer_type || "BW_COLOR")
+              .trim()
+              .toUpperCase() === "BW"
+              ? "BW"
+              : "BW_COLOR";
+          const configuredPayment = String(shop.payment_method || "BOTH")
+            .trim()
+            .toUpperCase();
+          shopPaymentMethod = ["UPI", "CASH", "BOTH"].includes(
+            configuredPayment,
+          )
+            ? configuredPayment
+            : "BOTH";
+
+          applyShopOptionRestrictions();
 
           // ------------------------------------------------------
           // 2. CASHFREE / UPI AVAILABILITY
@@ -2654,7 +2721,8 @@
         const buffer = await file.arrayBuffer();
 
         const pdfDoc = await PDFLib.PDFDocument.load(buffer, {
-          ignoreEncryption: false,
+          ignoreEncryption: true,
+          updateMetadata: false,
         });
 
         const pageCount = pdfDoc.getPageCount();
@@ -3059,8 +3127,82 @@
       }
 
       // ============================================================
-      // PAYMENT BUTTONS
+      // ENFORCE SHOP PRINTER / PAYMENT CONFIGURATION
       // ============================================================
+
+      function applyShopOptionRestrictions() {
+        const colorRadio = document.querySelector(
+          'input[name="colorType"][value="Color"]',
+        );
+        const bwRadio = document.querySelector(
+          'input[name="colorType"][value="BW"]',
+        );
+        const colorLabel = colorRadio?.closest("label");
+        const cashBtn = document.getElementById("cashPayBtn");
+        const upiBtn = document.getElementById("upiPayBtn");
+        const notices = [];
+
+        if (shopPrinterType === "BW") {
+          if (colorRadio) {
+            colorRadio.disabled = true;
+            colorRadio.checked = false;
+          }
+          if (bwRadio) bwRadio.checked = true;
+          if (colorLabel) {
+            colorLabel.classList.add("opacity-40", "cursor-not-allowed");
+            colorLabel.title =
+              "This shop supports Black & White printing only.";
+          }
+          notices.push(
+            "This shop supports B&W printing only. Colour printing is unavailable.",
+          );
+        } else if (colorRadio) {
+          colorRadio.disabled = false;
+          if (colorLabel) {
+            colorLabel.classList.remove("opacity-40", "cursor-not-allowed");
+            colorLabel.title = "";
+          }
+        }
+
+        const cashAllowed =
+          shopPaymentMethod === "CASH" || shopPaymentMethod === "BOTH";
+        const upiAllowed =
+          shopPaymentMethod === "UPI" || shopPaymentMethod === "BOTH";
+        if (cashBtn) {
+          cashBtn.dataset.shopAllowed = cashAllowed ? "true" : "false";
+          cashBtn.setAttribute("aria-disabled", cashAllowed ? "false" : "true");
+          cashBtn.classList.toggle("opacity-40", !cashAllowed);
+          cashBtn.classList.toggle("cursor-not-allowed", !cashAllowed);
+          cashBtn.title = cashAllowed
+            ? "Pay cash at the shop counter"
+            : "Cash payment is disabled by this shop";
+        }
+        if (upiBtn) {
+          upiBtn.dataset.shopAllowed = upiAllowed ? "true" : "false";
+          upiBtn.setAttribute("aria-disabled", upiAllowed ? "false" : "true");
+          upiBtn.classList.toggle("opacity-40", !upiAllowed);
+          upiBtn.classList.toggle("cursor-not-allowed", !upiAllowed);
+          upiBtn.title = upiAllowed
+            ? "Pay using UPI"
+            : "UPI payment is disabled by this shop";
+        }
+        if (!cashAllowed)
+          notices.push("Cash payment is not available at this shop.");
+        if (!upiAllowed)
+          notices.push("UPI payment is not available at this shop.");
+
+        const notice = document.getElementById("shopOptionsNotice");
+        if (notice) {
+          if (notices.length) {
+            notice.textContent = notices.join(" ");
+            notice.classList.remove("hidden");
+          } else {
+            notice.textContent = "";
+            notice.classList.add("hidden");
+          }
+        }
+        updateTotal();
+      }
 
       function setPayButtonsDisabled(disabled) {
         const cashBtn = document.getElementById("cashPayBtn");
@@ -3071,7 +3213,6 @@
         }
 
         if (upiBtn) {
-          // Keep UPI disabled if this shop is not configured for Cashfree.
           const upiUnavailable = upiBtn.dataset.unavailable === "true";
           upiBtn.disabled = disabled || upiUnavailable;
         }
@@ -3107,17 +3248,69 @@
 
           const path = `shop/${currentShopId}/job/${jobId}/${safeName}`;
 
-          const { error } = await supabaseClient.storage
-            .from(STORAGE_BUCKET)
-            .upload(path, item.file, {
-              contentType: item.file.type || "application/octet-stream",
+          const extension = item.file.name.split(".").pop().toLowerCase();
+          const inferredMime =
+            extension === "pdf"
+              ? "application/pdf"
+              : extension === "jpg" || extension === "jpeg"
+                ? "image/jpeg"
+                : extension === "png"
+                  ? "image/png"
+                  : "application/octet-stream";
+          const contentType =
+            item.file.type && item.file.type !== "application/octet-stream"
+              ? item.file.type
+              : inferredMime;
 
-              upsert: false,
-            });
+          // Adobe Scan and some mobile file pickers can report an empty or
+          // generic MIME type for valid PDFs. Use the filename-derived MIME
+          // type and retry once for transient network/fetch failures.
+          let uploadResult;
+          try {
+            uploadResult = await supabaseClient.storage
+              .from(STORAGE_BUCKET)
+              .upload(path, item.file, {
+                contentType,
+                cacheControl: "3600",
+                upsert: false,
+              });
 
-          if (error) {
+            if (
+              uploadResult.error &&
+              /fetch|network|timeout|temporar/i.test(
+                uploadResult.error.message || "",
+              )
+            ) {
+              await new Promise((resolve) => setTimeout(resolve, 700));
+              uploadResult = await supabaseClient.storage
+                .from(STORAGE_BUCKET)
+                .upload(path, item.file, {
+                  contentType,
+                  cacheControl: "3600",
+                  upsert: false,
+                });
+            }
+          } catch (uploadException) {
+            const networkMessage = String(
+              uploadException?.message || "Network request failed",
+            );
             throw new Error(
-              `"${item.file.name}" upload nahi ho payi: ${error.message}`,
+              `"${item.file.name}" upload failed: ${networkMessage}. Check your internet connection. If this repeats, verify the print-files bucket's Supabase Storage policies and CORS settings.`,
+            );
+          }
+
+          if (uploadResult.error) {
+            const rawMessage =
+              uploadResult.error.message || "Unknown storage error";
+            const hint = /fetch|network|cors/i.test(rawMessage)
+              ? " Check your connection. If it keeps happening, verify the Supabase Storage bucket policy and CORS settings for the print-files bucket."
+              : /row.level security|policy|permission|unauthorized|forbidden/i.test(
+                    rawMessage,
+                  )
+                ? " Supabase Storage upload permission is missing for this shop path."
+                : "";
+            throw new Error(
+              `"${item.file.name}" upload failed: ${rawMessage}.${hint}`,
             );
           }
 
@@ -3187,6 +3380,35 @@
           }
 
           const colorType = colorInput.value;
+
+          if (colorType === "Color" && shopPrinterType === "BW") {
+            showStep2Error(
+              "Colour printing is disabled because this shop has a B&W-only printer. Please choose Black & White.",
+            );
+            const bw = document.querySelector(
+              'input[name="colorType"][value="BW"]',
+            );
+            if (bw) bw.checked = true;
+            updateTotal();
+            hideQ2PLoader();
+            setPayButtonsDisabled(false);
+            return;
+          }
+
+          if (
+            (mode === "CASH" &&
+              !["CASH", "BOTH"].includes(shopPaymentMethod)) ||
+            (mode === "UPI" && !["UPI", "BOTH"].includes(shopPaymentMethod))
+          ) {
+            const message =
+              mode === "CASH"
+                ? "Cash payment is disabled for this shop. Please choose UPI."
+                : "UPI payment is disabled for this shop. Please choose cash at the counter.";
+            showStep2Error(message);
+            hideQ2PLoader();
+            setPayButtonsDisabled(false);
+            return;
+          }
 
           const paperSize = document.getElementById("paperSizeSelect").value;
 
@@ -3392,6 +3614,19 @@
           cancelProcessingAnimation();
           hideQ2PLoader();
 
+          // If upload/payment setup fails after the processing screen opens,
+          // return to the configuration screen so the customer can read the
+          // error and retry without losing the selected files.
+          document.getElementById("step3").classList.add("hidden");
+          document.getElementById("step3").classList.remove("flex");
+          document.getElementById("step4").classList.add("hidden");
+          document.getElementById("step4").classList.remove("flex");
+          document.getElementById("speedLines").style.display = "none";
+          document.getElementById("printedOverlay").classList.add("hidden");
+          document.getElementById("step1").classList.add("hidden");
+          document.getElementById("step2").classList.remove("hidden");
+          document.getElementById("step2").classList.add("flex");
+
           setPayButtonsDisabled(false);
 
           showStep2Error(mapOrderError(err));
@@ -3433,12 +3668,12 @@
           return "This shop is no longer active.";
         }
 
-        if (/upload nahi ho payi/i.test(msg)) {
+        if (/upload failed|upload nahi ho payi/i.test(msg)) {
           return msg;
         }
 
         if (/network|fetch|failed to fetch/i.test(msg)) {
-          return "Please check your internet connection and try again.";
+          return "Upload connection failed. Please check your internet connection and retry. If this continues, the shop's Supabase Storage policy or CORS configuration may need fixing.";
         }
 
         return msg || "Unable to place the order. Please try again.";
@@ -3689,8 +3924,16 @@
           .querySelectorAll('input[name="colorType"]')
           .forEach((radio) => {
             radio.addEventListener("change", () => {
+              if (radio.value === "Color" && shopPrinterType === "BW") {
+                const bw = document.querySelector(
+                  'input[name="colorType"][value="BW"]',
+                );
+                if (bw) bw.checked = true;
+                showStep2Error(
+                  "Colour printing is disabled because this shop has a B&W-only printer.",
+                );
+              }
               updatePayableTheme();
-
               updateTotal();
             });
           });
