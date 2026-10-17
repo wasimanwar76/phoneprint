@@ -841,3 +841,80 @@ async function submitLogin(event) {
     }
   });
 })();
+
+// =====================================================
+// QUICK2PRINT GLOBAL BUTTON LOADERS
+// Adds a compact animated spinner on button interaction
+// without changing existing button labels or workflows.
+// =====================================================
+(() => {
+  if (document.getElementById("q2pGlobalButtonLoaderStyles")) return;
+
+  const style = document.createElement("style");
+  style.id = "q2pGlobalButtonLoaderStyles";
+  style.textContent = `
+    @keyframes q2pButtonSpin {
+      to { transform: rotate(360deg); }
+    }
+    .q2p-button-spinner {
+      display: inline-block;
+      width: 0.95em;
+      height: 0.95em;
+      box-sizing: border-box;
+      border: 2px solid currentColor;
+      border-right-color: transparent !important;
+      border-radius: 50%;
+      vertical-align: -0.12em;
+      animation: q2pButtonSpin 0.65s linear infinite;
+      flex: 0 0 auto;
+      pointer-events: none;
+    }
+    .q2p-button-spinner-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55em;
+      pointer-events: none;
+    }
+    button.q2p-loader-active {
+      cursor: progress;
+    }
+    button.q2p-loader-active .q2p-button-spinner {
+      filter: drop-shadow(0 0 2px currentColor);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .q2p-button-spinner { animation-duration: 1.8s; }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Keep the loader brief for regular UI actions. Existing async flows
+  // retain their own status text and continue to work as before.
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("button");
+    if (!button || button.disabled || button.dataset.q2pNoLoader === "true")
+      return;
+    if (button.dataset.q2pLoaderActive === "true") return;
+
+    // If the button already has an in-progress request, don't stack spinners.
+    button.dataset.q2pLoaderActive = "true";
+    button.classList.add("q2p-loader-active");
+    button.setAttribute("aria-busy", "true");
+
+    const spinner = document.createElement("span");
+    spinner.className = "q2p-button-spinner";
+    spinner.setAttribute("aria-hidden", "true");
+    spinner.style.marginInlineEnd = "0.55em";
+    spinner.dataset.q2pGeneratedSpinner = "true";
+
+    // Place spinner inline so the existing label and styling remain intact.
+    button.insertBefore(spinner, button.firstChild);
+
+    window.setTimeout(() => {
+      spinner.remove();
+      button.classList.remove("q2p-loader-active");
+      button.removeAttribute("aria-busy");
+      delete button.dataset.q2pLoaderActive;
+    }, 900);
+  });
+})();
