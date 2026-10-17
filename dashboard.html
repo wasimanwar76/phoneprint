@@ -901,7 +901,12 @@
         color: #c02669;
       }
     </style>
-  </head>
+  
+<style id="q2p-dashboard-polish">
+:root{--q2p-deep:#17135f;--q2p-indigo:#211b8f;--q2p-cyan:#00b8d9}#renew-plan-modal{position:fixed!important;inset:0!important;z-index:99999!important;overflow:hidden!important;overscroll-behavior:contain}#renew-plan-modal:not(.hidden){display:block!important}#renew-plan-modal>.relative{position:absolute!important;inset:0!important;min-height:0!important;height:100dvh!important;overflow-y:auto!important;overscroll-behavior:contain;padding:clamp(12px,3vw,28px)!important;align-items:center!important;scrollbar-width:thin}#renew-plan-modal>.relative>div{max-height:calc(100dvh - 32px);overflow:hidden}#renew-plan-modal #renew-plan-grid{overflow-y:auto;max-height:min(58dvh,600px);padding:3px;overscroll-behavior:contain}body.q2p-modal-open{overflow:hidden!important;position:relative;width:100%;touch-action:pan-x}#renew-plan-modal button,#subscription-renew-button{transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease}#renew-plan-modal button:not(:disabled):hover,#subscription-renew-button:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(23,19,95,.14)}.q2p-action-spinner{display:inline-block;width:15px;height:15px;margin-right:8px;vertical-align:-3px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:q2pDashboardSpin .65s linear infinite}@keyframes q2pDashboardSpin{to{transform:rotate(360deg)}}.q2p-action-loading{pointer-events:none!important;opacity:.78!important}#renew-plan-modal [role=alert]{overflow-wrap:anywhere}@media(max-width:640px){#renew-plan-modal>.relative>div{max-height:calc(100dvh - 20px);border-radius:20px}#renew-plan-modal #renew-plan-grid{max-height:55dvh}}
+</style>
+
+</head>
   <body>
     <!-- Decorative background (dot grid + soft colour glows). Not interactive. -->
     <div class="q-bg"></div>
@@ -7224,7 +7229,7 @@
           modal.setAttribute("aria-hidden", "true");
         }
 
-        document.body.classList.remove("overflow-hidden");
+        document.body.classList.remove("overflow-hidden", "q2p-modal-open");
 
         const trigger = document.getElementById("subscription-renew-button");
 
@@ -7446,7 +7451,7 @@
 
         modal.setAttribute("aria-hidden", "false");
 
-        document.body.classList.add("overflow-hidden");
+        document.body.classList.add("overflow-hidden", "q2p-modal-open");
 
         const closeButton = modal.querySelector('button[aria-label="Close"]');
 
@@ -7689,5 +7694,10 @@
         }
       });
     </script>
-  </body>
+  
+<script id="q2p-dashboard-feedback">
+(()=>{document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled||b.dataset.q2pLoaderIgnore==='true')return;if(b.closest('#renew-plan-modal')&&b.getAttribute('onclick')==='closeRenewPlanModal()')return;if(b.dataset.q2pBusy==='1')return;const textNode=[...b.childNodes].find(n=>n.nodeType===Node.TEXT_NODE&&n.textContent.trim());const label=b.querySelector('[data-button-label]');if(!label&&!textNode)return;b.dataset.q2pBusy='1';b.classList.add('q2p-action-loading');b.setAttribute('aria-busy','true');const sp=document.createElement('span');sp.className='q2p-action-spinner';sp.setAttribute('aria-hidden','true');if(label)label.prepend(sp);else b.prepend(sp);setTimeout(()=>{sp.remove();b.dataset.q2pBusy='0';b.classList.remove('q2p-action-loading');b.removeAttribute('aria-busy')},1800)});document.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getElementById('renew-plan-modal');if(m&&!m.classList.contains('hidden')&&typeof window.closeRenewPlanModal==='function')window.closeRenewPlanModal()}});})();
+</script>
+
+</body>
 </html>
