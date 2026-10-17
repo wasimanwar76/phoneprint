@@ -157,7 +157,12 @@
         animation: spin 0.8s linear infinite;
       }
     </style>
-  </head>
+  
+<style id="q2p-payment-redesign">
+:root{--q2p-ink:#17135f;--q2p-indigo:#211b8f;--q2p-cyan:#00b8d9;--q2p-muted:#64748b;--q2p-line:#e5eaf3}html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 5% 0%,rgba(0,184,217,.13),transparent 34%),radial-gradient(ellipse at 100% 10%,rgba(33,27,143,.10),transparent 32%),#f5f7fc!important;color:#111827}header{position:sticky;top:0;z-index:20}main{padding-top:clamp(1.25rem,4vw,3.5rem)!important;padding-bottom:4rem!important}main .bg-white,main .glass{border:1px solid rgba(226,232,240,.9);box-shadow:0 22px 65px rgba(23,19,95,.09)}button{transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease}button:not(:disabled):hover{transform:translateY(-1px)}button:disabled{cursor:wait;opacity:.72}.q2p-inline-loader{display:inline-flex;align-items:center;gap:.65rem}.q2p-inline-loader:before{content:"";width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:q2pPaySpin .65s linear infinite}@keyframes q2pPaySpin{to{transform:rotate(360deg)}}.q2p-overlay{padding:20px}.q2p-loader-card{border:1px solid #e8ebf5;box-shadow:0 30px 100px rgba(12,18,50,.25)}.q2p-loader-ring{box-shadow:0 0 0 9px rgba(33,27,143,.05)}#errorState{border:1px solid #fecaca;border-radius:24px;background:#fff;padding:clamp(1.25rem,4vw,2.5rem);box-shadow:0 20px 55px rgba(127,29,29,.07)}#paymentState{animation:q2pPayRise .35s ease both}@keyframes q2pPayRise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}@media(max-width:640px){main{padding-left:1rem!important;padding-right:1rem!important}.q2p-loader-card{padding:24px}}
+</style>
+
+</head>
 
   <body class="min-h-screen text-slate-900">
     <!-- Overlay Loader -->
@@ -907,5 +912,10 @@
         }
       })();
     </script>
-  </body>
+  
+<script id="q2p-payment-button-feedback">
+(()=>{const css=document.createElement('style');css.textContent='button.q2p-busy{pointer-events:none!important;opacity:.82}button .q2p-button-ring{display:inline-block;width:15px;height:15px;margin-right:8px;vertical-align:-3px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:q2pPaySpin .65s linear infinite}';document.head.appendChild(css);document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled||b.dataset.q2pLoaderIgnore==='true')return;const label=b.querySelector('#buttonText')||b.querySelector('[data-button-label]');if(!label)return; if(b.dataset.q2pLoading==='true')return;b.dataset.q2pLoading='true';b.classList.add('q2p-busy');b.setAttribute('aria-busy','true');if(!label.querySelector('.q2p-button-ring')){const ring=document.createElement('span');ring.className='q2p-button-ring';ring.setAttribute('aria-hidden','true');label.prepend(ring)}const reset=()=>{b.dataset.q2pLoading='false';b.classList.remove('q2p-busy');b.removeAttribute('aria-busy');label.querySelector('.q2p-button-ring')?.remove()};setTimeout(()=>{if(document.visibilityState==='visible')reset()},2500);});})();
+</script>
+
+</body>
 </html>
