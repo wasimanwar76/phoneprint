@@ -664,10 +664,903 @@
           animation-duration: 2.5s !important;
         }
       }
+
+      /* ==========================================================
+         Quick2Print refreshed blue-violet customer experience
+         Visual-only overrides: all existing IDs and JS handlers stay intact.
+         ========================================================== */
+      :root {
+        --q2p-primary: #263fe8;
+        --q2p-deep: #211b8f;
+        --q2p-ink: #101b58;
+        --q2p-muted: #607ba8;
+        --q2p-line: #e1e8fa;
+        --q2p-soft: #f2f6ff;
+        --q2p-yellow: #ffbd19;
+      }
+      html {
+        background: #f8faff;
+      }
+      body {
+        width: 100%;
+        max-width: none;
+        min-height: 100dvh;
+        background: linear-gradient(180deg, #fff 0%, #f8faff 78%, #eef4ff 100%);
+        color: var(--q2p-ink);
+        font-family: Inter, sans-serif;
+      }
+      .glass-panel {
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid #edf1fc;
+        box-shadow: 0 4px 18px rgba(38, 63, 232, 0.04);
+      }
+      header {
+        width: 100%;
+        padding: 14px clamp(16px, 4vw, 38px) 12px !important;
+        gap: 12px;
+      }
+      header img {
+        max-width: min(48vw, 340px) !important;
+        height: auto !important;
+        max-height: 72px;
+      }
+      #shopIdDisplay {
+        background: linear-gradient(110deg, #2728d9, #3420b8) !important;
+        border-radius: 999px !important;
+        padding: 12px 18px !important;
+        letter-spacing: 0 !important;
+        box-shadow: 0 5px 14px #2728d91c;
+        font-size: 12px !important;
+      }
+      #mainContainer {
+        width: 100%;
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 12px clamp(16px, 4vw, 40px) 28px !important;
+        overflow-x: hidden;
+      }
+      #step1,
+      #step2,
+      #step3,
+      #step4 {
+        width: 100%;
+        max-width: 860px !important;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      #step1 {
+        padding-top: 8px;
+      }
+      #step1 h2,
+      #step2 h2,
+      #step4 h2 {
+        color: var(--q2p-ink) !important;
+        letter-spacing: -0.035em;
+      }
+      #step1 .mb-5 {
+        margin-bottom: 18px;
+      }
+      #step1 .rounded-xl,
+      #step1 .rounded-2xl,
+      #step2 .rounded-xl,
+      #step2 .rounded-2xl {
+        border-radius: 18px !important;
+      }
+      #step1 .manga-shadow,
+      #step2 .manga-shadow,
+      #step3 .manga-shadow,
+      #step4 .manga-shadow,
+      .manga-shadow {
+        box-shadow: 0 5px 18px rgba(28, 54, 145, 0.07) !important;
+        border: 1px solid var(--q2p-line);
+      }
+      .manga-shadow-stamp {
+        box-shadow: 0 5px 16px rgba(99, 23, 17, 0.12) !important;
+      }
+      .manga-shadow-active:active {
+        box-shadow: 0 2px 8px rgba(28, 54, 145, 0.08) !important;
+        transform: translateY(1px);
+      }
+      #step1 .bg-\[\#211B8F\],
+      #step2 .bg-\[\#211B8F\] {
+        background: linear-gradient(120deg, #283fe9, #3022bf) !important;
+      }
+      #step1 .bg-\[\#FFB800\],
+      #step2 .bg-\[\#FFB800\] {
+        background: var(--q2p-yellow) !important;
+      }
+      #step1 label[for="fileInput"] {
+        min-height: 150px;
+        border: 2px dashed #b9c9fa !important;
+        background: linear-gradient(145deg, #fff, #f7f9ff) !important;
+        box-shadow: 0 8px 24px rgba(37, 65, 180, 0.05);
+      }
+      #step1 label[for="fileInput"]:hover {
+        border-color: var(--q2p-primary) !important;
+      }
+      #step1 label[for="fileInput"] > div:first-child {
+        background: #eef2ff !important;
+      }
+      #step1 .grid[aria-label="How it works"] {
+        display: none !important;
+      }
+      #step2 {
+        height: auto !important;
+        min-height: calc(100dvh - 130px);
+        overflow: visible !important;
+        padding-top: 12px;
+      }
+      #step2ScrollArea {
+        overflow: visible !important;
+      }
+      #fileCardsContainer {
+        max-height: none !important;
+      }
+      #payableCard {
+        background: linear-gradient(115deg, #282fdb, #211b8f) !important;
+        border: 0 !important;
+        box-shadow: 0 10px 22px rgba(38, 63, 232, 0.17) !important;
+      }
+      .sticky-payment-footer {
+        background: linear-gradient(
+          to bottom,
+          rgba(248, 250, 255, 0),
+          #f8faff 14px,
+          #f8faff 100%
+        ) !important;
+      }
+      #cashPayBtn,
+      #upiPayBtn {
+        border-radius: 14px !important;
+        min-height: 52px;
+      }
+      #cashPayBtn {
+        border-color: #dce5fb !important;
+        background: white !important;
+      }
+      #upiPayBtn {
+        background: linear-gradient(120deg, #ffca37, #ffb800) !important;
+        box-shadow: 0 7px 16px #ffb80026 !important;
+      }
+      #pdfEditorModal > div {
+        border: 1px solid var(--q2p-line);
+        box-shadow: 0 24px 70px rgba(10, 20, 70, 0.24) !important;
+      }
+      #idBuilder {
+        background: #f5f7ff !important;
+      }
+      #idBuilder .sticky {
+        border-color: #e3e9fa !important;
+        box-shadow: 0 4px 14px rgba(25, 45, 120, 0.06) !important;
+      }
+      #idBuilder .idb-doc {
+        border-radius: 15px !important;
+        border-color: #e0e7f8 !important;
+      }
+      #idBuilder .idb-doc[aria-pressed="true"] {
+        border-color: var(--q2p-primary) !important;
+        background: #eef2ff !important;
+      }
+      #idBuilder button,
+      #pdfEditorModal button {
+        transition:
+          transform 0.16s ease,
+          box-shadow 0.16s ease,
+          background 0.16s ease;
+      }
+      #idBuilder button:active,
+      #pdfEditorModal button:active {
+        transform: scale(0.985);
+      }
+      #step3 h2 {
+        border-radius: 16px;
+        border: 1px solid var(--q2p-line);
+        box-shadow: 0 6px 18px rgba(28, 54, 145, 0.08) !important;
+      }
+      #step4 > div {
+        border-radius: 22px;
+        border: 1px solid var(--q2p-line);
+        box-shadow: 0 10px 28px rgba(28, 54, 145, 0.08) !important;
+      }
+      #step4 button {
+        color: var(--q2p-primary);
+      }
+      .q2p-type-grid {
+        display: grid;
+        gap: 12px;
+        margin: 18px 0 14px;
+      }
+      .q2p-type-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+        padding: 14px 16px;
+        text-align: left;
+        background: #fff;
+        border: 1.5px solid #e0e7f8;
+        border-radius: 18px;
+        box-shadow: 0 4px 14px rgba(30, 55, 140, 0.035);
+        transition:
+          border-color 0.18s,
+          transform 0.18s,
+          box-shadow 0.18s;
+      }
+      .q2p-type-card:hover {
+        border-color: #8ca5ff;
+        box-shadow: 0 8px 22px rgba(38, 63, 232, 0.09);
+        transform: translateY(-1px);
+      }
+      .q2p-type-icon {
+        width: 76px;
+        height: 76px;
+        flex: 0 0 76px;
+        display: grid;
+        place-items: center;
+        border-radius: 15px;
+        color: #fff;
+        font:
+          800 20px Outfit,
+          sans-serif;
+        box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.08);
+      }
+      .q2p-type-icon.pdf {
+        background: linear-gradient(145deg, #ff4a3d, #d91f2b);
+      }
+      .q2p-type-icon.jpg {
+        background: linear-gradient(145deg, #a04cff, #6224db);
+      }
+      .q2p-type-icon.png {
+        background: linear-gradient(145deg, #39c995, #07865c);
+      }
+      .q2p-type-icon.id {
+        background: linear-gradient(145deg, #8bb6ff, #4169cf);
+      }
+      .q2p-type-copy {
+        min-width: 0;
+        flex: 1;
+      }
+      .q2p-type-copy strong {
+        display: block;
+        color: #111d60;
+        font:
+          800 21px Outfit,
+          sans-serif;
+      }
+      .q2p-type-copy small {
+        display: block;
+        color: #6480ac;
+        font-size: 13px;
+        line-height: 1.5;
+        margin-top: 3px;
+      }
+      .q2p-type-arrow {
+        display: grid;
+        place-items: center;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        color: #263fe8;
+        background: #f0f3ff;
+        font-size: 28px;
+        line-height: 1;
+      }
+      .q2p-type-card.id-featured {
+        border: 2px solid #6f9bff;
+        background: linear-gradient(120deg, #fff, #f0f5ff);
+      }
+      .q2p-type-card.id-featured .q2p-type-icon {
+        width: 76px;
+      }
+      .q2p-type-card.id-featured .q2p-popular {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border-radius: 99px;
+        padding: 4px 10px;
+        color: white;
+        background: #263fe8;
+        font-size: 10px;
+        font-weight: 800;
+      }
+      .q2p-id-examples {
+        display: flex;
+        gap: 7px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .q2p-id-examples span {
+        padding: 5px 8px;
+        border-radius: 8px;
+        background: #e7edff;
+        color: #263578;
+        font-size: 10px;
+        font-weight: 700;
+      }
+      .q2p-tip {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 14px 0;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: #edf3ff;
+        color: #253c9b;
+      }
+      .q2p-tip .tip-icon {
+        font-size: 27px;
+      }
+      .q2p-tip p {
+        margin: 0;
+      }
+      @media (min-width: 768px) {
+        #step1 {
+          padding-top: 18px;
+        }
+        .q2p-type-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .q2p-type-card {
+          min-height: 118px;
+        }
+        .q2p-type-card.id-featured {
+          grid-column: 1 / -1;
+        }
+      }
+      @media (max-width: 520px) {
+        header img {
+          max-width: 46vw !important;
+          max-height: 58px;
+        }
+        #shopIdDisplay {
+          padding: 9px 11px !important;
+          font-size: 10px !important;
+          gap: 5px !important;
+        }
+        #shopIdValue {
+          font-size: 10px !important;
+        }
+        #mainContainer {
+          padding-left: 15px !important;
+          padding-right: 15px !important;
+        }
+        .q2p-type-card {
+          gap: 12px;
+          padding: 12px;
+        }
+        .q2p-type-icon {
+          width: 60px;
+          height: 60px;
+          flex-basis: 60px;
+          font-size: 17px;
+        }
+        .q2p-type-copy strong {
+          font-size: 18px;
+        }
+        .q2p-type-copy small {
+          font-size: 12px;
+        }
+        .q2p-type-arrow {
+          flex-basis: 34px;
+          width: 34px;
+          height: 34px;
+        }
+        .q2p-id-examples span {
+          font-size: 9px;
+        }
+      }
+      .q2p-type-grid {
+        gap: 13px;
+      }
+      .q2p-type-card {
+        min-height: 126px;
+        padding: 15px 17px;
+        border-radius: 20px;
+        border-color: #e3e9fb;
+      }
+      .q2p-type-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 16px;
+        box-shadow:
+          inset 0 -4px 0 rgba(0, 0, 0, 0.06),
+          0 4px 10px rgba(23, 42, 110, 0.08);
+      }
+      .q2p-type-icon svg {
+        display: block;
+        width: 86%;
+        height: 86%;
+      }
+      .q2p-type-icon.pdf {
+        background: linear-gradient(145deg, #ff5248, #e11e2c);
+      }
+      .q2p-type-icon.jpg {
+        background: linear-gradient(145deg, #a35aff, #6427d8);
+      }
+      .q2p-type-icon.png {
+        background: linear-gradient(145deg, #42d5a0, #0a9368);
+      }
+      .q2p-type-icon.id {
+        background: linear-gradient(145deg, #e9efff, #d4e1ff);
+      }
+      .q2p-type-card.id-featured {
+        align-items: flex-start;
+        padding: 17px;
+        background: linear-gradient(125deg, #fff 0%, #f3f7ff 100%);
+        border: 2px solid #78a2ff;
+        box-shadow: 0 8px 24px rgba(48, 88, 200, 0.08);
+      }
+      .q2p-type-card.id-featured .q2p-type-icon {
+        margin-top: 7px;
+      }
+      .q2p-type-copy {
+        align-self: center;
+      }
+      .q2p-type-card.id-featured .q2p-type-copy {
+        align-self: stretch;
+      }
+      .q2p-id-examples {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(54px, 0.8fr);
+        gap: 7px;
+        width: 100%;
+      }
+      .q2p-doc-sample {
+        min-width: 0;
+        min-height: 67px;
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        padding: 5px 5px 4px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #e2e8f7;
+        box-shadow: 0 2px 5px rgba(32, 57, 130, 0.04);
+      }
+      .q2p-doc-sample b {
+        display: block;
+        font-size: 7px;
+        line-height: 1.2;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .q2p-doc-sample i {
+        display: block;
+        position: absolute;
+        left: 6px;
+        top: 23px;
+        width: 15px;
+        height: 19px;
+        border-radius: 3px;
+        background: linear-gradient(145deg, #dbeafe, #8da9df);
+      }
+      .q2p-doc-sample em {
+        display: block;
+        position: absolute;
+        left: 25px;
+        right: 5px;
+        top: 24px;
+        height: 3px;
+        border-radius: 4px;
+        background: #8da5d7;
+        box-shadow:
+          0 6px 0 #c3cfe8,
+          0 12px 0 #c3cfe8;
+      }
+      .q2p-doc-sample small {
+        display: block;
+        margin-top: auto;
+        text-align: center;
+        font-size: 9px;
+        font-weight: 800;
+        line-height: 1.15;
+        white-space: nowrap;
+        color: #263a78;
+      }
+      .q2p-doc-sample.aadhaar {
+        background: linear-gradient(145deg, #fff, #fff5ee);
+        border-top: 3px solid #e77c3e;
+      }
+      .q2p-doc-sample.aadhaar b {
+        color: #2c6c4e;
+      }
+      .q2p-doc-sample.pan {
+        background: linear-gradient(145deg, #fff, #edf5ff);
+        border-top: 3px solid #6e8fda;
+      }
+      .q2p-doc-sample.pan b {
+        color: #385da9;
+        font-size: 6px;
+      }
+      .q2p-doc-sample.voter {
+        background: linear-gradient(145deg, #fff, #f1f5ff);
+        border-top: 3px solid #4c72bd;
+      }
+      .q2p-doc-sample.voter b {
+        color: #304d90;
+      }
+      .q2p-doc-sample.license {
+        background: linear-gradient(145deg, #fff, #eaf5ff);
+        border-top: 3px solid #548bc1;
+      }
+      .q2p-doc-sample.license b {
+        color: #285d8e;
+      }
+      .q2p-doc-sample.more {
+        align-items: center;
+        justify-content: center;
+        background: #e8eeff;
+        border-color: #dbe4ff;
+      }
+      .q2p-doc-sample.more b {
+        font-size: 22px;
+        line-height: 1;
+        color: #2944d8;
+      }
+      .q2p-doc-sample.more small {
+        margin-top: 5px;
+      }
+      .q2p-popular {
+        background: linear-gradient(100deg, #3448f0, #2623c4) !important;
+        letter-spacing: 0.02em;
+      }
+      .q2p-tip {
+        border: 1px solid #e5ebff;
+        background: linear-gradient(100deg, #edf3ff, #e8efff);
+      }
+      #step1 label[for="fileInput"],
+      #step1 > button[onclick="openIdBuilder()"] {
+        display: none !important;
+      }
+      @media (min-width: 768px) {
+        .q2p-type-grid {
+          grid-template-columns: 1fr;
+        }
+        .q2p-type-card.id-featured {
+          grid-column: auto;
+        }
+      }
+      @media (max-width: 520px) {
+        .q2p-type-card {
+          min-height: 94px;
+          gap: 12px;
+          padding: 12px;
+        }
+        .q2p-type-card.id-featured {
+          padding: 12px;
+        }
+        .q2p-type-icon {
+          width: 60px;
+          height: 60px;
+          flex-basis: 60px;
+        }
+        .q2p-type-card.id-featured .q2p-type-icon {
+          width: 60px;
+        }
+        .q2p-type-copy strong {
+          font-size: 18px;
+        }
+        .q2p-type-copy small {
+          font-size: 12px;
+        }
+        .q2p-type-arrow {
+          flex-basis: 32px;
+          width: 32px;
+          height: 32px;
+        }
+        .q2p-id-examples {
+          grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(42px, 0.75fr);
+          gap: 4px;
+        }
+        .q2p-doc-sample {
+          min-height: 59px;
+          padding: 4px 3px;
+          border-radius: 7px;
+        }
+        .q2p-doc-sample b {
+          font-size: 6px;
+        }
+        .q2p-doc-sample i {
+          left: 4px;
+          top: 21px;
+          width: 12px;
+          height: 15px;
+        }
+        .q2p-doc-sample em {
+          left: 19px;
+          right: 3px;
+          top: 22px;
+          height: 2px;
+          box-shadow:
+            0 5px 0 #c3cfe8,
+            0 10px 0 #c3cfe8;
+        }
+        .q2p-doc-sample small {
+          font-size: 7px;
+        }
+      }
+      @media (max-width: 380px) {
+        .q2p-type-card.id-featured {
+          gap: 8px;
+        }
+        .q2p-type-card.id-featured .q2p-type-icon {
+          width: 48px;
+          height: 48px;
+          flex-basis: 48px;
+        }
+        .q2p-type-arrow {
+          display: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .q2p-type-card,
+        #idBuilder button {
+          transition: none !important;
+        }
+      }
+
+      /* Homepage layout aligned with the supplied Quick2Print reference. */
+      body {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        min-height: 100dvh;
+        height: auto !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+      }
+      header {
+        flex: 0 0 auto;
+        min-height: 78px;
+      }
+      #mainContainer {
+        flex: 1 0 auto !important;
+        min-height: 0;
+        height: auto !important;
+        overflow: visible !important;
+        overflow-x: hidden !important;
+        padding-bottom: max(28px, env(safe-area-inset-bottom)) !important;
+      }
+      #step1 {
+        min-height: 0;
+        height: auto !important;
+        overflow: visible !important;
+        padding-bottom: 14px;
+      }
+      #step1 .q2p-progress {
+        display: grid;
+        grid-template-columns:
+          minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr)
+          auto minmax(0, 1fr);
+        align-items: start;
+        gap: clamp(5px, 1.6vw, 16px);
+        margin: 24px 0 30px;
+      }
+      #step1 .q2p-progress-step {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        position: relative;
+        color: #6680a8;
+        text-align: center;
+      }
+      #step1 .q2p-step-number {
+        display: grid;
+        place-items: center;
+        width: 54px;
+        height: 54px;
+        border: 2px solid #e0e7f7;
+        border-radius: 50%;
+        background: #f5f7ff;
+        color: #607ba8;
+        font:
+          800 23px/1 Outfit,
+          sans-serif;
+      }
+      #step1 .q2p-progress-step strong {
+        font:
+          700 clamp(10px, 1.6vw, 14px)/1.2 Inter,
+          sans-serif;
+        white-space: nowrap;
+      }
+      #step1 .q2p-progress-step.active {
+        color: #263fe8;
+      }
+      #step1 .q2p-progress-step.active .q2p-step-number {
+        color: #fff;
+        border-color: #263fe8;
+        background: linear-gradient(140deg, #3158ff, #2524cf);
+        box-shadow: 0 5px 14px #263fe826;
+      }
+      #step1 .q2p-progress-step.active::after {
+        content: "";
+        position: absolute;
+        height: 3px;
+        border-radius: 99px;
+        background: #263fe8;
+        left: 8%;
+        right: 8%;
+        bottom: -11px;
+      }
+      #step1 .q2p-progress-step:first-child i {
+        display: grid;
+        place-items: center;
+        position: absolute;
+        top: 42px;
+        left: calc(50% + 8px);
+        width: 22px;
+        height: 22px;
+        border: 2px solid white;
+        border-radius: 50%;
+        background: #22c983;
+        color: white;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 900;
+        box-shadow: 0 2px 8px #22c98345;
+      }
+      #step1 .q2p-progress-arrow {
+        color: #b8c7e8;
+        font-size: clamp(17px, 3vw, 27px);
+        line-height: 54px;
+        font-weight: 700;
+      }
+      #step1 [aria-label="Choose file type"] > .flex:first-child {
+        margin-bottom: 18px !important;
+      }
+      #step1 [aria-label="Choose file type"] > .flex:first-child h3 {
+        font-size: clamp(25px, 4vw, 34px);
+        line-height: 1.1;
+      }
+      #step1 .q2p-type-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 13px;
+        margin-top: 0;
+      }
+      #step1 .q2p-type-card {
+        min-height: 120px;
+      }
+      #step1 .q2p-type-card.id-featured {
+        grid-column: auto;
+      }
+      #step1 .q2p-tip {
+        margin-top: 18px;
+        margin-bottom: 18px;
+      }
+      /* A visible, unobtrusive scrollbar appears only when content overflows. */
+      html {
+        scrollbar-width: thin;
+        scrollbar-color: #aabbe7 #f1f4fc;
+      }
+      body,
+      #mainContainer,
+      #step2ScrollArea,
+      .file-scroll-container,
+      #idBuilder {
+        scrollbar-width: thin;
+        scrollbar-color: #aabbe7 #f1f4fc;
+      }
+      body::-webkit-scrollbar,
+      #mainContainer::-webkit-scrollbar,
+      #step2ScrollArea::-webkit-scrollbar,
+      #idBuilder::-webkit-scrollbar {
+        display: block;
+        width: 7px;
+      }
+      body::-webkit-scrollbar-track,
+      #mainContainer::-webkit-scrollbar-track,
+      #step2ScrollArea::-webkit-scrollbar-track,
+      #idBuilder::-webkit-scrollbar-track {
+        background: #f1f4fc;
+      }
+      body::-webkit-scrollbar-thumb,
+      #mainContainer::-webkit-scrollbar-thumb,
+      #step2ScrollArea::-webkit-scrollbar-thumb,
+      #idBuilder::-webkit-scrollbar-thumb {
+        background: #aabbe7;
+        border-radius: 99px;
+        border: 2px solid #f1f4fc;
+      }
+      body::-webkit-scrollbar-thumb:hover,
+      #mainContainer::-webkit-scrollbar-thumb:hover,
+      #step2ScrollArea::-webkit-scrollbar-thumb:hover,
+      #idBuilder::-webkit-scrollbar-thumb:hover {
+        background: #758fce;
+      }
+      @media (min-width: 768px) {
+        #mainContainer {
+          max-width: 920px;
+        }
+        #step1 .q2p-type-card {
+          padding: 15px 20px;
+        }
+      }
+      @media (max-width: 520px) {
+        #step1 .q2p-progress {
+          gap: 4px;
+          margin: 20px 0 28px;
+        }
+        #step1 .q2p-step-number {
+          width: 42px;
+          height: 42px;
+          font-size: 19px;
+        }
+        #step1 .q2p-progress-arrow {
+          line-height: 42px;
+          font-size: 18px;
+        }
+        #step1 .q2p-progress-step strong {
+          font-size: 10px;
+          letter-spacing: -0.02em;
+        }
+        #step1 .q2p-progress-step:first-child i {
+          top: 32px;
+          width: 19px;
+          height: 19px;
+          left: calc(50% + 6px);
+        }
+        #step1 .q2p-type-card {
+          min-height: 96px;
+        }
+        #step1 .q2p-type-card.id-featured {
+          min-height: 0;
+        }
+        #step1 .q2p-type-card.id-featured .q2p-type-copy {
+          min-width: 0;
+        }
+        #step1 .q2p-id-examples {
+          grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(42px, 0.75fr);
+        }
+        #step1 .q2p-tip {
+          align-items: flex-start;
+          padding: 12px;
+        }
+        #step1 .q2p-tip > span:last-child {
+          align-self: center;
+          padding: 7px 8px;
+          white-space: nowrap;
+        }
+      }
+      @media (max-width: 360px) {
+        header {
+          padding-left: 10px !important;
+          padding-right: 10px !important;
+        }
+        header img {
+          max-width: 42vw !important;
+        }
+        #shopIdDisplay {
+          padding: 8px !important;
+        }
+        #step1 .q2p-progress-step strong {
+          font-size: 9px;
+        }
+        #step1 .q2p-type-card {
+          gap: 8px;
+          padding: 10px;
+        }
+        #step1 .q2p-type-icon {
+          width: 50px;
+          height: 54px;
+          flex-basis: 50px;
+        }
+        #step1 .q2p-id-examples {
+          grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(42px, 0.75fr);
+        }
+      }
     </style>
   </head>
   <body
-    class="font-body min-h-screen relative overflow-hidden flex flex-col justify-between max-w-md mx-auto"
+    class="font-body min-h-screen relative overflow-hidden flex flex-col justify-between w-full mx-auto"
   >
     <div id="q2pLoader" role="status" aria-live="polite" aria-hidden="true">
       <div class="q2p-loader-card">
@@ -870,7 +1763,257 @@
           </div>
         </div>
 
-        <!-- Upload Card -->
+        <!-- Four-step progress tracker: upload is the active stage on this screen. -->
+        <nav class="q2p-progress" aria-label="Print order progress">
+          <div class="q2p-progress-step active" aria-current="step">
+            <span class="q2p-step-number">1</span><strong>Upload Files</strong>
+          </div>
+          <span class="q2p-progress-arrow" aria-hidden="true">→</span>
+          <div class="q2p-progress-step">
+            <span class="q2p-step-number">2</span><strong>Set Options</strong>
+          </div>
+          <span class="q2p-progress-arrow" aria-hidden="true">→</span>
+          <div class="q2p-progress-step">
+            <span class="q2p-step-number">3</span><strong>Payment</strong>
+          </div>
+          <span class="q2p-progress-arrow" aria-hidden="true">→</span>
+          <div class="q2p-progress-step">
+            <span class="q2p-step-number">4</span><strong>Print</strong>
+          </div>
+        </nav>
+
+        <!-- File type chooser styled to match the Quick2Print reference design.
+             Existing fileInput and openIdBuilder() workflows remain unchanged. -->
+        <section aria-label="Choose file type" class="mb-4">
+          <div class="flex items-center gap-3 mb-3">
+            <div
+              class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF2FF] border border-[#D9E2FF] text-[#263FE8]"
+            >
+              <svg
+                class="h-7 w-7"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M14 3v6h5M9 13h6M9 17h6"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3
+                class="font-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-[#111d60]"
+              >
+                Choose File Type
+              </h3>
+              <p class="text-sm sm:text-base text-[#6480ac]">
+                Select the type of document you want to upload.
+              </p>
+            </div>
+          </div>
+          <div class="q2p-type-grid">
+            <button
+              type="button"
+              class="q2p-type-card"
+              onclick="q2pChooseFileType('pdf')"
+              aria-label="Upload PDF files"
+            >
+              <span class="q2p-type-icon pdf" aria-hidden="true"
+                ><svg viewBox="0 0 64 72">
+                  <path
+                    d="M13 3h25l16 16v46a4 4 0 0 1-4 4H13a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Z"
+                    fill="white"
+                  />
+                  <path d="M38 3v17h16" fill="#ffd8d5" />
+                  <path
+                    d="M16 40c8-3 12-12 15-23 2 11 4 20 12 25 5 3 9 2 8-1-2-5-16-1-25 2-8 3-13 7-10 9 4 3 13-9 17-20"
+                    fill="none"
+                    stroke="#e62e35"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <text
+                    x="32"
+                    y="61"
+                    text-anchor="middle"
+                    font-size="14"
+                    font-weight="900"
+                    fill="#d8212b"
+                  >
+                    PDF
+                  </text>
+                </svg></span
+              >
+              <span class="q2p-type-copy"
+                ><strong>PDF</strong
+                ><small>Documents, forms and multi-page files</small></span
+              ><span class="q2p-type-arrow" aria-hidden="true">›</span>
+            </button>
+            <button
+              type="button"
+              class="q2p-type-card"
+              onclick="q2pChooseFileType('jpg')"
+              aria-label="Upload JPG or JPEG images"
+            >
+              <span class="q2p-type-icon jpg" aria-hidden="true"
+                ><svg viewBox="0 0 64 72">
+                  <path
+                    d="M13 3h25l16 16v46a4 4 0 0 1-4 4H13a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Z"
+                    fill="white"
+                  />
+                  <path d="M38 3v17h16" fill="#eadcff" />
+                  <circle cx="25" cy="31" r="5" fill="#7b35e8" />
+                  <path d="m14 48 12-13 8 8 6-6 11 11Z" fill="#7b35e8" />
+                  <text
+                    x="32"
+                    y="62"
+                    text-anchor="middle"
+                    font-size="12"
+                    font-weight="900"
+                    fill="#6424d6"
+                  >
+                    JPEG
+                  </text>
+                </svg></span
+              >
+              <span class="q2p-type-copy"
+                ><strong>JPG / JPEG</strong
+                ><small>Photos, scanned copies and pictures</small></span
+              ><span class="q2p-type-arrow" aria-hidden="true">›</span>
+            </button>
+            <button
+              type="button"
+              class="q2p-type-card"
+              onclick="q2pChooseFileType('png')"
+              aria-label="Upload PNG images"
+            >
+              <span class="q2p-type-icon png" aria-hidden="true"
+                ><svg viewBox="0 0 64 72">
+                  <path
+                    d="M13 3h25l16 16v46a4 4 0 0 1-4 4H13a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Z"
+                    fill="white"
+                  />
+                  <path d="M38 3v17h16" fill="#d3f7e7" />
+                  <g fill="#159d70">
+                    <rect x="15" y="27" width="8" height="8" />
+                    <rect x="31" y="27" width="8" height="8" />
+                    <rect x="47" y="27" width="5" height="8" />
+                    <rect x="23" y="35" width="8" height="8" />
+                    <rect x="39" y="35" width="8" height="8" />
+                    <rect x="15" y="43" width="8" height="8" />
+                    <rect x="31" y="43" width="8" height="8" />
+                    <rect x="47" y="43" width="5" height="8" />
+                  </g>
+                  <text
+                    x="32"
+                    y="63"
+                    text-anchor="middle"
+                    font-size="13"
+                    font-weight="900"
+                    fill="#087d59"
+                  >
+                    PNG
+                  </text>
+                </svg></span
+              >
+              <span class="q2p-type-copy"
+                ><strong>PNG</strong
+                ><small>Images, graphics and transparent files</small></span
+              ><span class="q2p-type-arrow" aria-hidden="true">›</span>
+            </button>
+            <button
+              type="button"
+              class="q2p-type-card id-featured"
+              onclick="openIdBuilder()"
+              aria-label="Open ID Card Print options"
+            >
+              <span class="q2p-type-icon id" aria-hidden="true"
+                ><svg viewBox="0 0 72 60">
+                  <rect
+                    x="3"
+                    y="6"
+                    width="66"
+                    height="48"
+                    rx="7"
+                    fill="#fff"
+                    stroke="#7397e8"
+                    stroke-width="3"
+                  />
+                  <rect
+                    x="9"
+                    y="12"
+                    width="17"
+                    height="20"
+                    rx="3"
+                    fill="#dce8ff"
+                  />
+                  <circle cx="17.5" cy="19" r="4" fill="#6f91d8" />
+                  <path d="M11 29c1-6 12-6 13 0" fill="#6f91d8" />
+                  <path
+                    d="M33 17h27M33 25h23M10 40h50M10 46h34"
+                    stroke="#7295dc"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                  /></svg
+              ></span>
+              <span class="q2p-type-copy"
+                ><span class="q2p-popular">★ POPULAR</span
+                ><strong class="mt-1">ID Card Print</strong
+                ><small>Aadhaar, PAN, Voter ID, Driving License and more</small>
+                <span
+                  class="q2p-id-examples"
+                  aria-label="Sample document types"
+                >
+                  <span class="q2p-doc-sample aadhaar"
+                    ><b>आधार</b><i></i><em></em><small>Aadhaar</small></span
+                  >
+                  <span class="q2p-doc-sample pan"
+                    ><b>INCOME TAX</b><i></i><em></em
+                    ><small>PAN Card</small></span
+                  >
+                  <span class="q2p-doc-sample voter"
+                    ><b>VOTER ID</b><i></i><em></em
+                    ><small>Voter ID</small></span
+                  >
+                  <span class="q2p-doc-sample license"
+                    ><b>DL</b><i></i><em></em
+                    ><small>Driving License</small></span
+                  >
+                  <span class="q2p-doc-sample more"
+                    ><b>+</b><small>More</small></span
+                  >
+                </span> </span
+              ><span class="q2p-type-arrow" aria-hidden="true">›</span>
+            </button>
+          </div>
+          <div class="q2p-tip">
+            <span class="tip-icon" aria-hidden="true">✦</span>
+            <div>
+              <p class="font-extrabold text-sm">
+                Need to upload multiple files?
+              </p>
+              <p class="text-xs mt-1 opacity-80">
+                You can select and upload up to 10 files at a time.
+              </p>
+            </div>
+            <span
+              class="ml-auto shrink-0 rounded-full bg-white/80 px-3 py-2 text-[10px] font-extrabold"
+              >Up to 10 files</span
+            >
+          </div>
+        </section>
+
+        <!-- Upload Card (kept as a general browse option) -->
         <label
           for="fileInput"
           class="group relative flex min-h-[190px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-white px-6 py-8 text-center shadow-sm transition-all duration-200 hover:border-[#211B8F] hover:bg-[#EEF2FF]/60 hover:shadow-md"
@@ -1118,8 +2261,6 @@
                 class="w-full appearance-none bg-white rounded-lg p-3 font-semibold text-sm text-ink manga-shadow focus:outline-none"
               >
                 <option value="A4">A4 (Normal)</option>
-                <option value="A3">A3 (Large)</option>
-                <option value="Letter">Letter</option>
               </select>
 
               <div
@@ -2511,6 +3652,25 @@
         };
       }
 
+      // File type shortcuts for the refreshed chooser. This only adjusts the
+      // native picker filter; the original file selection pipeline is preserved.
+      window.q2pChooseFileType = function (type) {
+        const input = document.getElementById("fileInput");
+        if (!input) return;
+        const filters = {
+          pdf: ".pdf,application/pdf",
+          jpg: ".jpg,.jpeg,image/jpeg",
+          png: ".png,image/png",
+        };
+        input.dataset.q2pSelectedType = type || "all";
+        input.setAttribute(
+          "accept",
+          filters[type] ||
+            ".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png",
+        );
+        input.click();
+      };
+
       // ============================================================
       // INIT
       // ============================================================
@@ -2758,7 +3918,26 @@
         const accepted = [];
         const previousFiles = [...filesList];
 
+        const selectedType = event.target.dataset.q2pSelectedType || "all";
+        event.target.dataset.q2pSelectedType = "all";
+
         for (const file of incoming) {
+          const extension = String(file.name || "")
+            .split(".")
+            .pop()
+            .toLowerCase();
+          const matchesSelectedType =
+            selectedType === "all" ||
+            (selectedType === "pdf" && extension === "pdf") ||
+            (selectedType === "jpg" && ["jpg", "jpeg"].includes(extension)) ||
+            (selectedType === "png" && extension === "png");
+          if (!matchesSelectedType) {
+            showUploadError(
+              `\"${file.name}\" is not a ${selectedType.toUpperCase()} file. Please choose the selected file type.`,
+            );
+            continue;
+          }
+
           if (!ACCEPTED_TYPES.test(file.name)) {
             showUploadError(
               `"${file.name}" is not a supported format. Only PDF, JPG and PNG are allowed.`,
