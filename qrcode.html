@@ -1029,7 +1029,96 @@
       #q2pFormatFileList.hidden {
         display: none !important;
       }
+      .q2p-hand-upload-hint {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 10px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        color: #2344d8;
+        background: #fff7c7;
+        border: 1px solid #ffe58a;
+        font-size: 12px;
+        line-height: 1.25;
+        font-weight: 800;
+        animation: q2pHintFloat 2.4s ease-in-out infinite;
+      }
+      .q2p-hand-upload-hint span {
+        font-size: 18px;
+      }
+      @keyframes q2pHintFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-2px);
+        }
+      }
+      .q2p-idcard-drawer-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        margin-top: 18px;
+        padding: 13px;
+        text-align: left;
+        border: 1.5px solid #dbe5ff;
+        border-radius: 14px;
+        background: linear-gradient(110deg, #f0f5ff, #f8faff);
+        transition:
+          border-color 0.18s ease,
+          transform 0.18s ease,
+          box-shadow 0.18s ease;
+      }
+      .q2p-idcard-drawer-option:hover {
+        border-color: #3152f4;
+        transform: translateY(-1px);
+        box-shadow: 0 7px 18px #3152f416;
+      }
+      .q2p-idcard-drawer-icon {
+        display: grid;
+        place-items: center;
+        flex: 0 0 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #e4edff;
+        font-size: 24px;
+      }
+      .q2p-idcard-drawer-copy {
+        flex: 1;
+        min-width: 0;
+      }
+      .q2p-idcard-drawer-copy b {
+        display: block;
+        color: #17245b;
+        font-size: 13px;
+      }
+      .q2p-idcard-drawer-copy small {
+        display: block;
+        color: #64748b;
+        font-size: 11px;
+        margin-top: 4px;
+        line-height: 1.4;
+      }
+      .q2p-idcard-drawer-arrow {
+        color: #2447ed;
+        font-size: 26px;
+        line-height: 1;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .q2p-hand-upload-hint {
+          animation: none;
+        }
+      }
       @media (max-width: 600px) {
+        .q2p-hand-upload-hint {
+          margin-top: 8px;
+          font-size: 11px;
+          padding: 6px 10px;
+        }
         #step1 label[for="fileInput"] {
           min-height: 300px !important;
           padding: 28px 16px !important;
@@ -2185,6 +2274,10 @@
               /></svg
             >Choose Files <span aria-hidden="true">→</span></span
           >
+          <span class="q2p-hand-upload-hint"
+            ><span aria-hidden="true">☝️</span> Yahan click karke upload
+            karein</span
+          >
           <span class="q2p-or"><span></span>OR<span></span></span>
           <span class="q2p-drop-zone"
             ><svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
@@ -2243,65 +2336,9 @@
             <b>Max File Size</b><span>Up to 100 MB per file</span>
           </div>
         </div>
-        <div class="q2p-security-strip">
-          <span class="q2p-security-shield">✓</span
-          ><span
-            ><b>Your files are secure</b
-            ><small>We keep your data safe and private.</small></span
-          ><span class="q2p-security-lock" aria-hidden="true">♙</span>
-        </div>
-        <button
-          type="button"
-          class="q2p-multiple-card"
-          onclick="document.getElementById('fileInput').click()"
-        >
-          <span class="q2p-multiple-art"
-            ><span class="q2p-mini-file pdf">PDF</span
-            ><span class="q2p-photo-icon">▧</span></span
-          ><span class="q2p-multiple-copy"
-            ><b>Need to print multiple files?</b
-            ><small>Upload multiple files and print them together.</small></span
-          ><span class="q2p-multiple-arrow">›</span>
-        </button>
+        <!-- Security and multiple-file promotional cards removed for a cleaner first page. -->
 
-        <!-- Bottom Info -->
-        <div
-          class="mt-4 flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-3"
-        >
-          <div class="flex items-center gap-2">
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-[#211B8F] shadow-sm"
-            >
-              <svg
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.7"
-                  d="M12 15v2m-6 4h12a2 2 0 002-2V7a2 2 0 00-2-2h-1V4a3 3 0 00-6 0v1H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
-
-            <div>
-              <p class="text-xs font-bold text-gray-700">Secure upload</p>
-
-              <p class="text-[10px] text-gray-400">
-                Your files are sent securely
-              </p>
-            </div>
-          </div>
-
-          <div class="text-right">
-            <p class="text-xs font-bold text-gray-700">Multiple files</p>
-
-            <p class="text-[10px] text-gray-400">Select more than one</p>
-          </div>
-        </div>
+        <!-- Redundant secure-upload/multiple-file info strip removed. -->
 
         <!-- ID Card Print entry -->
         <button
@@ -2765,13 +2802,10 @@
             ><input type="radio" name="q2pDocFormat" value="JPEG" /><span
               class="q2p-file-badge jpg"
               >JPG</span
-            ><span><b>JPEG Image</b><small>Sirf .jpeg file</small></span></label
-          >
-          <label class="q2p-format-option"
-            ><input type="radio" name="q2pDocFormat" value="JPG" /><span
-              class="q2p-file-badge jpg"
-              >JPG</span
-            ><span><b>JPG Image</b><small>Sirf .jpg file</small></span></label
+            ><span
+              ><b>JPG / JPEG Image</b
+              ><small>.jpg aur .jpeg dono supported hain</small></span
+            ></label
           >
           <label class="q2p-format-option"
             ><input type="radio" name="q2pDocFormat" value="PNG" /><span
@@ -2780,6 +2814,18 @@
             ><span><b>PNG Image</b><small>Sirf .png file</small></span></label
           >
         </div>
+        <button
+          type="button"
+          class="q2p-idcard-drawer-option"
+          onclick="q2pOpenIdCardFromFormat()"
+        >
+          <span class="q2p-idcard-drawer-icon" aria-hidden="true">🪪</span>
+          <span class="q2p-idcard-drawer-copy">
+            <b>ID Card Print (A4)</b>
+            <small>PAN, Aadhaar, Voter ID ki photo ko A4 par set karein</small>
+          </span>
+          <span class="q2p-idcard-drawer-arrow" aria-hidden="true">›</span>
+        </button>
         <div class="q2p-format-note">
           <span>🔒</span
           ><span
@@ -4270,6 +4316,22 @@
           .getElementById("q2pFormatDrawer")
           .setAttribute("aria-hidden", "true");
       }
+      function q2pOpenIdCardFromFormat() {
+        q2pCloseFormatPicker();
+        q2pPendingFiles = [];
+        q2pPendingInput = null;
+        q2pSelectedFormat = "";
+        const input = document.getElementById(q2pActiveInputId || "fileInput");
+        if (input) input.value = "";
+        if (typeof openIdBuilder === "function") {
+          openIdBuilder();
+        } else {
+          showUploadError(
+            "ID Card Print abhi open nahi ho pa raha. Kripya page refresh karein.",
+          );
+        }
+      }
+
       async function q2pConfirmFormat() {
         const choice = document.querySelector(
           'input[name="q2pDocFormat"]:checked',
@@ -4278,19 +4340,22 @@
           showUploadError("Pehle file ka format chunein.");
           return;
         }
-        q2pSelectedFormat = choice;
+        q2pSelectedFormat = choice === "JPG" ? "JPEG" : choice;
+        const normalizedChoice = q2pSelectedFormat;
         const accepts = {
           PDF: ".pdf,application/pdf",
           // JPEG and JPG are the same image format; allow both common extensions.
           JPEG: ".jpg,.jpeg,image/jpeg",
-          JPG: ".jpg,.jpeg,image/jpeg",
           PNG: ".png,image/png",
         };
         const input = document.getElementById(q2pActiveInputId || "fileInput");
         q2pCloseFormatPicker();
         if (!q2pPendingFiles.length) {
           if (input) {
-            input.setAttribute("accept", accepts[choice] || accepts.PDF);
+            input.setAttribute(
+              "accept",
+              accepts[normalizedChoice] || accepts.PDF,
+            );
             input.value = "";
             input.click();
           }
@@ -4301,11 +4366,11 @@
         q2pPendingFiles = [];
         q2pPendingInput = null;
         const mismatch = files.find(
-          (f) => !q2pFormatsMatch(choice, q2pFormatFor(f)),
+          (f) => !q2pFormatsMatch(normalizedChoice, q2pFormatFor(f)),
         );
         if (mismatch) {
           showUploadError(
-            `Aapne ${choice} format chuna hai. Kripya sirf ${choice} file select karein.`,
+            `Aapne ${normalizedChoice} format chuna hai. Kripya sirf ${normalizedChoice} file select karein.`,
           );
           if (sourceInput) sourceInput.value = "";
           return;
