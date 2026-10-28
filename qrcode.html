@@ -1872,6 +1872,89 @@
           font-size: 7px !important;
         }
       }
+
+      /* Final mobile polish: compact progress and centered ID-card entry */
+      .q2p-idcard-entry {
+        width: min(100%, 440px);
+        margin-left: auto !important;
+        margin-right: auto !important;
+        justify-content: center;
+      }
+      @media (max-width: 600px) {
+        #step1 > .mb-5 > div {
+          align-items: center !important;
+        }
+        #step1 > .mb-5 h2 {
+          letter-spacing: -0.04em;
+        }
+        #step1 > .mb-5 p {
+          max-width: 32ch;
+        }
+        .q2p-steps {
+          grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+          align-items: start;
+          gap: 4px !important;
+          margin: 8px 0 16px !important;
+        }
+        .q2p-steps > i {
+          display: none !important;
+        }
+        .q2p-step {
+          min-width: 0;
+          gap: 5px !important;
+        }
+        .q2p-step span {
+          width: 38px !important;
+          height: 38px !important;
+          font-size: 16px !important;
+        }
+        .q2p-step b {
+          max-width: 100%;
+          font-size: 10px !important;
+          line-height: 1.15 !important;
+          white-space: normal !important;
+          text-wrap: balance;
+        }
+        .q2p-step.is-active b:after {
+          bottom: -5px !important;
+        }
+        .q2p-idcard-entry {
+          display: flex !important;
+          flex-direction: column;
+          align-items: center !important;
+          justify-content: center;
+          gap: 8px !important;
+          width: min(100%, 340px);
+          margin: 14px auto 0 !important;
+          padding: 14px 16px !important;
+          text-align: center !important;
+          border-radius: 18px !important;
+          background: linear-gradient(135deg, #f8fbff, #edf4ff) !important;
+          border-color: #dbe6ff !important;
+        }
+        .q2p-idcard-entry > span:first-child {
+          width: 46px !important;
+          height: 46px !important;
+          border-radius: 14px !important;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .q2p-idcard-entry > span:nth-child(2) {
+          flex: none !important;
+          width: 100%;
+        }
+        .q2p-idcard-entry > span:nth-child(2) > span:first-child {
+          font-size: 14px !important;
+        }
+        .q2p-idcard-entry > span:nth-child(2) > span:last-child {
+          font-size: 11px !important;
+          line-height: 1.4;
+        }
+        .q2p-idcard-entry > span:last-child {
+          display: none;
+        }
+      }
     </style>
   </head>
   <body
@@ -2224,7 +2307,7 @@
         <button
           type="button"
           onclick="openIdBuilder()"
-          class="mt-4 flex w-full items-center gap-3 rounded-2xl border-2 border-[#211B8F]/15 bg-white px-4 py-3 text-left shadow-sm transition-all hover:border-[#211B8F] hover:bg-[#EEF2FF]/60 active:translate-y-0.5"
+          class="q2p-idcard-entry mt-4 flex w-full items-center gap-3 rounded-2xl border-2 border-[#211B8F]/15 bg-white px-4 py-3 text-left shadow-sm transition-all hover:border-[#211B8F] hover:bg-[#EEF2FF]/60 active:translate-y-0.5"
         >
           <span
             class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FFB800] text-2xl"
@@ -4138,6 +4221,18 @@
         const ext = (file.name.split(".").pop() || "").toLowerCase();
         return ext === "jpeg" ? "JPEG" : ext.toUpperCase();
       }
+
+      // .jpg and .jpeg are two extensions for the same JPEG format.
+      function q2pFormatsMatch(selectedFormat, actualFormat) {
+        const jpegFormats = ["JPG", "JPEG"];
+        if (
+          jpegFormats.includes(selectedFormat) &&
+          jpegFormats.includes(actualFormat)
+        ) {
+          return true;
+        }
+        return selectedFormat === actualFormat;
+      }
       function q2pShowFormatPicker(files = [], input = null) {
         q2pPendingFiles = files;
         q2pPendingInput = input;
@@ -4186,8 +4281,9 @@
         q2pSelectedFormat = choice;
         const accepts = {
           PDF: ".pdf,application/pdf",
-          JPEG: ".jpeg,image/jpeg",
-          JPG: ".jpg,image/jpeg",
+          // JPEG and JPG are the same image format; allow both common extensions.
+          JPEG: ".jpg,.jpeg,image/jpeg",
+          JPG: ".jpg,.jpeg,image/jpeg",
           PNG: ".png,image/png",
         };
         const input = document.getElementById(q2pActiveInputId || "fileInput");
@@ -4204,7 +4300,9 @@
         const sourceInput = q2pPendingInput;
         q2pPendingFiles = [];
         q2pPendingInput = null;
-        const mismatch = files.find((f) => q2pFormatFor(f) !== choice);
+        const mismatch = files.find(
+          (f) => !q2pFormatsMatch(choice, q2pFormatFor(f)),
+        );
         if (mismatch) {
           showUploadError(
             `Aapne ${choice} format chuna hai. Kripya sirf ${choice} file select karein.`,
@@ -4237,7 +4335,10 @@
             continue;
           }
           const actualFormat = q2pFormatFor(file);
-          if (q2pSelectedFormat && actualFormat !== q2pSelectedFormat) {
+          if (
+            q2pSelectedFormat &&
+            !q2pFormatsMatch(q2pSelectedFormat, actualFormat)
+          ) {
             showUploadError(
               `Aapne ${q2pSelectedFormat} chuna hai. Kripya isi format ki file select karein.`,
             );
