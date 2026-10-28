@@ -17,6 +17,12 @@
     <link rel="shortcut icon" href="./favicon.png" type="image/x-icon" />
 
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+      if (window.pdfjsLib)
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    </script>
     <!-- Supabase client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -665,902 +671,1211 @@
         }
       }
 
-      /* ==========================================================
-         Quick2Print refreshed blue-violet customer experience
-         Visual-only overrides: all existing IDs and JS handlers stay intact.
-         ========================================================== */
-      :root {
-        --q2p-primary: #263fe8;
-        --q2p-deep: #211b8f;
-        --q2p-ink: #101b58;
-        --q2p-muted: #607ba8;
-        --q2p-line: #e1e8fa;
-        --q2p-soft: #f2f6ff;
-        --q2p-yellow: #ffbd19;
+      /* Quick2Print reference theme: clean white, royal blue, soft sky-blue */
+      body {
+        background: #fff !important;
+        color: #111b4d !important;
+        overflow-x: hidden !important;
       }
       html {
-        background: #f8faff;
+        overflow-y: auto !important;
       }
-      body {
-        width: 100%;
-        max-width: none;
-        min-height: 100dvh;
-        background: linear-gradient(180deg, #fff 0%, #f8faff 78%, #eef4ff 100%);
-        color: var(--q2p-ink);
-        font-family: Inter, sans-serif;
+      ::-webkit-scrollbar {
+        display: block;
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f2f6fc;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #b9c9e8;
+        border-radius: 20px;
       }
       .glass-panel {
-        background: rgba(255, 255, 255, 0.96);
-        backdrop-filter: blur(14px);
-        border-bottom: 1px solid #edf1fc;
-        box-shadow: 0 4px 18px rgba(38, 63, 232, 0.04);
-      }
-      header {
-        width: 100%;
-        padding: 14px clamp(16px, 4vw, 38px) 12px !important;
-        gap: 12px;
-      }
-      header img {
-        max-width: min(48vw, 340px) !important;
-        height: auto !important;
-        max-height: 72px;
-      }
-      #shopIdDisplay {
-        background: linear-gradient(110deg, #2728d9, #3420b8) !important;
-        border-radius: 999px !important;
-        padding: 12px 18px !important;
-        letter-spacing: 0 !important;
-        box-shadow: 0 5px 14px #2728d91c;
-        font-size: 12px !important;
+        background: rgba(255, 255, 255, 0.97) !important;
+        backdrop-filter: blur(12px);
       }
       #mainContainer {
+        max-width: 1000px;
         width: 100%;
-        max-width: 940px;
-        margin: 0 auto;
-        padding: 12px clamp(16px, 4vw, 40px) 28px !important;
-        overflow-x: hidden;
-      }
-      #step1,
-      #step2,
-      #step3,
-      #step4 {
-        width: 100%;
-        max-width: 860px !important;
-        margin-left: auto;
-        margin-right: auto;
+        margin-inline: auto;
       }
       #step1 {
-        padding-top: 8px;
+        max-width: 850px !important;
       }
       #step1 h2,
-      #step2 h2,
-      #step4 h2 {
-        color: var(--q2p-ink) !important;
-        letter-spacing: -0.035em;
-      }
-      #step1 .mb-5 {
-        margin-bottom: 18px;
-      }
-      #step1 .rounded-xl,
-      #step1 .rounded-2xl,
-      #step2 .rounded-xl,
-      #step2 .rounded-2xl {
-        border-radius: 18px !important;
-      }
-      #step1 .manga-shadow,
-      #step2 .manga-shadow,
-      #step3 .manga-shadow,
-      #step4 .manga-shadow,
-      .manga-shadow {
-        box-shadow: 0 5px 18px rgba(28, 54, 145, 0.07) !important;
-        border: 1px solid var(--q2p-line);
-      }
-      .manga-shadow-stamp {
-        box-shadow: 0 5px 16px rgba(99, 23, 17, 0.12) !important;
-      }
-      .manga-shadow-active:active {
-        box-shadow: 0 2px 8px rgba(28, 54, 145, 0.08) !important;
-        transform: translateY(1px);
-      }
-      #step1 .bg-\[\#211B8F\],
-      #step2 .bg-\[\#211B8F\] {
-        background: linear-gradient(120deg, #283fe9, #3022bf) !important;
-      }
-      #step1 .bg-\[\#FFB800\],
-      #step2 .bg-\[\#FFB800\] {
-        background: var(--q2p-yellow) !important;
+      #step1 .font-heading {
+        letter-spacing: -0.025em;
       }
       #step1 label[for="fileInput"] {
-        min-height: 150px;
-        border: 2px dashed #b9c9fa !important;
-        background: linear-gradient(145deg, #fff, #f7f9ff) !important;
-        box-shadow: 0 8px 24px rgba(37, 65, 180, 0.05);
+        min-height: 360px !important;
+        border-color: #8acdf5 !important;
+        border-radius: 24px !important;
+        background: linear-gradient(135deg, #f8fcff, #eef6ff) !important;
+        box-shadow: 0 8px 28px rgba(42, 100, 200, 0.06);
       }
-      #step1 label[for="fileInput"]:hover {
-        border-color: var(--q2p-primary) !important;
+      #step1 label[for="fileInput"] .bg-\[\#EEF2FF\] {
+        background: #dcecff !important;
+        color: #2549ed !important;
       }
-      #step1 label[for="fileInput"] > div:first-child {
-        background: #eef2ff !important;
+      #step1 label[for="fileInput"] .group-hover\:bg-\[\#211B8F\] {
+        background: #2b4cf4 !important;
       }
-      #step1 .grid[aria-label="How it works"] {
+      #step1 label[for="fileInput"] span.inline-flex {
+        background: #fff !important;
+        color: #30436c !important;
+        border: 1px solid #e1eaff;
+      }
+      #step1 .rounded-xl.border.border-gray-100.bg-gray-50 {
+        background: #f1f5fb !important;
+        border: 0 !important;
+      }
+      #step1 .rounded-2xl.border-2.border-\[\#211B8F\]\/15 {
+        background: #edf4ff !important;
+        border: 0 !important;
+      }
+      .q2p-drawer-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 10050;
+        background: rgba(13, 24, 65, 0.34);
+        backdrop-filter: blur(4px);
+        display: flex;
+        justify-content: flex-end;
+        visibility: hidden;
+        opacity: 0;
+        transition:
+          opacity 0.22s ease,
+          visibility 0.22s ease;
+      }
+      .q2p-drawer-overlay.is-open {
+        visibility: visible;
+        opacity: 1;
+      }
+      .q2p-format-drawer {
+        width: min(440px, 100%);
+        height: 100%;
+        overflow-y: auto;
+        background: #fff;
+        padding: 28px 24px max(24px, env(safe-area-inset-bottom));
+        box-shadow: -20px 0 60px rgba(20, 40, 100, 0.18);
+        transform: translateX(28px);
+        transition: transform 0.25s ease;
+        color: #111b4d;
+      }
+      .q2p-drawer-overlay.is-open .q2p-format-drawer {
+        transform: translateX(0);
+      }
+      .q2p-drawer-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+        margin-bottom: 22px;
+      }
+      .q2p-eyebrow,
+      .q2p-format-label {
+        font-size: 10px;
+        letter-spacing: 0.13em;
+        font-weight: 800;
+        color: #3152e8;
+      }
+      .q2p-drawer-head h2,
+      .q2p-password-card h2 {
+        font-size: 25px;
+        font-weight: 800;
+        line-height: 1.15;
+        margin-top: 8px;
+        color: #111b4d;
+      }
+      .q2p-drawer-head p,
+      .q2p-password-copy {
+        font-size: 13px;
+        color: #64748b;
+        margin-top: 8px;
+      }
+      .q2p-close {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #f0f4fb;
+        color: #30416c;
+        font-size: 25px;
+        line-height: 1;
+      }
+      .q2p-format-files {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 24px;
+        max-height: 180px;
+        overflow: auto;
+      }
+      .q2p-pending-file,
+      .q2p-protected-file {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 0;
+        padding: 11px;
+        border: 1px solid #e4eaf5;
+        border-radius: 13px;
+        background: #f9fbff;
+      }
+      .q2p-pending-name {
+        min-width: 0;
+        flex: 1;
+        overflow-wrap: anywhere;
+        font-size: 12px;
+        font-weight: 700;
+        color: #1c2b59;
+      }
+      .q2p-pending-name small {
+        display: block;
+        font-weight: 500;
+        color: #7a88a6;
+        margin-top: 3px;
+      }
+      .q2p-format-pill {
+        font-size: 10px;
+        font-weight: 800;
+        color: #3152e8;
+        background: #e8eeff;
+        padding: 5px 7px;
+        border-radius: 7px;
+      }
+      .q2p-file-badge {
+        flex: 0 0 40px;
+        height: 46px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 900;
+        color: #fff;
+        box-shadow: 0 4px 8px #1c2b5915;
+      }
+      .q2p-file-badge.pdf {
+        background: #ed2939;
+      }
+      .q2p-file-badge.jpg {
+        background: #6b45c6;
+      }
+      .q2p-file-badge.png {
+        background: #0b9b78;
+      }
+      .q2p-format-label {
+        display: block;
+        margin: 0 0 10px;
+      }
+      .q2p-format-options {
+        display: grid;
+        gap: 9px;
+      }
+      .q2p-format-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1.5px solid #e2e9f6;
+        border-radius: 14px;
+        padding: 12px;
+        cursor: pointer;
+        transition: 0.15s ease;
+      }
+      .q2p-format-option:has(input:checked) {
+        border-color: #3152f4;
+        background: #f0f5ff;
+        box-shadow: 0 0 0 2px #3152f414;
+      }
+      .q2p-format-option input {
+        accent-color: #3152f4;
+        width: 17px;
+        height: 17px;
+      }
+      .q2p-format-option b {
+        display: block;
+        font-size: 13px;
+        color: #1a2856;
+      }
+      .q2p-format-option small {
+        display: block;
+        margin-top: 3px;
+        font-size: 11px;
+        color: #71809e;
+      }
+      .q2p-format-note {
+        display: flex;
+        gap: 10px;
+        padding: 14px;
+        background: #ecfaf6;
+        border-radius: 13px;
+        margin-top: 22px;
+        color: #087d62;
+      }
+      .q2p-format-note b,
+      .q2p-format-note small {
+        display: block;
+      }
+      .q2p-format-note b {
+        font-size: 12px;
+      }
+      .q2p-format-note small {
+        font-size: 11px;
+        margin-top: 3px;
+        color: #378a78;
+      }
+      .q2p-drawer-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 22px;
+      }
+      .q2p-secondary,
+      .q2p-primary {
+        flex: 1;
+        border-radius: 12px;
+        padding: 14px 12px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .q2p-secondary {
+        color: #52617f;
+        background: #f1f4fa;
+      }
+      .q2p-primary {
+        color: #fff;
+        background: linear-gradient(110deg, #2447ed, #3d5df8);
+        box-shadow: 0 7px 16px #3152f42b;
+      }
+      .q2p-primary span {
+        margin-left: 7px;
+        font-size: 17px;
+      }
+      .q2p-password-overlay {
+        justify-content: center;
+        align-items: center;
+        padding: 16px;
+      }
+      .q2p-password-card {
+        height: auto;
+        max-height: 90dvh;
+        border-radius: 24px;
+        width: min(420px, 100%);
+        padding: 28px;
+        transform: translateY(12px);
+      }
+      .q2p-lock-icon {
+        width: 56px;
+        height: 56px;
+        display: grid;
+        place-items: center;
+        border-radius: 17px;
+        background: #eaf1ff;
+        font-size: 26px;
+      }
+      .q2p-password-card h2 {
+        font-size: 22px;
+      }
+      .q2p-protected-file {
+        margin: 20px 0;
+        font-size: 12px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+      }
+      #q2pPdfPassword {
+        width: 100%;
+        border: 1.5px solid #dce4f2;
+        border-radius: 12px;
+        padding: 13px;
+        outline: none;
+        color: #1b2853;
+      }
+      #q2pPdfPassword:focus {
+        border-color: #3152f4;
+        box-shadow: 0 0 0 3px #3152f41c;
+      }
+      .q2p-password-foot {
+        color: #8994aa;
+        font-size: 10px;
+        margin-top: 14px;
+      }
+      .q2p-toast {
+        position: fixed;
+        z-index: 11000;
+        left: 50%;
+        bottom: 22px;
+        transform: translate(-50%, 14px);
+        opacity: 0;
+        pointer-events: none;
+        max-width: calc(100vw - 30px);
+        padding: 13px 18px;
+        border-radius: 14px;
+        background: #087f5b;
+        color: white;
+        box-shadow: 0 12px 35px #17255430;
+        font:
+          600 13px/1.45 Inter,
+          sans-serif;
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+      }
+      .q2p-toast.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+      .q2p-toast.error {
+        background: #b42332;
+      }
+      #q2pFormatFileList.hidden {
         display: none !important;
       }
-      #step2 {
-        height: auto !important;
-        min-height: calc(100dvh - 130px);
-        overflow: visible !important;
-        padding-top: 12px;
+      @media (max-width: 600px) {
+        #step1 label[for="fileInput"] {
+          min-height: 300px !important;
+          padding: 28px 16px !important;
+        }
+        .q2p-format-drawer {
+          padding: 23px 18px max(20px, env(safe-area-inset-bottom));
+        }
       }
-      #step2ScrollArea {
-        overflow: visible !important;
+
+      /* Reference-inspired first-page layout and motion */
+      body {
+        font-family: Inter, sans-serif !important;
+        background: linear-gradient(180deg, #fff 0%, #fbfdff 100%) !important;
       }
-      #fileCardsContainer {
-        max-height: none !important;
+      header {
+        min-height: 96px;
+        padding: 16px clamp(16px, 4vw, 38px) 12px !important;
+        border-bottom: 1px solid #edf2fb;
       }
-      #payableCard {
-        background: linear-gradient(115deg, #282fdb, #211b8f) !important;
+      #shopIdDisplay {
+        background: #2529c9 !important;
+        letter-spacing: 0 !important;
+        font-size: clamp(10px, 1.5vw, 14px) !important;
+        padding: 11px 18px !important;
+        box-shadow: 0 5px 16px #2529c91c;
+      }
+      #mainContainer {
+        padding: 14px clamp(16px, 4vw, 42px) 36px !important;
+      }
+      #step1 {
+        max-width: 850px !important;
+        padding-top: 8px !important;
+        gap: 0;
+      }
+      #step1 > .mb-5 {
+        margin-bottom: 24px !important;
+      }
+      #step1 > .mb-5 > div {
+        gap: 18px !important;
+      }
+      #step1 > .mb-5 > div > div:first-child {
+        width: 76px !important;
+        height: 76px !important;
+        border-radius: 20px !important;
+        background: #e6f1ff !important;
         border: 0 !important;
-        box-shadow: 0 10px 22px rgba(38, 63, 232, 0.17) !important;
       }
-      .sticky-payment-footer {
-        background: linear-gradient(
-          to bottom,
-          rgba(248, 250, 255, 0),
-          #f8faff 14px,
-          #f8faff 100%
-        ) !important;
+      #step1 > .mb-5 h2 {
+        font-size: clamp(28px, 4vw, 42px) !important;
+        color: #101b50 !important;
+        line-height: 1.1 !important;
       }
-      #cashPayBtn,
-      #upiPayBtn {
-        border-radius: 14px !important;
-        min-height: 52px;
+      #step1 > .mb-5 p {
+        font-size: clamp(13px, 2vw, 19px) !important;
+        color: #53678c !important;
+        margin-top: 7px;
       }
-      #cashPayBtn {
-        border-color: #dce5fb !important;
-        background: white !important;
-      }
-      #upiPayBtn {
-        background: linear-gradient(120deg, #ffca37, #ffb800) !important;
-        box-shadow: 0 7px 16px #ffb80026 !important;
-      }
-      #pdfEditorModal > div {
-        border: 1px solid var(--q2p-line);
-        box-shadow: 0 24px 70px rgba(10, 20, 70, 0.24) !important;
-      }
-      #idBuilder {
-        background: #f5f7ff !important;
-      }
-      #idBuilder .sticky {
-        border-color: #e3e9fa !important;
-        box-shadow: 0 4px 14px rgba(25, 45, 120, 0.06) !important;
-      }
-      #idBuilder .idb-doc {
-        border-radius: 15px !important;
-        border-color: #e0e7f8 !important;
-      }
-      #idBuilder .idb-doc[aria-pressed="true"] {
-        border-color: var(--q2p-primary) !important;
-        background: #eef2ff !important;
-      }
-      #idBuilder button,
-      #pdfEditorModal button {
-        transition:
-          transform 0.16s ease,
-          box-shadow 0.16s ease,
-          background 0.16s ease;
-      }
-      #idBuilder button:active,
-      #pdfEditorModal button:active {
-        transform: scale(0.985);
-      }
-      #step3 h2 {
-        border-radius: 16px;
-        border: 1px solid var(--q2p-line);
-        box-shadow: 0 6px 18px rgba(28, 54, 145, 0.08) !important;
-      }
-      #step4 > div {
-        border-radius: 22px;
-        border: 1px solid var(--q2p-line);
-        box-shadow: 0 10px 28px rgba(28, 54, 145, 0.08) !important;
-      }
-      #step4 button {
-        color: var(--q2p-primary);
-      }
-      .q2p-type-grid {
+      .q2p-steps {
         display: grid;
-        gap: 12px;
-        margin: 18px 0 14px;
+        grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+        align-items: start;
+        gap: clamp(5px, 2vw, 20px);
+        margin: 4px 0 32px;
       }
-      .q2p-type-card {
+      .q2p-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        color: #52678b;
+        min-width: 0;
+      }
+      .q2p-step span {
+        display: grid;
+        place-items: center;
+        width: clamp(44px, 7vw, 66px);
+        height: clamp(44px, 7vw, 66px);
+        border-radius: 50%;
+        background: #f0f4fa;
+        color: #52678b;
+        font-size: clamp(18px, 2.6vw, 27px);
+        font-weight: 800;
+        transition:
+          transform 0.25s,
+          background 0.25s,
+          color 0.25s,
+          box-shadow 0.25s;
+      }
+      .q2p-step b {
+        font-size: clamp(10px, 1.8vw, 17px);
+        font-weight: 600;
+        text-align: center;
+        white-space: nowrap;
+      }
+      .q2p-step.is-active {
+        color: #2b4bf0;
+      }
+      .q2p-step.is-active span {
+        color: #fff;
+        background: linear-gradient(135deg, #2850f4, #3944df);
+        box-shadow: 0 8px 18px #3152f42c;
+        animation: q2pStepPulse 2.5s ease-in-out infinite;
+      }
+      .q2p-step.is-active b {
+        font-weight: 800;
+        position: relative;
+      }
+      .q2p-step.is-active b:after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 3px;
+        bottom: -13px;
+        border-radius: 4px;
+        background: #3152f4;
+      }
+      .q2p-steps > i {
+        font-style: normal;
+        color: #c2d0e6;
+        font-size: clamp(20px, 3vw, 30px);
+        line-height: 2.1;
+      }
+      .q2p-upload-card {
+        min-height: 500px !important;
+        padding: 28px clamp(16px, 5vw, 48px) 26px !important;
+        border: 2px dashed #83cdf6 !important;
+        border-radius: 24px !important;
+        background: linear-gradient(
+          135deg,
+          #f8fcff 0%,
+          #f1f7ff 100%
+        ) !important;
+        box-shadow: 0 8px 28px #3164b00a;
+        overflow: hidden;
+        transition:
+          border-color 0.25s,
+          box-shadow 0.25s,
+          transform 0.25s;
+      }
+      .q2p-upload-card:hover,
+      .q2p-upload-card.q2p-drag-active {
+        border-color: #3152f4 !important;
+        background: linear-gradient(135deg, #eef5ff, #e7f0ff) !important;
+        box-shadow: 0 14px 36px #3164b02b;
+        transform: translateY(-2px);
+      }
+      .q2p-upload-cloud {
+        width: 126px;
+        height: 126px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #e1edff;
+        color: #2d50f0;
+        margin-bottom: 20px;
+        transition: transform 0.35s;
+      }
+      .q2p-upload-cloud svg {
+        width: 92px;
+        height: 92px;
+      }
+      .q2p-upload-card:hover .q2p-upload-cloud {
+        transform: translateY(-4px) scale(1.035);
+      }
+      .q2p-upload-title {
+        font-size: clamp(21px, 3.3vw, 34px);
+        line-height: 1.2;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        color: #111b4d;
+      }
+      .q2p-upload-subtitle {
+        font-size: clamp(13px, 2.2vw, 20px);
+        color: #5b6e91;
+        margin-top: 13px;
+      }
+      .q2p-choose-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        margin-top: 24px;
+        padding: 17px clamp(28px, 5vw, 62px);
+        border-radius: 999px;
+        background: linear-gradient(110deg, #2b4cf4, #315cf4);
+        color: #fff;
+        font-size: clamp(16px, 2.5vw, 24px);
+        font-weight: 800;
+        box-shadow: 0 10px 24px #3152f42b;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          filter 0.2s;
+      }
+      .q2p-choose-button svg {
+        width: 28px;
+        height: 28px;
+      }
+      .q2p-choose-button > span {
+        font-size: 27px;
+        font-weight: 400;
+      }
+      .q2p-upload-card:hover .q2p-choose-button {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 28px #3152f43a;
+        filter: saturate(1.08);
+      }
+      .q2p-or {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        width: 100%;
+        max-width: 650px;
+        margin: 24px 0;
+        color: #617493;
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .q2p-or span {
+        flex: 1;
+        height: 2px;
+        background: #e2eafa;
+      }
+      .q2p-drop-zone {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        width: 100%;
+        max-width: 680px;
+        padding: 20px 18px;
+        border: 2px dashed #d1def5;
+        border-radius: 16px;
+        background: #f6f9ff;
+        color: #7b91b4;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+      }
+      .q2p-upload-card:hover .q2p-drop-zone {
+        background: #f0f6ff;
+        border-color: #a9c6f5;
+      }
+      .q2p-drop-zone svg {
+        width: 54px;
+        height: 54px;
+        flex: 0 0 auto;
+      }
+      .q2p-drop-zone span {
+        text-align: left;
+      }
+      .q2p-drop-zone b {
+        display: block;
+        font-size: clamp(14px, 2.2vw, 21px);
+        color: #2c4df0;
+      }
+      .q2p-drop-zone small {
+        display: block;
+        margin-top: 5px;
+        font-size: clamp(12px, 1.7vw, 16px);
+        color: #617493;
+      }
+      .q2p-upload-hint {
+        display: none;
+      }
+      .q2p-format-strip {
         display: flex;
         align-items: center;
         gap: 16px;
-        width: 100%;
-        padding: 14px 16px;
-        text-align: left;
-        background: #fff;
-        border: 1.5px solid #e0e7f8;
-        border-radius: 18px;
-        box-shadow: 0 4px 14px rgba(30, 55, 140, 0.035);
-        transition:
-          border-color 0.18s,
-          transform 0.18s,
-          box-shadow 0.18s;
+        margin-top: 26px;
+        padding: 20px clamp(14px, 3vw, 28px);
+        border-radius: 20px;
+        background: #f2f6fc;
+        color: #56698b;
       }
-      .q2p-type-card:hover {
-        border-color: #8ca5ff;
-        box-shadow: 0 8px 22px rgba(38, 63, 232, 0.09);
-        transform: translateY(-1px);
+      .q2p-supported-icons {
+        display: flex;
+        gap: 10px;
       }
-      .q2p-type-icon {
-        width: 76px;
-        height: 76px;
-        flex: 0 0 76px;
+      .q2p-mini-file {
+        width: 43px;
+        height: 49px;
         display: grid;
         place-items: center;
-        border-radius: 15px;
         color: #fff;
-        font:
-          800 20px Outfit,
-          sans-serif;
-        box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.08);
+        font-size: 10px;
+        font-weight: 900;
+        border-radius: 7px 7px 9px 9px;
+        position: relative;
+        box-shadow: 0 4px 8px #1b28531a;
       }
-      .q2p-type-icon.pdf {
-        background: linear-gradient(145deg, #ff4a3d, #d91f2b);
+      .q2p-mini-file:before {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 11px;
+        height: 11px;
+        background: #ffffff7a;
+        clip-path: polygon(0 0, 100% 100%, 0 100%);
       }
-      .q2p-type-icon.jpg {
-        background: linear-gradient(145deg, #a04cff, #6224db);
+      .q2p-mini-file.pdf {
+        background: #ee293b;
       }
-      .q2p-type-icon.png {
-        background: linear-gradient(145deg, #39c995, #07865c);
+      .q2p-mini-file.jpg {
+        background: #7542c7;
       }
-      .q2p-type-icon.id {
-        background: linear-gradient(145deg, #8bb6ff, #4169cf);
+      .q2p-mini-file.png {
+        background: #079b78;
       }
-      .q2p-type-copy {
+      .q2p-strip-copy {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
         min-width: 0;
         flex: 1;
       }
-      .q2p-type-copy strong {
-        display: block;
-        color: #111d60;
-        font:
-          800 21px Outfit,
-          sans-serif;
+      .q2p-strip-copy b {
+        font-size: clamp(12px, 1.8vw, 17px);
+        color: #52678b;
       }
-      .q2p-type-copy small {
-        display: block;
-        color: #6480ac;
-        font-size: 13px;
-        line-height: 1.5;
-        margin-top: 3px;
+      .q2p-strip-copy span {
+        font-size: clamp(11px, 1.6vw, 15px);
       }
-      .q2p-type-arrow {
-        display: grid;
-        place-items: center;
-        flex: 0 0 42px;
+      .q2p-strip-divider {
+        width: 1px;
+        align-self: stretch;
+        background: #d8e2f3;
+        margin: 0 4px;
+      }
+      .q2p-layers-icon svg {
         width: 42px;
         height: 42px;
-        border-radius: 50%;
-        color: #263fe8;
-        background: #f0f3ff;
-        font-size: 28px;
-        line-height: 1;
+        color: #4438df;
       }
-      .q2p-type-card.id-featured {
-        border: 2px solid #6f9bff;
-        background: linear-gradient(120deg, #fff, #f0f5ff);
-      }
-      .q2p-type-card.id-featured .q2p-type-icon {
-        width: 76px;
-      }
-      .q2p-type-card.id-featured .q2p-popular {
-        display: inline-flex;
+      .q2p-security-strip {
+        display: flex;
         align-items: center;
-        gap: 4px;
-        border-radius: 99px;
-        padding: 4px 10px;
+        gap: 14px;
+        margin-top: 20px;
+        padding: 17px 22px;
+        border-radius: 20px;
+        background: linear-gradient(100deg, #e9f9f5, #eefaf8);
+        color: #168263;
+      }
+      .q2p-security-shield {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        border-radius: 12px 12px 16px 16px;
+        background: #118665;
         color: white;
-        background: #263fe8;
-        font-size: 10px;
-        font-weight: 800;
+        font-size: 25px;
+        font-weight: 900;
       }
-      .q2p-id-examples {
-        display: flex;
-        gap: 7px;
-        margin-top: 10px;
-        flex-wrap: wrap;
+      .q2p-security-strip b,
+      .q2p-security-strip small {
+        display: block;
       }
-      .q2p-id-examples span {
-        padding: 5px 8px;
-        border-radius: 8px;
-        background: #e7edff;
-        color: #263578;
-        font-size: 10px;
-        font-weight: 700;
+      .q2p-security-strip b {
+        font-size: clamp(13px, 1.8vw, 17px);
       }
-      .q2p-tip {
+      .q2p-security-strip small {
+        font-size: clamp(11px, 1.6vw, 15px);
+        margin-top: 4px;
+        color: #348a77;
+      }
+      .q2p-security-lock {
+        margin-left: auto;
+        font-size: 32px;
+        font-weight: 900;
+        color: #118665;
+        transform: rotate(180deg);
+      }
+      .q2p-multiple-card {
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin: 14px 0;
-        padding: 14px 16px;
-        border-radius: 18px;
-        background: #edf3ff;
-        color: #253c9b;
+        gap: 18px;
+        width: 100%;
+        margin-top: 20px;
+        padding: 22px clamp(14px, 3vw, 28px);
+        text-align: left;
+        border: 1px solid #e5edff;
+        border-radius: 20px;
+        background: linear-gradient(110deg, #eaf1ff, #f0f5ff);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
       }
-      .q2p-tip .tip-icon {
+      .q2p-multiple-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 26px #233f8514;
+      }
+      .q2p-multiple-art {
+        display: flex;
+        align-items: center;
+        position: relative;
+        min-width: 82px;
+        height: 68px;
+      }
+      .q2p-multiple-art .q2p-mini-file {
+        width: 43px;
+        height: 56px;
+        transform: rotate(-8deg);
+      }
+      .q2p-photo-icon {
+        display: grid;
+        place-items: center;
+        width: 43px;
+        height: 43px;
+        margin-left: -8px;
+        margin-top: 16px;
+        border: 3px solid #2e42b9;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #7dd3fc, #34d399);
+        color: #fff;
         font-size: 27px;
       }
-      .q2p-tip p {
-        margin: 0;
-      }
-      @media (min-width: 768px) {
-        #step1 {
-          padding-top: 18px;
-        }
-        .q2p-type-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-        .q2p-type-card {
-          min-height: 118px;
-        }
-        .q2p-type-card.id-featured {
-          grid-column: 1 / -1;
-        }
-      }
-      @media (max-width: 520px) {
-        header img {
-          max-width: 46vw !important;
-          max-height: 58px;
-        }
-        #shopIdDisplay {
-          padding: 9px 11px !important;
-          font-size: 10px !important;
-          gap: 5px !important;
-        }
-        #shopIdValue {
-          font-size: 10px !important;
-        }
-        #mainContainer {
-          padding-left: 15px !important;
-          padding-right: 15px !important;
-        }
-        .q2p-type-card {
-          gap: 12px;
-          padding: 12px;
-        }
-        .q2p-type-icon {
-          width: 60px;
-          height: 60px;
-          flex-basis: 60px;
-          font-size: 17px;
-        }
-        .q2p-type-copy strong {
-          font-size: 18px;
-        }
-        .q2p-type-copy small {
-          font-size: 12px;
-        }
-        .q2p-type-arrow {
-          flex-basis: 34px;
-          width: 34px;
-          height: 34px;
-        }
-        .q2p-id-examples span {
-          font-size: 9px;
-        }
-      }
-      .q2p-type-grid {
-        gap: 13px;
-      }
-      .q2p-type-card {
-        min-height: 126px;
-        padding: 15px 17px;
-        border-radius: 20px;
-        border-color: #e3e9fb;
-      }
-      .q2p-type-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        border-radius: 16px;
-        box-shadow:
-          inset 0 -4px 0 rgba(0, 0, 0, 0.06),
-          0 4px 10px rgba(23, 42, 110, 0.08);
-      }
-      .q2p-type-icon svg {
-        display: block;
-        width: 86%;
-        height: 86%;
-      }
-      .q2p-type-icon.pdf {
-        background: linear-gradient(145deg, #ff5248, #e11e2c);
-      }
-      .q2p-type-icon.jpg {
-        background: linear-gradient(145deg, #a35aff, #6427d8);
-      }
-      .q2p-type-icon.png {
-        background: linear-gradient(145deg, #42d5a0, #0a9368);
-      }
-      .q2p-type-icon.id {
-        background: linear-gradient(145deg, #e9efff, #d4e1ff);
-      }
-      .q2p-type-card.id-featured {
-        align-items: flex-start;
-        padding: 17px;
-        background: linear-gradient(125deg, #fff 0%, #f3f7ff 100%);
-        border: 2px solid #78a2ff;
-        box-shadow: 0 8px 24px rgba(48, 88, 200, 0.08);
-      }
-      .q2p-type-card.id-featured .q2p-type-icon {
-        margin-top: 7px;
-      }
-      .q2p-type-copy {
-        align-self: center;
-      }
-      .q2p-type-card.id-featured .q2p-type-copy {
-        align-self: stretch;
-      }
-      .q2p-id-examples {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(54px, 0.8fr);
-        gap: 7px;
-        width: 100%;
-      }
-      .q2p-doc-sample {
+      .q2p-multiple-copy {
+        flex: 1;
         min-width: 0;
-        min-height: 67px;
-        display: flex;
-        position: relative;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: stretch;
-        padding: 5px 5px 4px;
-        border-radius: 10px;
-        overflow: hidden;
-        border: 1px solid #e2e8f7;
-        box-shadow: 0 2px 5px rgba(32, 57, 130, 0.04);
       }
-      .q2p-doc-sample b {
+      .q2p-multiple-copy b {
         display: block;
-        font-size: 7px;
-        line-height: 1.2;
-        letter-spacing: 0.02em;
-        white-space: nowrap;
-        overflow: hidden;
+        font-size: clamp(14px, 2.1vw, 22px);
+        color: #111b4d;
       }
-      .q2p-doc-sample i {
+      .q2p-multiple-copy small {
         display: block;
-        position: absolute;
-        left: 6px;
-        top: 23px;
-        width: 15px;
-        height: 19px;
-        border-radius: 3px;
-        background: linear-gradient(145deg, #dbeafe, #8da9df);
+        margin-top: 6px;
+        font-size: clamp(11px, 1.7vw, 16px);
+        color: #5a6f94;
       }
-      .q2p-doc-sample em {
-        display: block;
-        position: absolute;
-        left: 25px;
-        right: 5px;
-        top: 24px;
-        height: 3px;
-        border-radius: 4px;
-        background: #8da5d7;
-        box-shadow:
-          0 6px 0 #c3cfe8,
-          0 12px 0 #c3cfe8;
+      .q2p-multiple-arrow {
+        font-size: 32px;
+        color: #111b4d;
       }
-      .q2p-doc-sample small {
-        display: block;
-        margin-top: auto;
-        text-align: center;
-        font-size: 9px;
-        font-weight: 800;
-        line-height: 1.15;
-        white-space: nowrap;
-        color: #263a78;
+      #step1 .rounded-xl.border.border-gray-100.bg-gray-50 {
+        margin-top: 18px !important;
       }
-      .q2p-doc-sample.aadhaar {
-        background: linear-gradient(145deg, #fff, #fff5ee);
-        border-top: 3px solid #e77c3e;
-      }
-      .q2p-doc-sample.aadhaar b {
-        color: #2c6c4e;
-      }
-      .q2p-doc-sample.pan {
-        background: linear-gradient(145deg, #fff, #edf5ff);
-        border-top: 3px solid #6e8fda;
-      }
-      .q2p-doc-sample.pan b {
-        color: #385da9;
-        font-size: 6px;
-      }
-      .q2p-doc-sample.voter {
-        background: linear-gradient(145deg, #fff, #f1f5ff);
-        border-top: 3px solid #4c72bd;
-      }
-      .q2p-doc-sample.voter b {
-        color: #304d90;
-      }
-      .q2p-doc-sample.license {
-        background: linear-gradient(145deg, #fff, #eaf5ff);
-        border-top: 3px solid #548bc1;
-      }
-      .q2p-doc-sample.license b {
-        color: #285d8e;
-      }
-      .q2p-doc-sample.more {
-        align-items: center;
-        justify-content: center;
-        background: #e8eeff;
-        border-color: #dbe4ff;
-      }
-      .q2p-doc-sample.more b {
-        font-size: 22px;
-        line-height: 1;
-        color: #2944d8;
-      }
-      .q2p-doc-sample.more small {
-        margin-top: 5px;
-      }
-      .q2p-popular {
-        background: linear-gradient(100deg, #3448f0, #2623c4) !important;
-        letter-spacing: 0.02em;
-      }
-      .q2p-tip {
-        border: 1px solid #e5ebff;
-        background: linear-gradient(100deg, #edf3ff, #e8efff);
-      }
-      #step1 label[for="fileInput"],
-      #step1 > button[onclick="openIdBuilder()"] {
-        display: none !important;
-      }
-      @media (min-width: 768px) {
-        .q2p-type-grid {
-          grid-template-columns: 1fr;
+      @keyframes q2pStepPulse {
+        0%,
+        100% {
+          box-shadow: 0 8px 18px #3152f42c;
         }
-        .q2p-type-card.id-featured {
-          grid-column: auto;
+        50% {
+          box-shadow: 0 8px 25px #3152f455;
         }
       }
-      @media (max-width: 520px) {
-        .q2p-type-card {
-          min-height: 94px;
-          gap: 12px;
-          padding: 12px;
-        }
-        .q2p-type-card.id-featured {
-          padding: 12px;
-        }
-        .q2p-type-icon {
-          width: 60px;
-          height: 60px;
-          flex-basis: 60px;
-        }
-        .q2p-type-card.id-featured .q2p-type-icon {
-          width: 60px;
-        }
-        .q2p-type-copy strong {
-          font-size: 18px;
-        }
-        .q2p-type-copy small {
-          font-size: 12px;
-        }
-        .q2p-type-arrow {
-          flex-basis: 32px;
-          width: 32px;
-          height: 32px;
-        }
-        .q2p-id-examples {
-          grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(42px, 0.75fr);
-          gap: 4px;
-        }
-        .q2p-doc-sample {
-          min-height: 59px;
-          padding: 4px 3px;
-          border-radius: 7px;
-        }
-        .q2p-doc-sample b {
-          font-size: 6px;
-        }
-        .q2p-doc-sample i {
-          left: 4px;
-          top: 21px;
-          width: 12px;
-          height: 15px;
-        }
-        .q2p-doc-sample em {
-          left: 19px;
-          right: 3px;
-          top: 22px;
-          height: 2px;
-          box-shadow:
-            0 5px 0 #c3cfe8,
-            0 10px 0 #c3cfe8;
-        }
-        .q2p-doc-sample small {
-          font-size: 7px;
-        }
-      }
-      @media (max-width: 380px) {
-        .q2p-type-card.id-featured {
+      @media (max-width: 600px) {
+        header {
+          min-height: 74px;
+          padding: 12px 14px !important;
           gap: 8px;
         }
-        .q2p-type-card.id-featured .q2p-type-icon {
-          width: 48px;
-          height: 48px;
-          flex-basis: 48px;
+        header img {
+          max-width: 180px !important;
+          height: auto !important;
         }
-        .q2p-type-arrow {
-          display: none;
+        #shopIdDisplay {
+          padding: 8px 10px !important;
+          font-size: 9px !important;
+        }
+        #mainContainer {
+          padding: 12px 14px 28px !important;
+        }
+        #step1 > .mb-5 > div > div:first-child {
+          width: 58px !important;
+          height: 58px !important;
+        }
+        .q2p-steps {
+          gap: 4px;
+          margin-bottom: 24px;
+        }
+        .q2p-step {
+          gap: 8px;
+        }
+        .q2p-step b {
+          white-space: normal;
+          line-height: 1.2;
+          font-size: 10px;
+        }
+        .q2p-steps > i {
+          font-size: 18px;
+          line-height: 2.4;
+        }
+        .q2p-upload-card {
+          min-height: 0 !important;
+          padding: 26px 15px 20px !important;
+        }
+        .q2p-upload-cloud {
+          width: 92px;
+          height: 92px;
+          margin-bottom: 16px;
+        }
+        .q2p-upload-cloud svg {
+          width: 68px;
+          height: 68px;
+        }
+        .q2p-upload-subtitle {
+          margin-top: 9px;
+        }
+        .q2p-choose-button {
+          margin-top: 20px;
+          padding: 14px 27px;
+        }
+        .q2p-drop-zone {
+          gap: 12px;
+          padding: 15px 10px;
+        }
+        .q2p-drop-zone svg {
+          width: 42px;
+          height: 42px;
+        }
+        .q2p-or {
+          margin: 19px 0;
+          gap: 12px;
+        }
+        .q2p-format-strip {
+          gap: 9px;
+          padding: 14px 10px;
+          border-radius: 15px;
+          flex-wrap: wrap;
+        }
+        .q2p-supported-icons {
+          gap: 5px;
+        }
+        .q2p-mini-file {
+          width: 32px;
+          height: 39px;
+          font-size: 8px;
+        }
+        .q2p-strip-copy b {
+          font-size: 10px;
+        }
+        .q2p-strip-copy span {
+          font-size: 9px;
+        }
+        .q2p-layers-icon svg {
+          width: 29px;
+          height: 29px;
+        }
+        .q2p-strip-divider {
+          margin: 0;
+        }
+        .q2p-security-strip {
+          gap: 10px;
+          padding: 14px;
+          border-radius: 15px;
+        }
+        .q2p-security-shield {
+          width: 32px;
+          height: 32px;
+          font-size: 21px;
+        }
+        .q2p-security-lock {
+          font-size: 24px;
+        }
+        .q2p-multiple-card {
+          gap: 10px;
+          padding: 15px 12px;
+          border-radius: 15px;
+        }
+        .q2p-multiple-art {
+          min-width: 57px;
+          transform: scale(0.8);
+          transform-origin: left center;
+          width: 58px;
+        }
+        .q2p-multiple-copy b {
+          font-size: 12px;
+        }
+        .q2p-multiple-copy small {
+          font-size: 10px;
+          line-height: 1.35;
         }
       }
       @media (prefers-reduced-motion: reduce) {
-        .q2p-type-card,
-        #idBuilder button {
+        .q2p-step.is-active span {
+          animation: none;
+        }
+        .q2p-upload-card,
+        .q2p-choose-button,
+        .q2p-multiple-card {
           transition: none !important;
         }
       }
 
-      /* Homepage layout aligned with the supplied Quick2Print reference. */
-      body {
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: flex-start !important;
-        min-height: 100dvh;
-        height: auto !important;
-        overflow-x: hidden !important;
-        overflow-y: auto !important;
-      }
-      header {
-        flex: 0 0 auto;
-        min-height: 78px;
-      }
-      #mainContainer {
-        flex: 1 0 auto !important;
-        min-height: 0;
-        height: auto !important;
-        overflow: visible !important;
-        overflow-x: hidden !important;
-        padding-bottom: max(28px, env(safe-area-inset-bottom)) !important;
-      }
-      #step1 {
-        min-height: 0;
-        height: auto !important;
-        overflow: visible !important;
-        padding-bottom: 14px;
-      }
-      #step1 .q2p-progress {
-        display: grid;
-        grid-template-columns:
-          minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr)
-          auto minmax(0, 1fr);
-        align-items: start;
-        gap: clamp(5px, 1.6vw, 16px);
-        margin: 24px 0 30px;
-      }
-      #step1 .q2p-progress-step {
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        position: relative;
-        color: #6680a8;
-        text-align: center;
-      }
-      #step1 .q2p-step-number {
-        display: grid;
-        place-items: center;
-        width: 54px;
-        height: 54px;
-        border: 2px solid #e0e7f7;
-        border-radius: 50%;
-        background: #f5f7ff;
-        color: #607ba8;
-        font:
-          800 23px/1 Outfit,
-          sans-serif;
-      }
-      #step1 .q2p-progress-step strong {
-        font:
-          700 clamp(10px, 1.6vw, 14px)/1.2 Inter,
-          sans-serif;
-        white-space: nowrap;
-      }
-      #step1 .q2p-progress-step.active {
-        color: #263fe8;
-      }
-      #step1 .q2p-progress-step.active .q2p-step-number {
-        color: #fff;
-        border-color: #263fe8;
-        background: linear-gradient(140deg, #3158ff, #2524cf);
-        box-shadow: 0 5px 14px #263fe826;
-      }
-      #step1 .q2p-progress-step.active::after {
-        content: "";
-        position: absolute;
-        height: 3px;
-        border-radius: 99px;
-        background: #263fe8;
-        left: 8%;
-        right: 8%;
-        bottom: -11px;
-      }
-      #step1 .q2p-progress-step:first-child i {
-        display: grid;
-        place-items: center;
-        position: absolute;
-        top: 42px;
-        left: calc(50% + 8px);
-        width: 22px;
-        height: 22px;
-        border: 2px solid white;
-        border-radius: 50%;
-        background: #22c983;
-        color: white;
-        font-size: 12px;
-        font-style: normal;
-        font-weight: 900;
-        box-shadow: 0 2px 8px #22c98345;
-      }
-      #step1 .q2p-progress-arrow {
-        color: #b8c7e8;
-        font-size: clamp(17px, 3vw, 27px);
-        line-height: 54px;
-        font-weight: 700;
-      }
-      #step1 [aria-label="Choose file type"] > .flex:first-child {
-        margin-bottom: 18px !important;
-      }
-      #step1 [aria-label="Choose file type"] > .flex:first-child h3 {
-        font-size: clamp(25px, 4vw, 34px);
-        line-height: 1.1;
-      }
-      #step1 .q2p-type-grid {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 13px;
-        margin-top: 0;
-      }
-      #step1 .q2p-type-card {
-        min-height: 120px;
-      }
-      #step1 .q2p-type-card.id-featured {
-        grid-column: auto;
-      }
-      #step1 .q2p-tip {
-        margin-top: 18px;
-        margin-bottom: 18px;
-      }
-      /* A visible, unobtrusive scrollbar appears only when content overflows. */
-      html {
-        scrollbar-width: thin;
-        scrollbar-color: #aabbe7 #f1f4fc;
-      }
-      body,
-      #mainContainer,
-      #step2ScrollArea,
-      .file-scroll-container,
-      #idBuilder {
-        scrollbar-width: thin;
-        scrollbar-color: #aabbe7 #f1f4fc;
-      }
-      body::-webkit-scrollbar,
-      #mainContainer::-webkit-scrollbar,
-      #step2ScrollArea::-webkit-scrollbar,
-      #idBuilder::-webkit-scrollbar {
-        display: block;
-        width: 7px;
-      }
-      body::-webkit-scrollbar-track,
-      #mainContainer::-webkit-scrollbar-track,
-      #step2ScrollArea::-webkit-scrollbar-track,
-      #idBuilder::-webkit-scrollbar-track {
-        background: #f1f4fc;
-      }
-      body::-webkit-scrollbar-thumb,
-      #mainContainer::-webkit-scrollbar-thumb,
-      #step2ScrollArea::-webkit-scrollbar-thumb,
-      #idBuilder::-webkit-scrollbar-thumb {
-        background: #aabbe7;
-        border-radius: 99px;
-        border: 2px solid #f1f4fc;
-      }
-      body::-webkit-scrollbar-thumb:hover,
-      #mainContainer::-webkit-scrollbar-thumb:hover,
-      #step2ScrollArea::-webkit-scrollbar-thumb:hover,
-      #idBuilder::-webkit-scrollbar-thumb:hover {
-        background: #758fce;
-      }
-      @media (min-width: 768px) {
+      /* Compact mobile first screen: keep the upload essentials visible with minimal scrolling */
+      @media (max-width: 600px) {
+        html,
+        body {
+          min-height: 100%;
+        }
+        body {
+          max-width: 100% !important;
+        }
+        header {
+          min-height: 58px !important;
+          padding: 7px 10px !important;
+        }
+        header img {
+          max-width: 145px !important;
+          max-height: 44px !important;
+          object-fit: contain;
+        }
+        #shopIdDisplay {
+          max-width: 48%;
+          padding: 6px 8px !important;
+          gap: 4px !important;
+          font-size: 8px !important;
+          line-height: 1.2;
+        }
+        #shopIdValue {
+          font-size: 9px !important;
+          overflow-wrap: anywhere;
+        }
         #mainContainer {
-          max-width: 920px;
+          padding: 7px 10px 12px !important;
+          overflow-y: visible !important;
         }
-        #step1 .q2p-type-card {
-          padding: 15px 20px;
+        #step1 {
+          padding-top: 2px !important;
         }
-      }
-      @media (max-width: 520px) {
-        #step1 .q2p-progress {
-          gap: 4px;
-          margin: 20px 0 28px;
+        #step1 > .mb-5 {
+          margin-bottom: 10px !important;
         }
-        #step1 .q2p-step-number {
-          width: 42px;
-          height: 42px;
-          font-size: 19px;
+        #step1 > .mb-5 > div {
+          gap: 10px !important;
+          margin-bottom: 0 !important;
         }
-        #step1 .q2p-progress-arrow {
-          line-height: 42px;
-          font-size: 18px;
+        #step1 > .mb-5 > div > div:first-child {
+          width: 43px !important;
+          height: 43px !important;
+          border-radius: 12px !important;
+          flex: 0 0 43px;
         }
-        #step1 .q2p-progress-step strong {
-          font-size: 10px;
-          letter-spacing: -0.02em;
+        #step1 > .mb-5 > div > div:first-child svg {
+          width: 23px !important;
+          height: 23px !important;
         }
-        #step1 .q2p-progress-step:first-child i {
-          top: 32px;
-          width: 19px;
-          height: 19px;
-          left: calc(50% + 6px);
+        #step1 > .mb-5 h2 {
+          font-size: clamp(21px, 6vw, 27px) !important;
+          line-height: 1.05 !important;
         }
-        #step1 .q2p-type-card {
-          min-height: 96px;
+        #step1 > .mb-5 p {
+          font-size: 11px !important;
+          line-height: 1.3;
+          margin-top: 4px !important;
         }
-        #step1 .q2p-type-card.id-featured {
-          min-height: 0;
+        .q2p-steps {
+          margin: 3px 0 13px !important;
+          gap: 2px !important;
         }
-        #step1 .q2p-type-card.id-featured .q2p-type-copy {
-          min-width: 0;
+        .q2p-step {
+          gap: 4px !important;
         }
-        #step1 .q2p-id-examples {
-          grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(42px, 0.75fr);
+        .q2p-step span {
+          width: 34px !important;
+          height: 34px !important;
+          font-size: 16px !important;
         }
-        #step1 .q2p-tip {
-          align-items: flex-start;
-          padding: 12px;
+        .q2p-step b {
+          font-size: 9px !important;
+          line-height: 1.05 !important;
+          white-space: nowrap !important;
         }
-        #step1 .q2p-tip > span:last-child {
-          align-self: center;
-          padding: 7px 8px;
-          white-space: nowrap;
+        .q2p-steps > i {
+          font-size: 15px !important;
+          line-height: 2.2 !important;
+        }
+        .q2p-step.is-active b:after {
+          bottom: -5px !important;
+          height: 2px !important;
+        }
+        .q2p-upload-card,
+        #step1 label[for="fileInput"] {
+          min-height: 0 !important;
+          padding: 13px 10px 12px !important;
+          border-radius: 17px !important;
+        }
+        .q2p-upload-cloud {
+          width: 54px !important;
+          height: 54px !important;
+          margin-bottom: 8px !important;
+        }
+        .q2p-upload-cloud svg {
+          width: 39px !important;
+          height: 39px !important;
+        }
+        .q2p-upload-title {
+          font-size: 18px !important;
+          line-height: 1.15 !important;
+        }
+        .q2p-upload-subtitle {
+          font-size: 11px !important;
+          margin-top: 5px !important;
+          line-height: 1.25;
+        }
+        .q2p-choose-button {
+          margin-top: 10px !important;
+          padding: 10px 20px !important;
+          gap: 8px !important;
+          font-size: 14px !important;
+        }
+        .q2p-choose-button svg {
+          width: 20px !important;
+          height: 20px !important;
+        }
+        .q2p-choose-button > span {
+          font-size: 19px !important;
+        }
+        .q2p-or {
+          margin: 9px 0 !important;
+          gap: 9px !important;
+          font-size: 11px !important;
+        }
+        .q2p-drop-zone {
+          gap: 8px !important;
+          padding: 8px !important;
+          border-radius: 11px !important;
+        }
+        .q2p-drop-zone svg {
+          width: 29px !important;
+          height: 29px !important;
+        }
+        .q2p-drop-zone b {
+          font-size: 11px !important;
+          line-height: 1.2;
+        }
+        .q2p-drop-zone small {
+          font-size: 9px !important;
+          margin-top: 2px !important;
+        }
+        .q2p-format-strip {
+          margin-top: 9px !important;
+          padding: 8px !important;
+          gap: 6px !important;
+          border-radius: 12px !important;
+          flex-wrap: nowrap !important;
+        }
+        .q2p-supported-icons {
+          gap: 4px !important;
+        }
+        .q2p-mini-file {
+          width: 25px !important;
+          height: 31px !important;
+          font-size: 7px !important;
+          border-radius: 5px !important;
+        }
+        .q2p-strip-copy {
+          gap: 2px !important;
+        }
+        .q2p-strip-copy b {
+          font-size: 9px !important;
+          line-height: 1.1;
+        }
+        .q2p-strip-copy span {
+          font-size: 8px !important;
+          line-height: 1.15;
+        }
+        .q2p-strip-divider {
+          margin: 0 1px !important;
+        }
+        .q2p-layers-icon svg {
+          width: 22px !important;
+          height: 22px !important;
+        }
+        .q2p-security-strip {
+          margin-top: 7px !important;
+          padding: 8px 10px !important;
+          gap: 7px !important;
+          border-radius: 12px !important;
+        }
+        .q2p-security-shield {
+          width: 25px !important;
+          height: 25px !important;
+          font-size: 16px !important;
+          border-radius: 8px !important;
+        }
+        .q2p-security-strip b {
+          font-size: 10px !important;
+          line-height: 1.1;
+        }
+        .q2p-security-strip small {
+          font-size: 8px !important;
+          margin-top: 2px !important;
+          line-height: 1.2;
+        }
+        .q2p-security-lock {
+          font-size: 19px !important;
+        }
+        .q2p-multiple-card {
+          margin-top: 7px !important;
+          padding: 8px 10px !important;
+          gap: 7px !important;
+          border-radius: 12px !important;
+        }
+        .q2p-multiple-art {
+          min-width: 43px !important;
+          width: 43px !important;
+          height: 43px !important;
+          transform: scale(0.65) !important;
+          transform-origin: left center !important;
+          margin-right: -10px;
+        }
+        .q2p-multiple-copy b {
+          font-size: 10px !important;
+          line-height: 1.15;
+        }
+        .q2p-multiple-copy small {
+          font-size: 8px !important;
+          line-height: 1.2;
+          margin-top: 3px !important;
+        }
+        .q2p-multiple-arrow {
+          font-size: 22px !important;
+        }
+        #step1 .rounded-xl.border.border-gray-100.bg-gray-50 {
+          margin-top: 8px !important;
         }
       }
       @media (max-width: 360px) {
-        header {
-          padding-left: 10px !important;
-          padding-right: 10px !important;
-        }
         header img {
-          max-width: 42vw !important;
+          max-width: 122px !important;
         }
         #shopIdDisplay {
-          padding: 8px !important;
+          padding: 5px 6px !important;
         }
-        #step1 .q2p-progress-step strong {
-          font-size: 9px;
+        .q2p-step b {
+          font-size: 8px !important;
         }
-        #step1 .q2p-type-card {
-          gap: 8px;
-          padding: 10px;
+        .q2p-strip-copy b {
+          font-size: 8px !important;
         }
-        #step1 .q2p-type-icon {
-          width: 50px;
-          height: 54px;
-          flex-basis: 50px;
-        }
-        #step1 .q2p-id-examples {
-          grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(42px, 0.75fr);
+        .q2p-strip-copy span {
+          font-size: 7px !important;
         }
       }
     </style>
   </head>
   <body
-    class="font-body min-h-screen relative overflow-hidden flex flex-col justify-between w-full mx-auto"
+    class="font-body min-h-screen relative flex flex-col justify-between w-full max-w-5xl mx-auto"
   >
     <div id="q2pLoader" role="status" aria-live="polite" aria-hidden="true">
       <div class="q2p-loader-card">
@@ -1722,354 +2037,94 @@
             <p class="font-bold">Upload failed</p>
 
             <span id="uploadErrorText" class="mt-0.5 block font-medium">
-              Something went wrong.
+              Kaam poora nahi ho paaya. Dobara try karein.
             </span>
           </div>
         </div>
 
-        <div class="mb-4 grid grid-cols-3 gap-2" aria-label="How it works">
-          <div
-            class="rounded-xl border border-indigo-100 bg-indigo-50 px-2 py-3 text-center"
-          >
-            <span
-              class="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-[#211B8F] text-xs font-extrabold text-white"
-              >1</span
-            >
-            <span class="block text-[11px] font-bold text-[#211B8F]"
-              >Upload</span
-            >
+        <div class="q2p-steps" aria-label="Print process">
+          <div class="q2p-step is-active">
+            <span>1</span><b>Upload Files</b>
           </div>
-          <div
-            class="rounded-xl border border-gray-200 bg-white px-2 py-3 text-center"
-          >
-            <span
-              class="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-xs font-extrabold text-gray-600"
-              >2</span
-            >
-            <span class="block text-[11px] font-bold text-gray-600"
-              >Set options</span
-            >
-          </div>
-          <div
-            class="rounded-xl border border-gray-200 bg-white px-2 py-3 text-center"
-          >
-            <span
-              class="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-xs font-extrabold text-gray-600"
-              >3</span
-            >
-            <span class="block text-[11px] font-bold text-gray-600"
-              >Place order</span
-            >
-          </div>
+          <i aria-hidden="true">→</i>
+          <div class="q2p-step"><span>2</span><b>Set Options</b></div>
+          <i aria-hidden="true">→</i>
+          <div class="q2p-step"><span>3</span><b>Payment</b></div>
+          <i aria-hidden="true">→</i>
+          <div class="q2p-step"><span>4</span><b>Print</b></div>
         </div>
 
-        <!-- Four-step progress tracker: upload is the active stage on this screen. -->
-        <nav class="q2p-progress" aria-label="Print order progress">
-          <div class="q2p-progress-step active" aria-current="step">
-            <span class="q2p-step-number">1</span><strong>Upload Files</strong>
-          </div>
-          <span class="q2p-progress-arrow" aria-hidden="true">→</span>
-          <div class="q2p-progress-step">
-            <span class="q2p-step-number">2</span><strong>Set Options</strong>
-          </div>
-          <span class="q2p-progress-arrow" aria-hidden="true">→</span>
-          <div class="q2p-progress-step">
-            <span class="q2p-step-number">3</span><strong>Payment</strong>
-          </div>
-          <span class="q2p-progress-arrow" aria-hidden="true">→</span>
-          <div class="q2p-progress-step">
-            <span class="q2p-step-number">4</span><strong>Print</strong>
-          </div>
-        </nav>
-
-        <!-- File type chooser styled to match the Quick2Print reference design.
-             Existing fileInput and openIdBuilder() workflows remain unchanged. -->
-        <section aria-label="Choose file type" class="mb-4">
-          <div class="flex items-center gap-3 mb-3">
-            <div
-              class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF2FF] border border-[#D9E2FF] text-[#263FE8]"
-            >
-              <svg
-                class="h-7 w-7"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                aria-hidden="true"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M14 3v6h5M9 13h6M9 17h6"
-                />
-              </svg>
-            </div>
-            <div>
-              <h3
-                class="font-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-[#111d60]"
-              >
-                Choose File Type
-              </h3>
-              <p class="text-sm sm:text-base text-[#6480ac]">
-                Select the type of document you want to upload.
-              </p>
-            </div>
-          </div>
-          <div class="q2p-type-grid">
-            <button
-              type="button"
-              class="q2p-type-card"
-              onclick="q2pChooseFileType('pdf')"
-              aria-label="Upload PDF files"
-            >
-              <span class="q2p-type-icon pdf" aria-hidden="true"
-                ><svg viewBox="0 0 64 72">
-                  <path
-                    d="M13 3h25l16 16v46a4 4 0 0 1-4 4H13a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Z"
-                    fill="white"
-                  />
-                  <path d="M38 3v17h16" fill="#ffd8d5" />
-                  <path
-                    d="M16 40c8-3 12-12 15-23 2 11 4 20 12 25 5 3 9 2 8-1-2-5-16-1-25 2-8 3-13 7-10 9 4 3 13-9 17-20"
-                    fill="none"
-                    stroke="#e62e35"
-                    stroke-width="3"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <text
-                    x="32"
-                    y="61"
-                    text-anchor="middle"
-                    font-size="14"
-                    font-weight="900"
-                    fill="#d8212b"
-                  >
-                    PDF
-                  </text>
-                </svg></span
-              >
-              <span class="q2p-type-copy"
-                ><strong>PDF</strong
-                ><small>Documents, forms and multi-page files</small></span
-              ><span class="q2p-type-arrow" aria-hidden="true">›</span>
-            </button>
-            <button
-              type="button"
-              class="q2p-type-card"
-              onclick="q2pChooseFileType('jpg')"
-              aria-label="Upload JPG or JPEG images"
-            >
-              <span class="q2p-type-icon jpg" aria-hidden="true"
-                ><svg viewBox="0 0 64 72">
-                  <path
-                    d="M13 3h25l16 16v46a4 4 0 0 1-4 4H13a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Z"
-                    fill="white"
-                  />
-                  <path d="M38 3v17h16" fill="#eadcff" />
-                  <circle cx="25" cy="31" r="5" fill="#7b35e8" />
-                  <path d="m14 48 12-13 8 8 6-6 11 11Z" fill="#7b35e8" />
-                  <text
-                    x="32"
-                    y="62"
-                    text-anchor="middle"
-                    font-size="12"
-                    font-weight="900"
-                    fill="#6424d6"
-                  >
-                    JPEG
-                  </text>
-                </svg></span
-              >
-              <span class="q2p-type-copy"
-                ><strong>JPG / JPEG</strong
-                ><small>Photos, scanned copies and pictures</small></span
-              ><span class="q2p-type-arrow" aria-hidden="true">›</span>
-            </button>
-            <button
-              type="button"
-              class="q2p-type-card"
-              onclick="q2pChooseFileType('png')"
-              aria-label="Upload PNG images"
-            >
-              <span class="q2p-type-icon png" aria-hidden="true"
-                ><svg viewBox="0 0 64 72">
-                  <path
-                    d="M13 3h25l16 16v46a4 4 0 0 1-4 4H13a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Z"
-                    fill="white"
-                  />
-                  <path d="M38 3v17h16" fill="#d3f7e7" />
-                  <g fill="#159d70">
-                    <rect x="15" y="27" width="8" height="8" />
-                    <rect x="31" y="27" width="8" height="8" />
-                    <rect x="47" y="27" width="5" height="8" />
-                    <rect x="23" y="35" width="8" height="8" />
-                    <rect x="39" y="35" width="8" height="8" />
-                    <rect x="15" y="43" width="8" height="8" />
-                    <rect x="31" y="43" width="8" height="8" />
-                    <rect x="47" y="43" width="5" height="8" />
-                  </g>
-                  <text
-                    x="32"
-                    y="63"
-                    text-anchor="middle"
-                    font-size="13"
-                    font-weight="900"
-                    fill="#087d59"
-                  >
-                    PNG
-                  </text>
-                </svg></span
-              >
-              <span class="q2p-type-copy"
-                ><strong>PNG</strong
-                ><small>Images, graphics and transparent files</small></span
-              ><span class="q2p-type-arrow" aria-hidden="true">›</span>
-            </button>
-            <button
-              type="button"
-              class="q2p-type-card id-featured"
-              onclick="openIdBuilder()"
-              aria-label="Open ID Card Print options"
-            >
-              <span class="q2p-type-icon id" aria-hidden="true"
-                ><svg viewBox="0 0 72 60">
-                  <rect
-                    x="3"
-                    y="6"
-                    width="66"
-                    height="48"
-                    rx="7"
-                    fill="#fff"
-                    stroke="#7397e8"
-                    stroke-width="3"
-                  />
-                  <rect
-                    x="9"
-                    y="12"
-                    width="17"
-                    height="20"
-                    rx="3"
-                    fill="#dce8ff"
-                  />
-                  <circle cx="17.5" cy="19" r="4" fill="#6f91d8" />
-                  <path d="M11 29c1-6 12-6 13 0" fill="#6f91d8" />
-                  <path
-                    d="M33 17h27M33 25h23M10 40h50M10 46h34"
-                    stroke="#7295dc"
-                    stroke-width="3"
-                    stroke-linecap="round"
-                  /></svg
-              ></span>
-              <span class="q2p-type-copy"
-                ><span class="q2p-popular">★ POPULAR</span
-                ><strong class="mt-1">ID Card Print</strong
-                ><small>Aadhaar, PAN, Voter ID, Driving License and more</small>
-                <span
-                  class="q2p-id-examples"
-                  aria-label="Sample document types"
-                >
-                  <span class="q2p-doc-sample aadhaar"
-                    ><b>आधार</b><i></i><em></em><small>Aadhaar</small></span
-                  >
-                  <span class="q2p-doc-sample pan"
-                    ><b>INCOME TAX</b><i></i><em></em
-                    ><small>PAN Card</small></span
-                  >
-                  <span class="q2p-doc-sample voter"
-                    ><b>VOTER ID</b><i></i><em></em
-                    ><small>Voter ID</small></span
-                  >
-                  <span class="q2p-doc-sample license"
-                    ><b>DL</b><i></i><em></em
-                    ><small>Driving License</small></span
-                  >
-                  <span class="q2p-doc-sample more"
-                    ><b>+</b><small>More</small></span
-                  >
-                </span> </span
-              ><span class="q2p-type-arrow" aria-hidden="true">›</span>
-            </button>
-          </div>
-          <div class="q2p-tip">
-            <span class="tip-icon" aria-hidden="true">✦</span>
-            <div>
-              <p class="font-extrabold text-sm">
-                Need to upload multiple files?
-              </p>
-              <p class="text-xs mt-1 opacity-80">
-                You can select and upload up to 10 files at a time.
-              </p>
-            </div>
-            <span
-              class="ml-auto shrink-0 rounded-full bg-white/80 px-3 py-2 text-[10px] font-extrabold"
-              >Up to 10 files</span
-            >
-          </div>
-        </section>
-
-        <!-- Upload Card (kept as a general browse option) -->
+        <!-- Upload Card: refreshed to match the supplied Quick2Print reference -->
         <label
           for="fileInput"
-          class="group relative flex min-h-[190px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-white px-6 py-8 text-center shadow-sm transition-all duration-200 hover:border-[#211B8F] hover:bg-[#EEF2FF]/60 hover:shadow-md"
+          class="q2p-upload-card group relative flex cursor-pointer flex-col items-center justify-center text-center"
         >
-          <div
-            class="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#EEF2FF] transition-transform duration-300 group-hover:scale-125"
-          ></div>
-
-          <div
-            class="pointer-events-none absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-gray-50"
-          ></div>
-
-          <div
-            class="relative mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#EEF2FF] text-[#211B8F] ring-8 ring-[#EEF2FF]/70 transition-all duration-300 group-hover:-translate-y-1 group-hover:bg-[#211B8F] group-hover:text-white group-hover:ring-[#D9DDFF]"
-          >
-            <svg
-              class="h-7 w-7"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <span class="q2p-upload-cloud" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none">
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.7"
-                d="M12 16V4m0 0L8 8m4-4l4 4"
+                d="M18 47h29a12 12 0 0 0 1-24A17 17 0 0 0 16 27a10 10 0 0 0 2 20Z"
+                fill="currentColor"
+                opacity=".16"
               />
               <path
+                d="M18 47h29a12 12 0 0 0 1-24A17 17 0 0 0 16 27a10 10 0 0 0 2 20Z"
+                stroke="currentColor"
+                stroke-width="4"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                stroke-width="1.7"
-                d="M5 13v5a2 2 0 002 2h10a2 2 0 002-2v-5"
+              />
+              <path
+                d="M32 49V28m0 0-9 9m9-9 9 9"
+                stroke="currentColor"
+                stroke-width="5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
               />
             </svg>
-          </div>
-
-          <div class="relative">
-            <span
-              class="block text-base font-extrabold text-[#111827] transition-colors group-hover:text-[#211B8F]"
-            >
-              Choose documents to print
-            </span>
-
-            <span class="mt-1 block text-sm text-gray-500">
-              Tap to browse your phone or computer
-            </span>
-
-            <span
-              class="mt-3 inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-[11px] font-semibold text-gray-500"
-            >
-              PDF · JPG · PNG
-              <span class="mx-1.5 text-gray-300">•</span>
-              Up to 10 MB per file
-            </span>
-          </div>
-
+          </span>
+          <span class="q2p-upload-title">Tap to Upload Your Files</span>
+          <span class="q2p-upload-subtitle"
+            >Select files from your phone or computer</span
+          >
+          <span class="q2p-choose-button"
+            ><svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M7 3h7l5 5v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h1Z"
+                fill="currentColor"
+                opacity=".22"
+              />
+              <path
+                d="M14 3v5h5M12 11v7m-3.5-3.5h7"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+            >Choose Files <span aria-hidden="true">→</span></span
+          >
+          <span class="q2p-or"><span></span>OR<span></span></span>
+          <span class="q2p-drop-zone"
+            ><svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <path
+                d="M13 5h15l9 9v26a3 3 0 0 1-3 3H13a4 4 0 0 1-4-4V9a4 4 0 0 1 4-4Z"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M28 5v10h9M24 22v13m-6.5-6.5h13"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              /></svg
+            ><span
+              ><b>Drag &amp; Drop files here</b
+              ><small>(from gallery or folder)</small></span
+            ></span
+          >
+          <span class="q2p-upload-hint"
+            >PDF · JPG · PNG <span>•</span> Up to 100 MB per file</span
+          >
           <input
             type="file"
             id="fileInput"
@@ -2078,6 +2133,53 @@
             multiple
           />
         </label>
+
+        <div
+          class="q2p-format-strip"
+          aria-label="Supported file formats and file size"
+        >
+          <div class="q2p-supported-icons">
+            <span class="q2p-mini-file pdf">PDF</span
+            ><span class="q2p-mini-file jpg">JPG</span
+            ><span class="q2p-mini-file png">PNG</span>
+          </div>
+          <div class="q2p-strip-copy">
+            <b>Supported Formats</b><span>PDF, JPG, PNG</span>
+          </div>
+          <span class="q2p-strip-divider"></span>
+          <span class="q2p-layers-icon" aria-hidden="true"
+            ><svg viewBox="0 0 32 32" fill="none">
+              <path
+                d="m16 3 13 7-13 7L3 10 16 3Zm-13 13 13 7 13-7M3 22l13 7 13-7"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linejoin="round"
+              /></svg
+          ></span>
+          <div class="q2p-strip-copy">
+            <b>Max File Size</b><span>Up to 100 MB per file</span>
+          </div>
+        </div>
+        <div class="q2p-security-strip">
+          <span class="q2p-security-shield">✓</span
+          ><span
+            ><b>Your files are secure</b
+            ><small>We keep your data safe and private.</small></span
+          ><span class="q2p-security-lock" aria-hidden="true">♙</span>
+        </div>
+        <button
+          type="button"
+          class="q2p-multiple-card"
+          onclick="document.getElementById('fileInput').click()"
+        >
+          <span class="q2p-multiple-art"
+            ><span class="q2p-mini-file pdf">PDF</span
+            ><span class="q2p-photo-icon">▧</span></span
+          ><span class="q2p-multiple-copy"
+            ><b>Need to print multiple files?</b
+            ><small>Upload multiple files and print them together.</small></span
+          ><span class="q2p-multiple-arrow">›</span>
+        </button>
 
         <!-- Bottom Info -->
         <div
@@ -2208,7 +2310,9 @@
               />
             </svg>
 
-            <span id="step2ErrorText"> Something went wrong. </span>
+            <span id="step2ErrorText">
+              Kaam poora nahi ho paaya. Dobara try karein.
+            </span>
           </div>
 
           <!-- File Cards -->
@@ -2261,6 +2365,8 @@
                 class="w-full appearance-none bg-white rounded-lg p-3 font-semibold text-sm text-ink manga-shadow focus:outline-none"
               >
                 <option value="A4">A4 (Normal)</option>
+                <option value="A3">A3 (Large)</option>
+                <option value="Letter">Letter</option>
               </select>
 
               <div
@@ -2534,6 +2640,129 @@
         </button>
       </div>
     </main>
+
+    <div id="q2pToast" class="q2p-toast" role="status" aria-live="polite"></div>
+    <div id="q2pFormatDrawer" class="q2p-drawer-overlay" aria-hidden="true">
+      <section
+        class="q2p-format-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="q2pFormatTitle"
+      >
+        <div class="q2p-drawer-head">
+          <div>
+            <span class="q2p-eyebrow">QUICK2PRINT · FILE SETUP</span>
+            <h2 id="q2pFormatTitle">Kaunsa format upload karna hai?</h2>
+            <p>
+              Pehle format chunein. Uske baad sirf usi format ki file select
+              karein.
+            </p>
+          </div>
+          <button
+            type="button"
+            class="q2p-close"
+            onclick="q2pCloseFormatPicker()"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+        <div id="q2pFormatFileList" class="q2p-format-files"></div>
+        <p class="q2p-format-label">FILE FORMAT CHUNEIN</p>
+        <div class="q2p-format-options">
+          <label class="q2p-format-option"
+            ><input type="radio" name="q2pDocFormat" value="PDF" /><span
+              class="q2p-file-badge pdf"
+              >PDF</span
+            ><span
+              ><b>PDF Document</b><small>Sirf .pdf file</small></span
+            ></label
+          >
+          <label class="q2p-format-option"
+            ><input type="radio" name="q2pDocFormat" value="JPEG" /><span
+              class="q2p-file-badge jpg"
+              >JPG</span
+            ><span><b>JPEG Image</b><small>Sirf .jpeg file</small></span></label
+          >
+          <label class="q2p-format-option"
+            ><input type="radio" name="q2pDocFormat" value="JPG" /><span
+              class="q2p-file-badge jpg"
+              >JPG</span
+            ><span><b>JPG Image</b><small>Sirf .jpg file</small></span></label
+          >
+          <label class="q2p-format-option"
+            ><input type="radio" name="q2pDocFormat" value="PNG" /><span
+              class="q2p-file-badge png"
+              >PNG</span
+            ><span><b>PNG Image</b><small>Sirf .png file</small></span></label
+          >
+        </div>
+        <div class="q2p-format-note">
+          <span>🔒</span
+          ><span
+            ><b>Aapki files surakshit hain</b
+            ><small>Har file maximum 100 MB ki ho sakti hai</small></span
+          >
+        </div>
+        <div class="q2p-drawer-actions">
+          <button
+            type="button"
+            class="q2p-secondary"
+            onclick="q2pCloseFormatPicker()"
+          >
+            Cancel</button
+          ><button
+            type="button"
+            class="q2p-primary"
+            onclick="q2pConfirmFormat()"
+          >
+            File chunein <span>→</span>
+          </button>
+        </div>
+      </section>
+    </div>
+    <div
+      id="q2pPasswordModal"
+      class="q2p-drawer-overlay q2p-password-overlay"
+      aria-hidden="true"
+    >
+      <section
+        class="q2p-format-drawer q2p-password-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="q2pPasswordTitle"
+      >
+        <div class="q2p-lock-icon">🔐</div>
+        <h2 id="q2pPasswordTitle">Password-protected PDF</h2>
+        <p class="q2p-password-copy">
+          This PDF is locked. Enter its password to securely prepare it for
+          printing.
+        </p>
+        <div class="q2p-protected-file">
+          <span class="q2p-file-badge pdf">PDF</span
+          ><span id="q2pPasswordFile"></span>
+        </div>
+        <form id="q2pPasswordForm">
+          <label class="q2p-format-label" for="q2pPdfPassword"
+            >PDF PASSWORD</label
+          ><input
+            id="q2pPdfPassword"
+            type="password"
+            autocomplete="off"
+            required
+            placeholder="Enter document password"
+          />
+          <div class="q2p-drawer-actions">
+            <button type="button" id="q2pPasswordCancel" class="q2p-secondary">
+              Cancel</button
+            ><button type="submit" class="q2p-primary">Unlock PDF →</button>
+          </div>
+        </form>
+        <p class="q2p-password-foot">
+          The password is used only to open this file in your browser.
+        </p>
+      </section>
+    </div>
 
     <!-- ========================================================= -->
     <!-- PDF PAGE EDITOR -->
@@ -2916,7 +3145,7 @@
 
       const PAYMENT_API = "https://quick2print-payment-shops-ejbl.vercel.app";
 
-      const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+      const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024;
 
       const ACCEPTED_TYPES = /\.(pdf|jpg|jpeg|png)$/i;
 
@@ -3652,25 +3881,6 @@
         };
       }
 
-      // File type shortcuts for the refreshed chooser. This only adjusts the
-      // native picker filter; the original file selection pipeline is preserved.
-      window.q2pChooseFileType = function (type) {
-        const input = document.getElementById("fileInput");
-        if (!input) return;
-        const filters = {
-          pdf: ".pdf,application/pdf",
-          jpg: ".jpg,.jpeg,image/jpeg",
-          png: ".png,image/png",
-        };
-        input.dataset.q2pSelectedType = type || "all";
-        input.setAttribute(
-          "accept",
-          filters[type] ||
-            ".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png",
-        );
-        input.click();
-      };
-
       // ============================================================
       // INIT
       // ============================================================
@@ -3850,7 +4060,7 @@
 
           showErrorState(
             "Connection Error",
-            "Unable to verify the shop. Please check your internet connection and reload the page.",
+            "Network error: internet connection check karein aur page dobara kholein.",
           );
         }
       }
@@ -3861,10 +4071,22 @@
 
       function wireFileInput(inputId) {
         const input = document.getElementById(inputId);
-
         if (!input) return;
-
         input.onchange = handleFileSelection;
+        const label = document.querySelector(`label[for="${inputId}"]`);
+        if (label && !label.dataset.q2pFormatBound) {
+          label.dataset.q2pFormatBound = "1";
+          label.addEventListener("click", (event) => {
+            // Programmatic input.click() must still open the native file picker.
+            if (event.target === input || input.contains(event.target)) return;
+            event.preventDefault();
+            if (!ensureUploadAllowed()) return;
+            q2pActiveInputId = inputId;
+            q2pPendingFiles = [];
+            q2pPendingInput = null;
+            q2pShowFormatPicker([], input);
+          });
+        }
       }
 
       // ============================================================
@@ -3881,13 +4103,20 @@
         }
 
         const buffer = await file.arrayBuffer();
-
-        const pdfDoc = await PDFLib.PDFDocument.load(buffer, {
-          ignoreEncryption: true,
-          updateMetadata: false,
-        });
-
-        const pageCount = pdfDoc.getPageCount();
+        let pageCount;
+        if (window.pdfjsLib) {
+          const pdf = await window.pdfjsLib.getDocument({
+            data: buffer.slice(0),
+          }).promise;
+          pageCount = pdf.numPages;
+          await pdf.destroy();
+        } else {
+          const pdfDoc = await PDFLib.PDFDocument.load(buffer, {
+            ignoreEncryption: false,
+            updateMetadata: false,
+          });
+          pageCount = pdfDoc.getPageCount();
+        }
 
         if (!Number.isInteger(pageCount) || pageCount < 1) {
           throw new Error("No valid page found in the PDF.");
@@ -3900,122 +4129,262 @@
       // FILE SELECTION
       // ============================================================
 
+      let q2pPendingFiles = [];
+      let q2pPendingInput = null;
+      let q2pSelectedFormat = "";
+      let q2pActiveInputId = "fileInput";
+
+      function q2pFormatFor(file) {
+        const ext = (file.name.split(".").pop() || "").toLowerCase();
+        return ext === "jpeg" ? "JPEG" : ext.toUpperCase();
+      }
+      function q2pShowFormatPicker(files = [], input = null) {
+        q2pPendingFiles = files;
+        q2pPendingInput = input;
+        const list = document.getElementById("q2pFormatFileList");
+        list.innerHTML = files
+          .map((file) => {
+            const format = q2pFormatFor(file);
+            const iconClass =
+              format === "PDF" ? "pdf" : format === "PNG" ? "png" : "jpg";
+            const safeName = file.name
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;");
+            return `<div class="q2p-pending-file"><span class="q2p-file-badge ${iconClass}">${iconClass === "pdf" ? "PDF" : iconClass === "png" ? "PNG" : "JPG"}</span><span class="q2p-pending-name" title="${safeName}">${safeName}<small>${(file.size / 1024 / 1024).toFixed(2)} MB · ${format}</small></span><span class="q2p-format-pill">${format}</span></div>`;
+          })
+          .join("");
+        list.classList.toggle("hidden", files.length === 0);
+        document
+          .querySelectorAll('input[name="q2pDocFormat"]')
+          .forEach((r) => (r.checked = false));
+        if (q2pSelectedFormat) {
+          const selected = document.querySelector(
+            `input[name="q2pDocFormat"][value="${q2pSelectedFormat}"]`,
+          );
+          if (selected) selected.checked = true;
+        }
+        document.getElementById("q2pFormatDrawer").classList.add("is-open");
+        document
+          .getElementById("q2pFormatDrawer")
+          .setAttribute("aria-hidden", "false");
+      }
+      function q2pCloseFormatPicker() {
+        document.getElementById("q2pFormatDrawer").classList.remove("is-open");
+        document
+          .getElementById("q2pFormatDrawer")
+          .setAttribute("aria-hidden", "true");
+      }
+      async function q2pConfirmFormat() {
+        const choice = document.querySelector(
+          'input[name="q2pDocFormat"]:checked',
+        )?.value;
+        if (!choice) {
+          showUploadError("Pehle file ka format chunein.");
+          return;
+        }
+        q2pSelectedFormat = choice;
+        const accepts = {
+          PDF: ".pdf,application/pdf",
+          JPEG: ".jpeg,image/jpeg",
+          JPG: ".jpg,image/jpeg",
+          PNG: ".png,image/png",
+        };
+        const input = document.getElementById(q2pActiveInputId || "fileInput");
+        q2pCloseFormatPicker();
+        if (!q2pPendingFiles.length) {
+          if (input) {
+            input.setAttribute("accept", accepts[choice] || accepts.PDF);
+            input.value = "";
+            input.click();
+          }
+          return;
+        }
+        const files = q2pPendingFiles;
+        const sourceInput = q2pPendingInput;
+        q2pPendingFiles = [];
+        q2pPendingInput = null;
+        const mismatch = files.find((f) => q2pFormatFor(f) !== choice);
+        if (mismatch) {
+          showUploadError(
+            `Aapne ${choice} format chuna hai. Kripya sirf ${choice} file select karein.`,
+          );
+          if (sourceInput) sourceInput.value = "";
+          return;
+        }
+        await processSelectedFiles(files, sourceInput);
+      }
       async function handleFileSelection(event) {
         hideUploadError();
-
-        // Never process or upload files when the subscription/limit check fails.
         if (!ensureUploadAllowed()) {
           event.target.value = "";
           return;
         }
-
         const incoming = Array.from(event.target.files || []);
-
-        if (incoming.length === 0) {
-          return;
-        }
-
+        if (!incoming.length) return;
         const accepted = [];
-        const previousFiles = [...filesList];
-
-        const selectedType = event.target.dataset.q2pSelectedType || "all";
-        event.target.dataset.q2pSelectedType = "all";
-
         for (const file of incoming) {
-          const extension = String(file.name || "")
-            .split(".")
-            .pop()
-            .toLowerCase();
-          const matchesSelectedType =
-            selectedType === "all" ||
-            (selectedType === "pdf" && extension === "pdf") ||
-            (selectedType === "jpg" && ["jpg", "jpeg"].includes(extension)) ||
-            (selectedType === "png" && extension === "png");
-          if (!matchesSelectedType) {
-            showUploadError(
-              `\"${file.name}\" is not a ${selectedType.toUpperCase()} file. Please choose the selected file type.`,
-            );
-            continue;
-          }
-
           if (!ACCEPTED_TYPES.test(file.name)) {
             showUploadError(
-              `"${file.name}" is not a supported format. Only PDF, JPG and PNG are allowed.`,
+              `"${file.name}" ka format support nahi hota. PDF, JPG, JPEG ya PNG select karein.`,
             );
-
             continue;
           }
-
           if (file.size > MAX_FILE_SIZE_BYTES) {
-            showUploadError(`"${file.name}" is larger than 10MB.`);
-
+            showUploadError(
+              `"${file.name}" 100 MB se badi hai. Kripya chhoti file select karein.`,
+            );
             continue;
           }
-
+          const actualFormat = q2pFormatFor(file);
+          if (q2pSelectedFormat && actualFormat !== q2pSelectedFormat) {
+            showUploadError(
+              `Aapne ${q2pSelectedFormat} chuna hai. Kripya isi format ki file select karein.`,
+            );
+            continue;
+          }
           accepted.push(file);
         }
-
-        event.target.value = "";
-
-        if (accepted.length === 0) {
+        if (!accepted.length) {
+          event.target.value = "";
           return;
         }
+        await processSelectedFiles(accepted, event.target);
+      }
 
-        // Read actual page count
+      async function processSelectedFiles(accepted, input) {
+        const previousFiles = [...filesList];
+        if (input) input.value = "";
         for (const file of accepted) {
+          let processingFile = file;
           const isImage =
             file.type.startsWith("image/") ||
             /\.(jpg|jpeg|png)$/i.test(file.name);
-
           let pages = 1;
-
-          if (isImage) {
-            pages = 1;
-          } else {
+          if (!isImage) {
             try {
               pages = await getPdfPageCount(file);
             } catch (error) {
               console.error("PDF page count error:", error);
-
-              showUploadError(
-                `"${file.name}" could not be read. Please check that the PDF is valid and not password-protected.`,
-              );
-
-              continue;
+              const protectedPdf = /\.pdf$/i.test(file.name);
+              if (protectedPdf && window.pdfjsLib) {
+                const password = await q2pRequestPdfPassword(file);
+                if (password === null) continue;
+                try {
+                  const unlocked = await q2pFlattenProtectedPdf(file, password);
+                  processingFile = unlocked.file;
+                  pages = unlocked.pages;
+                } catch (passwordError) {
+                  showUploadError(
+                    `PDF password galat hai ya file open nahi ho rahi. Password check karke dobara try karein.`,
+                  );
+                  continue;
+                }
+              } else {
+                showUploadError(
+                  `PDF open nahi ho paayi. File check karein ya password dobara try karein.`,
+                );
+                continue;
+              }
             }
           }
-
           filesList.push({
-            file,
-
+            file: processingFile,
             pages,
-
             copies: 1,
-
             removedPages: [],
-
             uploaded: false,
-
             storagePath: null,
-
             jobId: null,
           });
         }
-
         if (filesList.length > 0) {
           const requestedCheck = checkRequestedPrintLimit(filesList);
-
           if (!requestedCheck.allowed) {
-            // Do not allow a selection that would exceed the subscription plan.
             filesList = previousFiles;
             renderFiles();
             updateTotal();
             showUploadError(requestedCheck.message);
             return;
           }
-
+          renderFiles();
+          updateTotal();
           showConfigStep();
+          if (typeof window.q2pToast === "function")
+            window.q2pToast(
+              `${accepted.length} file successfully add ho gayi!`,
+              "success",
+            );
         }
+      }
+
+      function q2pRequestPdfPassword(file) {
+        return new Promise((resolve) => {
+          const modal = document.getElementById("q2pPasswordModal");
+          document.getElementById("q2pPasswordFile").textContent = file.name;
+          const field = document.getElementById("q2pPdfPassword");
+          const form = document.getElementById("q2pPasswordForm");
+          const cancel = document.getElementById("q2pPasswordCancel");
+          field.value = "";
+          modal.classList.add("is-open");
+          modal.setAttribute("aria-hidden", "false");
+          const cleanup = (value) => {
+            modal.classList.remove("is-open");
+            modal.setAttribute("aria-hidden", "true");
+            form.removeEventListener("submit", submit);
+            cancel.removeEventListener("click", onCancel);
+            resolve(value);
+          };
+          const submit = (e) => {
+            e.preventDefault();
+            cleanup(field.value);
+          };
+          const onCancel = () => cleanup(null);
+          form.addEventListener("submit", submit);
+          cancel.addEventListener("click", onCancel);
+          setTimeout(() => field.focus(), 80);
+        });
+      }
+
+      async function q2pFlattenProtectedPdf(file, password) {
+        const bytes = await file.arrayBuffer();
+        const loadingTask = window.pdfjsLib.getDocument({
+          data: bytes,
+          password,
+        });
+        const pdf = await loadingTask.promise;
+        const output = await PDFLib.PDFDocument.create();
+        for (let n = 1; n <= pdf.numPages; n++) {
+          const page = await pdf.getPage(n);
+          const viewport = page.getViewport({ scale: 1.6 });
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.ceil(viewport.width);
+          canvas.height = Math.ceil(viewport.height);
+          const ctx = canvas.getContext("2d");
+          await page.render({ canvasContext: ctx, viewport }).promise;
+          const png = await new Promise((resolve) =>
+            canvas.toBlob(resolve, "image/png"),
+          );
+          const imageBytes = await png.arrayBuffer();
+          const embedded = await output.embedPng(imageBytes);
+          const outPage = output.addPage([viewport.width, viewport.height]);
+          outPage.drawImage(embedded, {
+            x: 0,
+            y: 0,
+            width: viewport.width,
+            height: viewport.height,
+          });
+          canvas.width = 1;
+          canvas.height = 1;
+        }
+        const outBytes = await output.save();
+        const safeName = file.name.replace(/\.pdf$/i, "");
+        const unlocked = new File([outBytes], `${safeName}-unlocked.pdf`, {
+          type: "application/pdf",
+        });
+        if (unlocked.size > MAX_FILE_SIZE_BYTES)
+          throw new Error("Processed PDF exceeds 100 MB.");
+        return { file: unlocked, pages: pdf.numPages };
       }
 
       // ============================================================
@@ -5708,6 +6077,59 @@
           setTimeout(hideQ2PLoader, 250);
         }
       });
+      window.q2pToast = (message, type = "success") => {
+        const toast = document.getElementById("q2pToast");
+        if (!toast) return;
+        toast.textContent = message;
+        toast.className = `q2p-toast show ${type === "error" ? "error" : ""}`;
+        clearTimeout(window.__q2pToastTimer);
+        window.__q2pToastTimer = setTimeout(() => {
+          toast.className = "q2p-toast";
+        }, 3600);
+      };
+      window.addEventListener("offline", () =>
+        window.q2pToast(
+          "Network error: internet connection check karein.",
+          "error",
+        ),
+      );
+      window.addEventListener("online", () =>
+        window.q2pToast("Internet connection wapas aa gaya.", "success"),
+      );
+
+      // Enable the advertised drag-and-drop upload area. Format selection still happens before processing.
+      (() => {
+        const uploadCard = document.querySelector("#step1 .q2p-upload-card");
+        if (!uploadCard) return;
+        ["dragenter", "dragover"].forEach((type) =>
+          uploadCard.addEventListener(type, (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            uploadCard.classList.add("q2p-drag-active");
+          }),
+        );
+        ["dragleave", "dragend"].forEach((type) =>
+          uploadCard.addEventListener(type, (event) => {
+            event.preventDefault();
+            uploadCard.classList.remove("q2p-drag-active");
+          }),
+        );
+        uploadCard.addEventListener("drop", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          uploadCard.classList.remove("q2p-drag-active");
+          const dropped = Array.from(event.dataTransfer?.files || []);
+          if (!dropped.length) return;
+          if (
+            typeof ensureUploadAllowed === "function" &&
+            !ensureUploadAllowed()
+          )
+            return;
+          q2pActiveInputId = "fileInput";
+          q2pShowFormatPicker(dropped, document.getElementById("fileInput"));
+        });
+      })();
+
       window.addEventListener("error", () => hideQ2PLoader());
       window.addEventListener("unhandledrejection", () => hideQ2PLoader());
     </script>
