@@ -248,6 +248,167 @@
           animation-duration: 2.5s !important;
         }
       }
+
+      /* Order confirmation transition inspired by qrcode.html cash receipt flow */
+      #orderConfirmTransition {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: radial-gradient(
+          circle at top,
+          #eef4ff 0%,
+          #f8fbff 48%,
+          #ffffff 100%
+        );
+        overflow: hidden;
+      }
+      #orderConfirmTransition.is-visible {
+        display: flex;
+      }
+      .confirm-transition-card {
+        width: min(360px, 100%);
+        text-align: center;
+        padding: 30px 24px;
+        border: 1px solid #dbeafe;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 24px 70px rgba(33, 27, 143, 0.16);
+        animation: confirmCardIn 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      }
+      .confirm-paper {
+        position: relative;
+        width: 92px;
+        height: 116px;
+        margin: 0 auto 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #cbd5e1;
+        border-radius: 15px;
+        background: linear-gradient(145deg, #fff, #f3f7ff);
+        box-shadow: 0 12px 24px rgba(33, 27, 143, 0.12);
+        animation: confirmPaperFloat 1.6s ease-in-out infinite;
+      }
+      .confirm-paper-lines {
+        display: grid;
+        gap: 8px;
+        width: 44px;
+      }
+      .confirm-paper-lines span {
+        height: 5px;
+        border-radius: 99px;
+        background: #c7d2fe;
+      }
+      .confirm-paper-lines span:nth-child(2) {
+        width: 75%;
+      }
+      .confirm-paper-lines span:nth-child(3) {
+        width: 88%;
+      }
+      .confirm-scan-line {
+        position: absolute;
+        left: 7px;
+        right: 7px;
+        top: 12px;
+        height: 3px;
+        border-radius: 99px;
+        background: #3152f4;
+        box-shadow: 0 0 12px #3152f4a8;
+        animation: confirmScan 1.15s ease-in-out infinite alternate;
+      }
+      .confirm-check {
+        position: absolute;
+        right: -13px;
+        bottom: -10px;
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: #16a34a;
+        border: 4px solid #fff;
+        border-radius: 50%;
+        box-shadow: 0 8px 18px #16a34a45;
+        animation: confirmCheckPop 0.55s 0.15s ease-out both;
+      }
+      .confirm-progress {
+        height: 6px;
+        margin-top: 22px;
+        overflow: hidden;
+        border-radius: 99px;
+        background: #e5e7eb;
+      }
+      .confirm-progress span {
+        display: block;
+        width: 42%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #211b8f, #4263ff, #22c55e);
+        animation: confirmProgress 1.2s ease-in-out infinite;
+      }
+      @keyframes confirmCardIn {
+        from {
+          opacity: 0;
+          transform: translateY(14px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes confirmPaperFloat {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-1deg);
+        }
+        50% {
+          transform: translateY(-5px) rotate(1deg);
+        }
+      }
+      @keyframes confirmScan {
+        from {
+          top: 10px;
+          opacity: 0.5;
+        }
+        to {
+          top: 94px;
+          opacity: 1;
+        }
+      }
+      @keyframes confirmCheckPop {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        75% {
+          transform: scale(1.15);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @keyframes confirmProgress {
+        from {
+          transform: translateX(-115%);
+        }
+        to {
+          transform: translateX(255%);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .confirm-transition-card,
+        .confirm-paper,
+        .confirm-scan-line,
+        .confirm-check,
+        .confirm-progress span {
+          animation-duration: 2.5s !important;
+        }
+      }
     </style>
   </head>
 
@@ -264,6 +425,50 @@
         </p>
         <div id="q2pLoaderOrder" class="q2p-loader-order"></div>
         <div class="q2p-loader-track" aria-hidden="true"><span></span></div>
+      </div>
+    </div>
+
+    <div
+      id="orderConfirmTransition"
+      role="status"
+      aria-live="polite"
+      aria-hidden="true"
+    >
+      <div class="confirm-transition-card">
+        <div class="confirm-paper" aria-hidden="true">
+          <div class="confirm-paper-lines">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="confirm-scan-line"></div>
+          <div class="confirm-check">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m5 12 4 4L19 6" />
+            </svg>
+          </div>
+        </div>
+        <p class="text-xs font-extrabold tracking-[.22em] text-[#3152F4]">
+          QUICK2PRINT
+        </p>
+        <h2 class="font-heading text-2xl font-extrabold text-gray-900 mt-2">
+          Order Confirmed!
+        </h2>
+        <p class="text-sm text-gray-500 mt-2">
+          Payment verify ho gaya. Aapka order shop ko bheja ja raha hai…
+        </p>
+        <p
+          id="confirmTransitionOrderId"
+          class="mt-3 inline-block rounded-lg bg-indigo-50 px-3 py-2 font-mono text-xs font-bold text-[#211B8F]"
+        ></p>
+        <div class="confirm-progress" aria-hidden="true"><span></span></div>
       </div>
     </div>
 
@@ -771,6 +976,7 @@
 
       function hideAllStates() {
         hideQ2PLoader();
+        hideOrderConfirmTransition();
 
         document.getElementById("statusCard").classList.remove("hidden");
 
@@ -800,11 +1006,25 @@
         return Number.isFinite(amount) ? `₹${amount.toFixed(2)}` : "—";
       }
 
+      let confirmTransitionTimer = null;
+
+      function hideOrderConfirmTransition() {
+        const transition = document.getElementById("orderConfirmTransition");
+        if (confirmTransitionTimer) {
+          clearTimeout(confirmTransitionTimer);
+          confirmTransitionTimer = null;
+        }
+        if (transition) {
+          transition.classList.remove("is-visible");
+          transition.setAttribute("aria-hidden", "true");
+        }
+      }
+
       function showSuccess(data) {
         hideAllStates();
 
-        document.getElementById("paymentSuccess").classList.remove("hidden");
-
+        // Keep the existing success IDs and values, but show the same
+        // processing-to-confirmation transition used by the qrcode cash flow.
         document.getElementById("successOrderId").textContent = shortOrderId(
           data.orderId || orderId,
         );
@@ -821,6 +1041,25 @@
         document.getElementById("successAmount").textContent = formatAmount(
           data.total,
         );
+
+        const transition = document.getElementById("orderConfirmTransition");
+        const transitionOrder = document.getElementById(
+          "confirmTransitionOrderId",
+        );
+        if (transitionOrder) {
+          transitionOrder.textContent = `Order ID: ${shortOrderId(data.orderId || orderId)}`;
+        }
+
+        if (transition) {
+          transition.classList.add("is-visible");
+          transition.setAttribute("aria-hidden", "false");
+        }
+
+        confirmTransitionTimer = setTimeout(() => {
+          hideOrderConfirmTransition();
+          document.getElementById("paymentSuccess").classList.remove("hidden");
+          confirmTransitionTimer = null;
+        }, 1450);
       }
 
       function showFailed(message, details = {}) {
