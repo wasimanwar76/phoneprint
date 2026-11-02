@@ -4232,8 +4232,10 @@
         const buffer = await file.arrayBuffer();
         let pageCount;
         if (window.pdfjsLib) {
+          // Pass a view of the existing buffer. buffer.slice(0) created an
+          // unnecessary full-size copy of every PDF before parsing it.
           const pdf = await window.pdfjsLib.getDocument({
-            data: buffer.slice(0),
+            data: new Uint8Array(buffer),
           }).promise;
           pageCount = pdf.numPages;
           await pdf.destroy();
@@ -4419,42 +4421,59 @@
       async function processSelectedFiles(accepted, input) {
         const previousFiles = [...filesList];
         if (input) input.value = "";
-        for (const file of accepted) {
-          let processingFile = file;
-          const isImage =
-            file.type.startsWith("image/") ||
-            /\.(jpg|jpeg|png)$/i.test(file.name);
-          let pages = 1;
-          if (!isImage) {
+
+        // Read and count ordinary PDFs in parallel instead of waiting for
+        // each PDF to finish before starting the next one.
+        const prepared = await Promise.all(
+          accepted.map(async (file) => {
+            const isImage =
+              file.type.startsWith("image/") ||
+              /\.(jpg|jpeg|png)$/i.test(file.name);
+            if (isImage) {
+              return { file, processingFile: file, pages: 1, error: null };
+            }
             try {
-              pages = await getPdfPageCount(file);
+              const pages = await getPdfPageCount(file);
+              return { file, processingFile: file, pages, error: null };
             } catch (error) {
               console.error("PDF page count error:", error);
-              const protectedPdf = /\.pdf$/i.test(file.name);
-              if (protectedPdf && window.pdfjsLib) {
-                const password = await q2pRequestPdfPassword(file);
-                if (password === null) continue;
-                try {
-                  const unlocked = await q2pFlattenProtectedPdf(file, password);
-                  processingFile = unlocked.file;
-                  pages = unlocked.pages;
-                } catch (passwordError) {
-                  showUploadError(
-                    `PDF password galat hai ya file open nahi ho rahi. Password check karke dobara try karein.`,
-                  );
-                  continue;
-                }
-              } else {
+              return { file, processingFile: file, pages: 1, error };
+            }
+          }),
+        );
+
+        // Handle protected/invalid PDFs sequentially so only one password
+        // dialog can be open at a time.
+        for (const item of prepared) {
+          if (item.error) {
+            const protectedPdf = /\.pdf$/i.test(item.file.name);
+            if (protectedPdf && window.pdfjsLib) {
+              const password = await q2pRequestPdfPassword(item.file);
+              if (password === null) continue;
+              try {
+                const unlocked = await q2pFlattenProtectedPdf(
+                  item.file,
+                  password,
+                );
+                item.processingFile = unlocked.file;
+                item.pages = unlocked.pages;
+              } catch (passwordError) {
                 showUploadError(
-                  `PDF open nahi ho paayi. File check karein ya password dobara try karein.`,
+                  `PDF password galat hai ya file open nahi ho rahi. Password check karke dobara try karein.`,
                 );
                 continue;
               }
+            } else {
+              showUploadError(
+                `PDF open nahi ho paayi. File check karein ya password dobara try karein.`,
+              );
+              continue;
             }
           }
+
           filesList.push({
-            file: processingFile,
-            pages,
+            file: item.processingFile,
+            pages: item.pages,
             copies: 1,
             removedPages: [],
             uploaded: false,
@@ -4462,6 +4481,7 @@
             jobId: null,
           });
         }
+
         if (filesList.length > 0) {
           const requestedCheck = checkRequestedPrintLimit(filesList);
           if (!requestedCheck.allowed) {
