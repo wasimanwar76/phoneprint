@@ -336,6 +336,13 @@
       .q-brand .q-logo-chip {
         animation: floatY 4s ease-in-out infinite;
       }
+      .q-sidebar-logo {
+        display: block;
+        width: min(205px, 100%);
+        max-height: 62px;
+        object-fit: contain;
+        object-position: center;
+      }
 
       .nav-item {
         position: relative;
@@ -1024,25 +1031,6 @@
         box-shadow: 0 5px 22px rgba(23, 19, 95, 0.055);
         overflow: visible;
       }
-      .q-navbar-brand {
-        width: 190px;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-      }
-      .q-navbar-brand img {
-        display: block;
-        width: 100%;
-        max-height: 58px;
-        object-fit: contain;
-        object-position: left center;
-      }
-      .q-navbar-divider {
-        width: 1px;
-        height: 48px;
-        background: linear-gradient(180deg, transparent, #d9dced, transparent);
-        flex: 0 0 auto;
-      }
       .q-navbar-shopline {
         display: flex;
         align-items: center;
@@ -1092,12 +1080,6 @@
         align-items: center;
         gap: 10px;
       }
-      .q-mobile-full-logo {
-        width: 156px;
-        height: 42px;
-        object-fit: contain;
-        object-position: left center;
-      }
       .q-mobile-shopline {
         display: flex;
         align-items: center;
@@ -1134,14 +1116,30 @@
       }
       .q-mobile-meta b {
         color: #211b8f;
-        max-width: 100px;
+        max-width: 112px;
         overflow: hidden;
         text-overflow: ellipsis;
+        display: inline-block;
+        vertical-align: bottom;
+      }
+      @media (max-width: 767px) {
+        .q-mobile-shopline {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px 12px;
+        }
+        .q-mobile-shopname {
+          flex: 1 1 100%;
+        }
+        .q-mobile-meta {
+          flex: 0 1 auto;
+          min-width: 0;
+        }
+        .q-mobile-meta b {
+          max-width: min(34vw, 145px);
+        }
       }
       @media (max-width: 1100px) and (min-width: 768px) {
-        .q-navbar-brand {
-          width: 150px;
-        }
         .q-navbar-shopline {
           gap: 9px;
         }
@@ -1168,9 +1166,6 @@
         }
       }
       @media (max-width: 390px) {
-        .q-mobile-full-logo {
-          width: 132px;
-        }
         .q-mobile-shopline {
           gap: 6px;
           padding: 7px;
@@ -1197,11 +1192,6 @@
         class="q-mobile-navbar md:hidden fixed top-0 inset-x-0 z-50 px-3 py-2.5"
       >
         <div class="q-mobile-brandline flex items-center justify-between gap-3">
-          <img
-            src="./logo.png"
-            alt="Quick2Print logo"
-            class="q-mobile-full-logo"
-          />
           <div class="flex shrink-0 items-center gap-1.5">
             <button
               onclick="logoutShop()"
@@ -1247,9 +1237,11 @@
         id="sidebar"
         class="w-72 max-w-[85vw] flex-shrink-0 flex flex-col h-full fixed md:relative z-40 -translate-x-full md:translate-x-0 pt-32 md:pt-0"
       >
-        <!-- Brand / shop identity -->
-        <div class="q-brand p-10 flex items-center gap-3">
-         
+        <!-- Quick2Print logo: shown only at the top of the sidebar -->
+        <div
+          class="q-brand flex min-h-[104px] items-center justify-center px-6 py-5"
+        >
+          <img src="./logo.png" alt="Quick2Print" class="q-sidebar-logo" />
         </div>
 
         <!-- Navigation – `active` class is set by switchTab() -->
@@ -1312,6 +1304,22 @@
           </a>
 
           <a
+            href="#support-ticket-modal"
+            onclick="
+              openSupportTicket();
+              return false;
+            "
+            class="nav-item flex items-center gap-3 p-3 rounded-xl font-bold"
+            aria-label="Create a support ticket"
+          >
+            <i data-lucide="headphones" class="w-5 h-5 shrink-0"></i>
+            <span class="truncate">Support / Help</span>
+            <span class="ml-auto text-[10px] font-semibold text-slate-400"
+              >✉️</span
+            >
+          </a>
+
+          <a
             href="#"
             onclick="
               switchTab('settings', this);
@@ -1344,6 +1352,200 @@
         </div>
       </aside>
 
+      <!-- Support ticket form -->
+      <div
+        id="support-ticket-modal"
+        class="fixed inset-0 z-[90] hidden items-center justify-center bg-[#17135F]/55 p-3 sm:p-5"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="support-ticket-title"
+      >
+        <div
+          class="w-full max-w-xl max-h-[92vh] overflow-y-auto rounded-3xl bg-white shadow-2xl"
+        >
+          <div
+            class="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-slate-100 bg-white px-5 py-4 sm:px-6"
+          >
+            <div>
+              <p
+                class="text-xs font-bold uppercase tracking-wider text-[#00A6C5]"
+              >
+                Quick2Print Helpdesk
+              </p>
+              <h2
+                id="support-ticket-title"
+                class="text-xl font-extrabold text-[#17135F]"
+              >
+                🎧 Create Support Ticket
+              </h2>
+            </div>
+            <button
+              type="button"
+              onclick="closeSupportTicket()"
+              class="q-btn-ghost rounded-xl p-2"
+              aria-label="Close support form"
+            >
+              <i data-lucide="x" class="h-5 w-5"></i>
+            </button>
+          </div>
+          <form id="support-ticket-form" class="space-y-4 p-5 sm:p-6">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label
+                  class="mb-1.5 block text-sm font-bold text-slate-700"
+                  for="support-shop-name"
+                  >🏪 Shop Name</label
+                ><input
+                  id="support-shop-name"
+                  class="q-input w-full"
+                  type="text"
+                  readonly
+                />
+              </div>
+              <div>
+                <label
+                  class="mb-1.5 block text-sm font-bold text-slate-700"
+                  for="support-shop-id"
+                  >🆔 Shop ID</label
+                ><input
+                  id="support-shop-id"
+                  class="q-input w-full"
+                  type="text"
+                  readonly
+                />
+              </div>
+              <div>
+                <label
+                  class="mb-1.5 block text-sm font-bold text-slate-700"
+                  for="support-owner-name"
+                  >👤 Owner Name</label
+                ><input
+                  id="support-owner-name"
+                  class="q-input w-full"
+                  type="text"
+                  readonly
+                />
+              </div>
+              <div>
+                <label
+                  class="mb-1.5 block text-sm font-bold text-slate-700"
+                  for="support-contact-number"
+                  >📞 Contact Number *</label
+                ><input
+                  id="support-contact-number"
+                  class="q-input w-full"
+                  type="tel"
+                  inputmode="tel"
+                  maxlength="16"
+                  required
+                  placeholder="Enter contact number"
+                />
+              </div>
+            </div>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label
+                  class="mb-1.5 block text-sm font-bold text-slate-700"
+                  for="support-category"
+                  >📂 Category *</label
+                ><select id="support-category" class="q-input w-full" required>
+                  <option value="">Select category</option>
+                  <option>Print Orders</option>
+                  <option>QR Code</option>
+                  <option>Payment</option>
+                  <option>Subscription / Plan</option>
+                  <option>Printer / Device</option>
+                  <option>Account / Login</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  class="mb-1.5 block text-sm font-bold text-slate-700"
+                  for="support-priority"
+                  >🚦 Priority</label
+                ><select id="support-priority" class="q-input w-full">
+                  <option value="NORMAL">Normal</option>
+                  <option value="HIGH">High</option>
+                  <option value="URGENT">Urgent</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label
+                class="mb-1.5 block text-sm font-bold text-slate-700"
+                for="support-subject"
+                >📝 Subject *</label
+              ><input
+                id="support-subject"
+                class="q-input w-full"
+                type="text"
+                maxlength="180"
+                required
+                placeholder="Briefly describe your issue"
+              />
+            </div>
+            <div>
+              <label
+                class="mb-1.5 block text-sm font-bold text-slate-700"
+                for="support-message"
+                >💬 Message *</label
+              ><textarea
+                id="support-message"
+                class="q-input w-full min-h-[115px] resize-y"
+                rows="4"
+                maxlength="5000"
+                required
+                placeholder="Explain the issue and steps to reproduce it..."
+              ></textarea>
+            </div>
+            <div>
+              <label
+                class="mb-1.5 block text-sm font-bold text-slate-700"
+                for="support-attachment"
+                >🖼️ Attach Image
+                <span class="font-normal text-slate-400"
+                  >(Optional, max 5 MB)</span
+                ></label
+              ><input
+                id="support-attachment"
+                class="block w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-[#17135F] file:px-3 file:py-2 file:font-bold file:text-white"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+              />
+              <p class="mt-1 text-xs text-slate-400">
+                PNG, JPG, WEBP or GIF. Please avoid uploading sensitive
+                documents.
+              </p>
+            </div>
+            <div
+              id="support-ticket-feedback"
+              class="hidden rounded-xl border px-4 py-3 text-sm font-semibold"
+              role="status"
+              aria-live="polite"
+            ></div>
+            <div
+              class="flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:justify-end"
+            >
+              <button
+                type="button"
+                onclick="closeSupportTicket()"
+                class="q-btn-ghost px-5 py-3"
+              >
+                Cancel</button
+              ><button
+                id="support-ticket-submit"
+                type="submit"
+                class="q-btn px-5 py-3"
+              >
+                <i data-lucide="send" class="mr-2 inline h-4 w-4"></i>Submit
+                Ticket
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
       <!-- =============================================================
          MAIN CONTENT
     ============================================================== -->
@@ -1352,12 +1554,8 @@
       >
         <!-- Single-line Quick2Print shop identity navbar -->
         <header
-          class="q-desktop-navbar flex flex-shrink-0 z-10 items-center gap-5 px-5 sm:px-7 py-3"
+          class="q-desktop-navbar hidden md:flex flex-shrink-0 z-10 items-center gap-5 px-5 sm:px-7 py-3"
         >
-          <div class="q-navbar-brand shrink-0">
-            <img src="./logo.png" alt="Quick2Print logo" />
-          </div>
-          <div class="q-navbar-divider"></div>
           <div class="q-navbar-shopline min-w-0 flex-1">
             <div class="q-navbar-shopname-wrap min-w-0">
               <span class="q-navbar-store-icon">🏪</span>
@@ -1448,6 +1646,106 @@
                 </p>
               </div>
             </div>
+
+            <!-- ================= BASIC SHOP DETAILS ================= -->
+            <section
+              id="overview-shop-details"
+              class="q-card q-static overflow-hidden"
+            >
+              <div
+                class="flex flex-col gap-4 border-b border-slate-100 bg-gradient-to-r from-[#FFF9DF] via-white to-[#F5F6FF] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7"
+              >
+                <div class="flex min-w-0 items-center gap-3">
+                  <div
+                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#211B8F]/10 text-2xl"
+                  >
+                    🏪
+                  </div>
+                  <div class="min-w-0">
+                    <p
+                      class="text-[10px] font-black uppercase tracking-[0.18em] text-[#00A6C5]"
+                    >
+                      Your Business Profile
+                    </p>
+                    <h2
+                      id="overview-shop-name"
+                      class="truncate text-xl font-extrabold text-[#17135F]"
+                    >
+                      My Print Shop
+                    </h2>
+                    <p class="mt-0.5 text-xs font-semibold text-slate-500">
+                      Shop ID:
+                      <span
+                        id="overview-shop-id"
+                        class="font-mono text-[#17135F]"
+                        >—</span
+                      >
+                    </p>
+                  </div>
+                </div>
+                <span
+                  class="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700"
+                  ><span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                  Shop Details</span
+                >
+              </div>
+              <div
+                class="grid grid-cols-1 gap-3 p-5 sm:grid-cols-2 sm:p-7 lg:grid-cols-3"
+              >
+                <div
+                  class="rounded-2xl border border-slate-100 bg-slate-50/80 p-4"
+                >
+                  <p class="text-xs font-semibold text-slate-500">
+                    👤 Shop Owner
+                  </p>
+                  <p
+                    id="overview-owner-name"
+                    class="mt-1 break-words text-sm font-extrabold text-[#17135F]"
+                  >
+                    Shop Owner
+                  </p>
+                </div>
+                <div
+                  class="rounded-2xl border border-slate-100 bg-slate-50/80 p-4"
+                >
+                  <p class="text-xs font-semibold text-slate-500">
+                    📞 Contact Number
+                  </p>
+                  <p
+                    id="overview-shop-contact"
+                    class="mt-1 break-words text-sm font-extrabold text-[#17135F]"
+                  >
+                    —
+                  </p>
+                </div>
+                <div
+                  class="rounded-2xl border border-slate-100 bg-slate-50/80 p-4"
+                >
+                  <p class="text-xs font-semibold text-slate-500">
+                    📧 Email Address
+                  </p>
+                  <p
+                    id="overview-shop-email"
+                    class="mt-1 break-words text-sm font-extrabold text-[#17135F]"
+                  >
+                    —
+                  </p>
+                </div>
+                <div
+                  class="rounded-2xl border border-slate-100 bg-slate-50/80 p-4 sm:col-span-2 lg:col-span-3"
+                >
+                  <p class="text-xs font-semibold text-slate-500">
+                    📍 Shop Address
+                  </p>
+                  <p
+                    id="overview-shop-address"
+                    class="mt-1 break-words text-sm font-bold leading-6 text-[#17135F]"
+                  >
+                    Address not added
+                  </p>
+                </div>
+              </div>
+            </section>
 
             <!-- ======================= SHOP STATUS ======================= -->
             <section class="q-card q-static p-6 sm:p-7" id="shopStatusSection">
@@ -2242,6 +2540,7 @@
                   Customers can scan this QR code to open your Quick2Print shop
                   page and submit documents for printing.
                 </p>
+               
               </div>
               <div
                 id="qrStatus"
@@ -2477,8 +2776,10 @@
                       <p
                         class="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400"
                       >
-                        Scan this QR code with your phone to upload documents
-                        directly to this printing shop.
+                        QR कोड को Google Lens से स्कैन करके इस दुकान का पेज
+                        खोलें। <br />
+                        Scan this QR code with Google Lens to open This shop
+                        page.
                       </p>
                     </div>
 
@@ -3461,7 +3762,14 @@
         const settingsMobileEl = document.getElementById("settings-mobile");
         const shopName = currentShop.shop_name || "My Print Shop";
         const shopId = currentShop.shop_id || "—";
-        const ownerName = currentShop.owner_name || "Shop Owner";
+        const ownerName =
+          String(
+            currentShop.owner_name ||
+              currentShop.owner_full_name ||
+              currentShop.full_name ||
+              currentShop.owner ||
+              "Shop Owner",
+          ).trim() || "Shop Owner";
 
         ["navbar-shop-name", "mobile-shop-name"].forEach((id) => {
           const el = document.getElementById(id);
@@ -3487,9 +3795,34 @@
         }
       }
 
+      function hydrateOverviewShopDetails() {
+        const shop = currentShop || {};
+        const ownerName =
+          String(
+            shop.owner_name ||
+              shop.owner_full_name ||
+              shop.full_name ||
+              shop.owner ||
+              "Shop Owner",
+          ).trim() || "Shop Owner";
+        const values = {
+          "overview-shop-name": shop.shop_name || "My Print Shop",
+          "overview-shop-id": shop.shop_id || "—",
+          "overview-owner-name": ownerName,
+          "overview-shop-contact": shop.whatsapp_number || "—",
+          "overview-shop-email": shop.email || "—",
+          "overview-shop-address": shop.shop_address || "Address not added",
+        };
+        Object.entries(values).forEach(([id, value]) => {
+          const element = document.getElementById(id);
+          if (element) element.textContent = value;
+        });
+      }
+
       // ---- 3. Icons ----
       lucide.createIcons();
       hydrateShopInfo();
+      hydrateOverviewShopDetails();
 
       // ---- 4. Mobile menu (with backdrop + scroll lock) ----
       const sidebarEl = document.getElementById("sidebar");
@@ -3612,6 +3945,179 @@
         SUPABASE_ANON_KEY,
       );
       const STORAGE_BUCKET = "print-files";
+
+      // ------------------------------------------------------------
+      // Support tickets: public.support_tickets + optional image upload
+      // ------------------------------------------------------------
+      function q2pSupportFeedback(message, type = "error") {
+        const box = document.getElementById("support-ticket-feedback");
+        if (!box) return;
+        box.className =
+          "rounded-xl border px-4 py-3 text-sm font-semibold " +
+          (type === "success"
+            ? "border-green-200 bg-green-50 text-green-700"
+            : "border-red-200 bg-red-50 text-red-700");
+        box.textContent = message;
+      }
+
+      function openSupportTicket() {
+        const modal = document.getElementById("support-ticket-modal");
+        if (!modal) return;
+        const shop = currentShop || {};
+        const set = (id, value) => {
+          const el = document.getElementById(id);
+          if (el) el.value = value || "";
+        };
+        set("support-shop-name", shop.shop_name);
+        set("support-shop-id", shop.shop_id);
+        set(
+          "support-owner-name",
+          shop.owner_name ||
+            shop.owner_full_name ||
+            shop.full_name ||
+            shop.owner ||
+            "Shop Owner",
+        );
+        set("support-contact-number", shop.whatsapp_number);
+        const feedback = document.getElementById("support-ticket-feedback");
+        if (feedback) feedback.classList.add("hidden");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        document.body.classList.add("overflow-hidden");
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      function closeSupportTicket() {
+        const modal = document.getElementById("support-ticket-modal");
+        if (!modal) return;
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        document.body.classList.remove("overflow-hidden");
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("support-ticket-form");
+        if (!form) return;
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const button = document.getElementById("support-ticket-submit");
+          const shop = currentShop || {};
+          const contact = document
+            .getElementById("support-contact-number")
+            .value.trim();
+          const category = document.getElementById("support-category").value;
+          const priority = document.getElementById("support-priority").value;
+          const subject = document
+            .getElementById("support-subject")
+            .value.trim();
+          const message = document
+            .getElementById("support-message")
+            .value.trim();
+          const fileInput = document.getElementById("support-attachment");
+          const file = fileInput.files && fileInput.files[0];
+          if (!contact || !category || !subject || !message) {
+            q2pSupportFeedback("Please complete all required fields.");
+            return;
+          }
+          if (
+            file &&
+            !["image/png", "image/jpeg", "image/webp", "image/gif"].includes(
+              file.type,
+            )
+          ) {
+            q2pSupportFeedback("Please attach a PNG, JPG, WEBP or GIF image.");
+            return;
+          }
+          if (file && file.size > 5 * 1024 * 1024) {
+            q2pSupportFeedback("Image size must be 5 MB or less.");
+            return;
+          }
+          button.disabled = true;
+          button.classList.add("opacity-60", "cursor-not-allowed");
+          button.textContent = "Submitting…";
+          try {
+            let attachmentUrl = null;
+            if (file) {
+              const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+              const objectPath = `support-tickets/${shop.shop_id || "unknown"}/${Date.now()}-${safeName}`;
+              const { error: uploadError } = await supabaseClient.storage
+                .from(STORAGE_BUCKET)
+                .upload(objectPath, file, {
+                  cacheControl: "3600",
+                  upsert: false,
+                  contentType: file.type,
+                });
+              if (uploadError)
+                throw new Error("Image upload failed: " + uploadError.message);
+              const { data: publicData } = supabaseClient.storage
+                .from(STORAGE_BUCKET)
+                .getPublicUrl(objectPath);
+              attachmentUrl = publicData?.publicUrl || null;
+              if (!attachmentUrl)
+                throw new Error(
+                  "Image uploaded, but its public URL could not be generated. Check the print-files bucket settings.",
+                );
+            }
+            const { error } = await supabaseClient
+              .from("support_tickets")
+              .insert([
+                {
+                  shop_id: shop.shop_id || null,
+                  shop_name: shop.shop_name || null,
+                  owner_name:
+                    shop.owner_name ||
+                    shop.owner_full_name ||
+                    shop.full_name ||
+                    shop.owner ||
+                    document.getElementById("support-owner-name").value ||
+                    null,
+                  contact_number: contact,
+                  category,
+                  priority,
+                  subject,
+                  message,
+                  attachment_url: attachmentUrl,
+                  status: "OPEN",
+                },
+              ]);
+            if (error) throw error;
+            q2pSupportFeedback(
+              "✅ Your support ticket has been submitted successfully. Our support team will contact you soon.",
+              "success",
+            );
+            form.reset();
+            document.getElementById("support-shop-name").value =
+              shop.shop_name || "";
+            document.getElementById("support-shop-id").value =
+              shop.shop_id || "";
+            document.getElementById("support-owner-name").value =
+              shop.owner_name ||
+              shop.owner_full_name ||
+              shop.full_name ||
+              shop.owner ||
+              "Shop Owner";
+            document.getElementById("support-contact-number").value = contact;
+          } catch (error) {
+            console.error("Support ticket submission failed:", error);
+            q2pSupportFeedback(
+              "❌ Could not submit your ticket. " +
+                (error?.message || "Please try again."),
+            );
+          } finally {
+            button.disabled = false;
+            button.classList.remove("opacity-60", "cursor-not-allowed");
+            button.innerHTML =
+              '<i data-lucide="send" class="mr-2 inline h-4 w-4"></i>Submit Ticket';
+            if (window.lucide) window.lucide.createIcons();
+          }
+        });
+        const modal = document.getElementById("support-ticket-modal");
+        modal?.addEventListener("click", (event) => {
+          if (event.target === modal) closeSupportTicket();
+        });
+      });
+      window.openSupportTicket = openSupportTicket;
+      window.closeSupportTicket = closeSupportTicket;
 
       // ============================================================
       // Demo account information from Supabase
@@ -6491,6 +6997,40 @@
 
             document.getElementById("settings-owner-name").value =
               data.owner_name || "";
+
+            // The database profile is authoritative for the owner display.
+            currentShop = { ...currentShop, ...data };
+            try {
+              localStorage.setItem("loggedInShop", JSON.stringify(currentShop));
+            } catch (_) {}
+            hydrateOverviewShopDetails();
+            ["navbar-shop-name", "mobile-shop-name"].forEach((id) => {
+              const node = document.getElementById(id);
+              if (node)
+                node.textContent =
+                  data.shop_name || currentShop.shop_name || "My Print Shop";
+            });
+            [
+              "navbar-owner-name",
+              "mobile-owner-name",
+              "support-owner-name",
+            ].forEach((id) => {
+              const node = document.getElementById(id);
+              if (node)
+                node.textContent !== undefined && "value" in node
+                  ? (node.value = data.owner_name || "Shop Owner")
+                  : (node.textContent = data.owner_name || "Shop Owner");
+            });
+            const supportShopName =
+              document.getElementById("support-shop-name");
+            const supportShopId = document.getElementById("support-shop-id");
+            if (supportShopName) supportShopName.value = data.shop_name || "";
+            if (supportShopId) supportShopId.value = data.shop_id || "";
+            const supportContact = document.getElementById(
+              "support-contact-number",
+            );
+            if (supportContact && !supportContact.value)
+              supportContact.value = data.whatsapp_number || "";
 
             document.getElementById("settings-mobile").value =
               data.whatsapp_number || "";
