@@ -751,6 +751,132 @@
           font-size: 10px;
         }
       }
+
+      /* Print Agent connection panel */
+      .q-agent-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+        padding: 23px 26px;
+        background: linear-gradient(115deg, #111c47, #243b83);
+        color: white;
+        border-radius: 22px;
+        box-shadow: 0 16px 36px #17255420;
+        position: relative;
+        overflow: hidden;
+      }
+      .q-agent-panel:before {
+        content: "";
+        position: absolute;
+        width: 210px;
+        height: 210px;
+        border: 1px solid #ffffff18;
+        border-radius: 50%;
+        right: -65px;
+        top: -110px;
+        pointer-events: none;
+      }
+      .q-agent-copy {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-width: 0;
+        position: relative;
+      }
+      .q-agent-icon {
+        width: 56px;
+        height: 56px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        background: #ffffff18;
+        border: 1px solid #ffffff30;
+        border-radius: 17px;
+      }
+      .q-agent-kicker {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #b9caff;
+        font-weight: 800;
+      }
+      .q-agent-title {
+        font-size: 21px;
+        font-weight: 800;
+        line-height: 1.25;
+        margin-top: 4px;
+      }
+      .q-agent-desc {
+        font-size: 12px;
+        color: #cbd5ee;
+        margin-top: 5px;
+        line-height: 1.5;
+      }
+      .q-agent-controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .q-agent-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #ffffff15;
+        border: 1px solid #ffffff30;
+        border-radius: 999px;
+        padding: 9px 13px;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .q-agent-dot {
+        height: 9px;
+        width: 9px;
+        border-radius: 50%;
+        background: #fbbf24;
+      }
+      .q-agent-panel[data-state="connected"] .q-agent-dot {
+        background: #34d399;
+        box-shadow: 0 0 0 4px #34d39922;
+      }
+      .q-agent-panel[data-state="disconnected"] .q-agent-dot {
+        background: #fca5a5;
+      }
+      .q-agent-refresh {
+        border: 1px solid #ffffff60;
+        background: #fff;
+        color: #1e3270;
+        border-radius: 11px;
+        padding: 10px 14px;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .q-agent-refresh:disabled {
+        opacity: 0.65;
+        cursor: wait;
+      }
+      @media (max-width: 650px) {
+        .q-agent-panel {
+          flex-direction: column;
+          align-items: stretch;
+          padding: 20px;
+        }
+        .q-agent-controls {
+          justify-content: space-between;
+        }
+        .q-agent-title {
+          font-size: 18px;
+        }
+        .q-agent-icon {
+          width: 46px;
+          height: 46px;
+        }
+      }
     </style>
 
     <script>
@@ -1601,6 +1727,45 @@
             id="tab-overview"
             class="tab-content max-w-6xl mx-auto space-y-6"
           >
+            <!-- Print Agent: reflects the authoritative shops.print_agent column -->
+            <section
+              id="q-agent-panel"
+              class="q-agent-panel"
+              data-state="loading"
+              aria-label="Print Agent connection"
+            >
+              <div class="q-agent-copy">
+                <div class="q-agent-icon">
+                  <i data-lucide="printer" class="w-7 h-7"></i>
+                </div>
+                <div>
+                  <div class="q-agent-kicker">Device connection</div>
+                  <h2 class="q-agent-title">Print Agent</h2>
+                  <p id="q-agent-description" class="q-agent-desc">
+                    Checking your printer agent connection…
+                  </p>
+                </div>
+              </div>
+              <div class="q-agent-controls">
+                <div
+                  id="q-agent-status"
+                  class="q-agent-status"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <span class="q-agent-dot"></span
+                  ><span id="q-agent-status-text">Checking…</span>
+                </div>
+                <button
+                  type="button"
+                  id="q-agent-refresh"
+                  class="q-agent-refresh"
+                  onclick="q2pRefreshAgent()"
+                >
+                  ↻ Refresh
+                </button>
+              </div>
+            </section>
             <!-- Software update banner -->
             <div class="q-card q-static q-cmyk q-update p-6 sm:p-7">
               <div class="flex flex-col gap-5">
@@ -2540,7 +2705,6 @@
                   Customers can scan this QR code to open your Quick2Print shop
                   page and submit documents for printing.
                 </p>
-               
               </div>
               <div
                 id="qrStatus"
@@ -6968,6 +7132,7 @@
               printer_type,
               payment_method,
               shop_status,
+              print_agent,
               qr_token
             `,
               )
@@ -6982,6 +7147,7 @@
               return;
             }
 
+            if (data) q2pRenderAgent(data.print_agent);
             if (!data) {
               showMessage("Shop profile nahi mila.", "error");
 
@@ -8617,6 +8783,74 @@
         } catch (_) {
           window.q2pUpdateQrPreferencePreview("BW_COLOR", "BOTH");
         }
+      });
+    </script>
+
+    <script>
+      // The database value is authoritative; this dashboard does not pretend a browser
+      // can connect or disconnect a native print agent by itself.
+      function q2pRenderAgent(value, failed) {
+        const panel = document.getElementById("q-agent-panel");
+        if (!panel) return;
+        const state = failed
+          ? "error"
+          : value === true
+            ? "connected"
+            : value === false
+              ? "disconnected"
+              : "loading";
+        panel.dataset.state = state;
+        document.getElementById("q-agent-status-text").textContent =
+          state === "connected"
+            ? "Connected"
+            : state === "disconnected"
+              ? "Disconnected"
+              : state === "error"
+                ? "Unavailable"
+                : "Checking…";
+        document.getElementById("q-agent-description").textContent =
+          state === "connected"
+            ? "Your print agent is marked as connected and ready in the shop database."
+            : state === "disconnected"
+              ? "Print agent is offline. Start the agent on your computer, then refresh."
+              : state === "error"
+                ? "Could not retrieve agent status. Check your connection and try again."
+                : "Checking your printer agent connection…";
+      }
+      async function q2pRefreshAgent() {
+        const button = document.getElementById("q-agent-refresh");
+        if (button) button.disabled = true;
+        try {
+          const saved = JSON.parse(
+            localStorage.getItem("loggedInShop") || "null",
+          );
+          const id = saved && saved.shop_id;
+          if (!id || typeof supabaseClient === "undefined")
+            throw new Error("Shop session unavailable");
+          const { data, error } = await supabaseClient
+            .from("shops")
+            .select("print_agent")
+            .eq("shop_id", id)
+            .single();
+          if (error) throw error;
+          q2pRenderAgent(data.print_agent);
+        } catch (err) {
+          console.error("Print agent status:", err);
+          q2pRenderAgent(null, true);
+        } finally {
+          if (button) button.disabled = false;
+        }
+      }
+      document.addEventListener("DOMContentLoaded", () => {
+        q2pRefreshAgent();
+        document.addEventListener("visibilitychange", () => {
+          if (!document.hidden) q2pRefreshAgent();
+        });
+        window.addEventListener("online", q2pRefreshAgent);
+        // Refresh periodically in case the desktop agent changes its status.
+        setInterval(() => {
+          if (!document.hidden) q2pRefreshAgent();
+        }, 30000);
       });
     </script>
   </body>
