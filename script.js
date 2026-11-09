@@ -647,7 +647,7 @@ async function submitLogin(event) {
 (() => {
   const pricing = document.getElementById("pricing");
   if (!pricing || document.getElementById("q2pSubscriptionModal")) return;
-  const PAYMENT_API = "https://quick2print-payment-subscription-na.vercel.app";
+  const PAYMENT_API = "https://quick2print-payment-subscription.vercel.app";
   const checkoutPage = new URL(
     "subscription-payment.html",
     window.location.href,
