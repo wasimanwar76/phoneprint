@@ -845,6 +845,11 @@
       .q-agent-panel[data-state="disconnected"] .q-agent-dot {
         background: #fca5a5;
       }
+      .q-agent-panel[data-state="offline"] .q-agent-dot,
+      .q-agent-panel[data-state="error"] .q-agent-dot {
+        background: #fbbf24;
+        box-shadow: 0 0 0 4px #fbbf2422;
+      }
       .q-agent-refresh {
         border: 1px solid #ffffff60;
         background: #fff;
@@ -8787,39 +8792,51 @@
     </script>
 
     <script>
-      // The database value is authoritative; this dashboard does not pretend a browser
-      // can connect or disconnect a native print agent by itself.
+      // Dashboard display only: the Windows agent owns shops.print_agent updates.
+      let q2pAgentRequest = 0;
       function q2pRenderAgent(value, failed) {
         const panel = document.getElementById("q-agent-panel");
-        if (!panel) return;
-        const state = failed
-          ? "error"
-          : value === true
-            ? "connected"
-            : value === false
-              ? "disconnected"
-              : "loading";
+        const label = document.getElementById("q-agent-status-text");
+        const description = document.getElementById("q-agent-description");
+        if (!panel || !label || !description) return;
+        const state = !navigator.onLine
+          ? "offline"
+          : failed
+            ? "error"
+            : value === true
+              ? "connected"
+              : value === false
+                ? "disconnected"
+                : "loading";
         panel.dataset.state = state;
-        document.getElementById("q-agent-status-text").textContent =
-          state === "connected"
-            ? "Connected"
-            : state === "disconnected"
-              ? "Disconnected"
-              : state === "error"
-                ? "Unavailable"
-                : "Checking…";
-        document.getElementById("q-agent-description").textContent =
-          state === "connected"
-            ? "Your print agent is marked as connected and ready in the shop database."
-            : state === "disconnected"
-              ? "Print agent is offline. Start the agent on your computer, then refresh."
-              : state === "error"
-                ? "Could not retrieve agent status. Check your connection and try again."
-                : "Checking your printer agent connection…";
+        label.textContent = {
+          connected: "Connected",
+          disconnected: "Disconnected",
+          offline: "Internet offline",
+          error: "Status unavailable",
+          loading: "Checking…",
+        }[state];
+        description.textContent = {
+          connected:
+            "The print agent is online and reporting its connection to Quick2Print.",
+          disconnected:
+            "The print agent is offline. Open Quick2Print Agent on your computer and check its internet connection.",
+          offline:
+            "This device is offline. Reconnect to the internet to check the print agent status.",
+          error:
+            "The print agent status could not be loaded. Check your connection and select Refresh.",
+          loading: "Checking your printer agent connection…",
+        }[state];
       }
       async function q2pRefreshAgent() {
+        const request = ++q2pAgentRequest;
         const button = document.getElementById("q-agent-refresh");
         if (button) button.disabled = true;
+        if (!navigator.onLine) {
+          q2pRenderAgent(null, true);
+          if (button) button.disabled = false;
+          return;
+        }
         try {
           const saved = JSON.parse(
             localStorage.getItem("loggedInShop") || "null",
@@ -8832,13 +8849,14 @@
             .select("print_agent")
             .eq("shop_id", id)
             .single();
-          if (error) throw error;
-          q2pRenderAgent(data.print_agent);
+          if (error || !data)
+            throw error || new Error("Shop status unavailable");
+          if (request === q2pAgentRequest) q2pRenderAgent(data.print_agent);
         } catch (err) {
-          console.error("Print agent status:", err);
-          q2pRenderAgent(null, true);
+          console.error("Print agent status refresh failed:", err);
+          if (request === q2pAgentRequest) q2pRenderAgent(null, true);
         } finally {
-          if (button) button.disabled = false;
+          if (request === q2pAgentRequest && button) button.disabled = false;
         }
       }
       document.addEventListener("DOMContentLoaded", () => {
@@ -8847,7 +8865,12 @@
           if (!document.hidden) q2pRefreshAgent();
         });
         window.addEventListener("online", q2pRefreshAgent);
-        // Refresh periodically in case the desktop agent changes its status.
+        window.addEventListener("offline", () => {
+          ++q2pAgentRequest; // Ignore any old successful response after disconnect.
+          q2pRenderAgent(null, true);
+          const button = document.getElementById("q-agent-refresh");
+          if (button) button.disabled = false;
+        });
         setInterval(() => {
           if (!document.hidden) q2pRefreshAgent();
         }, 30000);
